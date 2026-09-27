@@ -1,0 +1,25 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { route } from '../../i18n/routes';
+import { breadcrumbSchema, contactPageSchema } from '../../lib/seo';
+import { CONTACT_EMAIL } from '../../data/site-config';
+const lang = 'en';
+const title = 'Contact Salary Calculator SG: Errors, Questions, Widget';
+const description = 'Write to the publisher of Salary Calculator SG to report an error in a CPF or tax figure, ask about the method or get the free widget. We reply within days.';
+const jsonLd = [contactPageSchema({ name: title, description, path: route('contact', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Contact', path: route('contact', lang) }])];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Contact' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Contact</h1></header>
+  <div class="prose prose-slate max-w-none">
+    <p>Email is the only channel: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We read every message and usually reply within a few working days.</p>
+    <h2>Reporting an error</h2>
+    <p>Tell us the page, the salary, age and status you entered, the figure shown and the figure you expected, with its source if you have one: a payslip line, a CPF statement or an IRAS notice. Please do not send your NRIC, bank details or full documents; the numbers are enough.</p>
+    <h2>Questions about your own situation</h2>
+    <p>We cannot give personal tax or payroll advice. For your CPF contributions, the CPF Board answers through its website and hotline; for your tax, IRAS; for your employment terms, the Ministry of Manpower.</p>
+    <h2>Embedding the calculator</h2>
+    <p>The salary calculator can be embedded free of charge on any website. The code and conditions are on the <a href={route('widget', lang)}>widget page</a>.</p>
+    <h2>Publisher</h2>
+    <LegalIdentity lang="en" />
+  </div>
+</PageLayout>

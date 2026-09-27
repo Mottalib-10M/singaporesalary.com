@@ -1,0 +1,18 @@
+---
+import AmountPage from '../../components/AmountPage.astro';
+import { route, ANNUAL } from '../../i18n/routes';
+import { annualLabel } from '../../i18n/nav';
+import { annualAngle } from '../../lib/amount-angles';
+import { ex } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+export function getStaticPaths() { return ANNUAL.map((a) => ({ params: { amount: String(a) } })); }
+const amount = Number(Astro.params.amount);
+const rows = ([[12, 'SC'], [13, 'SC'], [14, 'SC'], [12, 'FOREIGNER'], [13, 'FOREIGNER']] as const).map(([n, s]) => { const m = amount / n; const r = ex(m, { status: s, bonus: amount - m * 12 }); return [`${s === 'SC' ? 'Citizen' : 'Foreigner'}, ${n} months`, formatMoney(m), formatMoney(r.annual.cpfEmployee), formatMoney(r.annual.tax), formatMoney(r.annual.net)]; });
+const i = ANNUAL.indexOf(amount as (typeof ANNUAL)[number]);
+const near = [ANNUAL[i - 1], ANNUAL[i + 1]].filter(Boolean) as number[];
+---
+<AmountPage id={`y-${amount}`} crumb={annualLabel(amount)} angle={annualAngle(amount)} monthly={amount / 12} mode="afterTax"
+  table={{ caption: `${formatMoney(amount)} a year by pay structure`, headers: ['Structure', 'Monthly salary', 'Employee CPF', 'Tax YA 2027', 'Net per year'], rows }}
+  neighbours={[...near.map((n) => ({ href: route(`y-${n}`, 'en'), name: annualLabel(n) })), { href: route('afterTax', 'en'), name: 'Salary after tax' }, { href: route('bonus', 'en'), name: 'Bonus tax calculator' }]}
+  sources={[SRC.iras_rates, SRC.cpf_rates, SRC.iras_cpf_relief]} />

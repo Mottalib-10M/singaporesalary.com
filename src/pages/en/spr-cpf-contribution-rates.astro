@@ -1,0 +1,51 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { cpf, ex, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const bl: Record<string, string> = { '55_below': '55 and below', '55_60': 'Above 55 to 60', '60_65': 'Above 60 to 65', '65_70': 'Above 65 to 70', '70_above': 'Above 70' };
+const tbl = (k: keyof typeof P.cpf.tables) => Object.entries(P.cpf.tables[k].rates).map(([b, r]) => [bl[b], formatPercent(r.total - r.employee, 1), formatPercent(r.employee, 1), formatPercent(r.total, 1), formatMoney(r.max_total)]);
+const sal = 6000;
+const opts = [['SPR1_GG', 'Year 1, graduated (G/G)'], ['SPR1_FG', 'Year 1, full employer (F/G)'], ['SC', 'Year 1, full/full (table 1)'], ['SPR2_GG', 'Year 2, graduated (G/G)'], ['SPR2_FG', 'Year 2, full employer (F/G)'], ['SC', 'Year 2, full/full (table 1)']] as const;
+const cmp = opts.map(([s, l]) => { const c = cpf(sal, 30, s); return [l, formatMoney(c.employee), formatMoney(c.employer), formatMoney(c.total * 12), formatMoney(sal - c.employee)]; });
+const y1 = ex(sal, { status: 'SPR1_GG' }); const full = ex(sal);
+const faqs = [
+  { q: 'Do PRs pay the same CPF as citizens?', a: 'Not at first. In the first two years after obtaining permanent residence, PRs and their employers contribute at graduated rates, much lower than citizen rates: 5 % from the employee and 4 % from the employer in the first year for those aged 55 and below. From the third year, PRs contribute at exactly the same rates as citizens, automatically.' },
+  { q: 'How do I opt into full CPF rates as a new PR?', a: 'The employer and the employee submit a joint application to the CPF Board, choosing either full rates for both or full rates for the employer with graduated rates for the employee. Once approved, the choice cannot be reversed, and it applies to that employer. If you change employer during the two years, the new employer starts at graduated rates unless you apply again.' },
+  { q: 'When does my second year of PR start for CPF?', a: 'On the anniversary of the date you obtained PR status, not in January. Someone who became a PR on 15 August 2025 contributes at first-year graduated rates until 14 August 2026, at second-year rates from 15 August 2026, and at full rates from 15 August 2027. Payroll should switch rates in the month concerned.' },
+  { q: 'Is it worth paying full CPF rates in the first two years?', a: 'It depends on your plans. Full rates add money to your CPF accounts that you can use for an HDB flat, and your employer’s full share is money you would not otherwise receive. The cost is lower take-home pay during two years. If you may leave Singapore and renounce PR, graduated rates keep more cash in hand.' },
+];
+---
+<Guide id="sprRates" title="SPR CPF Contribution Rates 2026: Graduated Rates, Years 1–2" h1="CPF rates for Singapore Permanent Residents in their first two years"
+  description="The four CPF tables for first- and second-year PRs in 2026: graduated rates, full employer rates, how to opt in, and what each choice does to take-home pay."
+  intro="Tables 2 to 5 of the CPF Board’s 2026 schedule, which most calculators ignore, with the joint application option and a side-by-side comparison on one salary."
+  resume={`A Singapore Permanent Resident does not start at citizen CPF rates. In the first two years of PR status, CPF is due at graduated rates, which the CPF Board sets out in four separate tables. By default both the employer and the employee pay graduated rates: in the first year, 4 % from the employer and 5 % from the employee for those aged 55 and below, and in the second year 9 % and 15 %. The employer and employee may instead apply jointly to pay at full employer rates with graduated employee rates, or at full rates for both. From the third anniversary of PR status, the citizen rates of 17 % and 20 % apply automatically. On a ${formatMoney(sal)} salary at age 30, a first-year PR on graduated rates takes home ${formatMoney(y1.takeHomeMonthly)} a month, against ${formatMoney(full.takeHomeMonthly)} at full rates, but builds up ${formatMoney(full.annual.cpfTotal - y1.annual.cpfTotal)} less in CPF over the year.`}
+  faqs={faqs} related={['cpfRates', 'employerCpf', 'cpf', 'home', 'netToGross', 'allocation']} sources={[SRC.cpf_rates, SRC.cpf_alloc, SRC.cpf_2027]}>
+  <h2>Table 2: first year, graduated rates for both (the default)</h2>
+  <ContentTable headers={['Age', 'Employer', 'Employee', 'Total', 'Max. total']} align={['l', 'r', 'r', 'r', 'r']} rows={tbl('SPR1_GG')} />
+  <p>The employee share is 5 % at every age, and the employer’s is 4 % up to 60 and 3.5 % above. The maximum total contribution, reached at the {formatMoney(P.cpf.ow_ceiling_month)} ordinary wage ceiling, is {formatMoney(720)}, a quarter of a citizen’s.</p>
+
+  <h2>Table 3: second year, graduated rates for both</h2>
+  <ContentTable headers={['Age', 'Employer', 'Employee', 'Total', 'Max. total']} align={['l', 'r', 'r', 'r', 'r']} rows={tbl('SPR2_GG')} />
+  <p>In the second year the employee share triples below 55, from 5 % to 15 %, which makes the second anniversary of PR status the moment take-home pay drops the most. Above 65, the second-year rates are the same as the first year’s.</p>
+
+  <h2>Table 4: first year, full employer and graduated employee</h2>
+  <ContentTable headers={['Age', 'Employer', 'Employee', 'Total', 'Max. total']} align={['l', 'r', 'r', 'r', 'r']} rows={tbl('SPR1_FG')} />
+
+  <h2>Table 5: second year, full employer and graduated employee</h2>
+  <ContentTable headers={['Age', 'Employer', 'Employee', 'Total', 'Max. total']} align={['l', 'r', 'r', 'r', 'r']} rows={tbl('SPR2_FG')} />
+  <p>In tables 4 and 5, the employer pays exactly what it pays for a citizen, while the employee keeps the lower graduated share. For the employee, this option costs nothing in take-home pay compared with the default and brings the employer’s full contribution into CPF. It costs the employer the difference, which is why it usually comes as a retention benefit or a negotiated term.</p>
+
+  <h2>The six options on one {formatMoney(sal)} salary, age 30</h2>
+  <ContentTable headers={['Option', 'Employee per month', 'Employer per month', 'CPF per year', 'Take-home per month']} align={['l', 'r', 'r', 'r', 'r']} rows={cmp} />
+  <p>The full/full option is simply table 1 applied early. Choosing it in year one means the employee pays {formatMoney(cpf(sal).employee - cpf(sal, 30, 'SPR1_GG').employee)} more a month than on the default, and the account balance grows by {formatMoney(full.annual.cpfTotal - y1.annual.cpfTotal)} more over the year.</p>
+
+  <h2>How the rates change during the year</h2>
+  <p>The graduated period is counted from the date PR status was granted. Payroll moves to second-year rates in the month of the first anniversary and to full rates in the month of the second. A new PR who changes employer keeps the same anniversary dates, but a joint application approved with one employer does not carry over to the next. Our calculator uses one status for the whole year; if your anniversary falls mid-year, run it twice and weigh the months.</p>
+
+  <h2>What stays the same for PRs</h2>
+  <p>Everything else in CPF applies as for citizens: the wage bands below $750, the $8,000 ordinary wage ceiling, the Additional Wage ceiling for bonuses, the allocation ratios between accounts, and the CPF relief for income tax, which is based on the compulsory employee contributions actually made. A PR on graduated rates therefore gets a smaller CPF relief and may pay slightly more income tax than a citizen on the same salary. The 2027 increases for older workers do not touch the graduated rates, as the <a href={route('cpf2027', lang)}>2027 changes page</a> notes.</p>
+</Guide>

@@ -1,0 +1,32 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, cpf, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatDecimal } from '../../lib/format';
+const lang = 'en';
+const e = ex(4200, { age: 34 });
+const bands = [[25, 'up to 35'], [40, 'above 35 to 45'], [48, 'above 45 to 50'], [53, 'above 50 to 55'], [58, 'above 55 to 60'], [63, 'above 60 to 65'], [68, 'above 65 to 70'], [72, 'above 70']] as const;
+const rows = bands.map(([age, l]) => { const c = cpf(4200, age); const r = ex(4200, { age }); return [l, formatMoney(c.employee), formatMoney(c.employer), formatMoney(r.allocation.oa / 12), formatMoney(r.allocation.sa / 12), formatMoney(r.allocation.ma / 12)]; });
+const faqs = [
+  { q: 'How do I calculate my CPF contribution by hand?', a: `Take your ordinary wages for the month, capped at ${formatMoney(P.cpf.ow_ceiling_month)}, and multiply by your employee rate: 20 % up to age 55 for citizens. Round the result down to the dollar. Multiply the same wages by the total rate, 37 %, and round to the nearest dollar; your employer pays the difference. On ${formatMoney(4200)}, that gives ${formatMoney(cpf(4200).employee)} from you and ${formatMoney(cpf(4200).employer)} from your employer.` },
+  { q: 'Why is my Ordinary Account growing more slowly than my salary suggests?', a: `Because MediSave and the Special Account are served first. At 34, ${formatDecimal(P.cpf.allocation['35_45'].ma * 100)} % of each contribution goes to MediSave and ${formatDecimal(P.cpf.allocation['35_45'].sa * 100)} % to the Special Account once you pass 35; the Ordinary Account receives the remainder. Past 50, the share for retirement rises sharply, so the Ordinary Account slows down just when many people are paying off a flat.` },
+  { q: 'Can I use this CPF calculator for a part-time job?', a: 'Yes. CPF is based on the wages actually paid in the month, not on full-time status. Enter the monthly amount you receive. Below $500 only your employer contributes, and between $500 and $750 your own share phases in gradually, so a part-timer earning $600 contributes $60, not 20 % of $600.' },
+];
+---
+<ToolPage id="cpf" title="CPF Calculator 2026: Your Contribution and OA, SA, MA Split" h1="CPF calculator 2026: your contribution and where it goes"
+  description="See what CPF takes from your monthly salary, what your employer adds and how much lands in your Ordinary, Special or Retirement and MediSave accounts in 2026."
+  intro="Enter your salary and age: the calculator applies the CPF Board’s 2026 rates, the $8,000 ceiling and the rounding rules, then splits the total between your three accounts."
+  mode="cpf" initialMonthly={4200} initialAge={34} faqs={faqs} related={['contribution', 'employerCpf', 'allocation', 'cpfRates', 'sprRates', 'home']}
+  sources={[SRC.cpf_rates, SRC.cpf_alloc, SRC.cpf_sums]}>
+  <p>On a salary of {formatMoney(4200)} at age 34, CPF takes {formatMoney(e.monthly.employee)} from your pay and your employer adds {formatMoney(e.monthly.employer)}, a total of {formatMoney(e.monthly.total)} that lands in your CPF accounts every month. Over a year, that is {formatMoney(e.annual.cpfTotal)}, split into {formatMoney(e.allocation.oa)} for the Ordinary Account, {formatMoney(e.allocation.sa)} for the Special Account and {formatMoney(e.allocation.ma)} for MediSave. The calculator reproduces the CPF Board’s own procedure: it picks the rate table from your status, the age band from your age, caps your ordinary wages at {formatMoney(P.cpf.ow_ceiling_month)}, rounds the total to the nearest dollar and your share down to the dollar, then applies the allocation ratios for your age. It is the number you should see on your CPF statement for a month in which your salary did not change.</p>
+  <h2>Contributions and allocation by age on {formatMoney(4200)} a month</h2>
+  <p>The contribution rates change at 55, 60, 65 and 70. The allocation ratios change more often, at 35, 45 and 50 as well, because the CPF Board tilts savings towards retirement and healthcare as you get older.</p>
+  <ContentTable headers={['Age', 'You pay', 'Employer pays', 'Ordinary', 'Special or Retirement', 'MediSave']} align={['l', 'r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The last three columns are monthly averages. Two moments stand out. At 55 the Special Account closes and the Retirement Account takes its place, filled up to the Full Retirement Sum of {formatMoney(P.cpf.retirement_sums_2026.frs)} for members turning 55 in {P.year}. Above 65, MediSave receives most of each contribution, because hospital costs rise with age and MediSave is capped at the Basic Healthcare Sum, {formatMoney(P.cpf.basic_healthcare_sum_2026)} in {P.year}, beyond which the excess flows to your other accounts.</p>
+  <h2>What this calculator treats as your salary</h2>
+  <p>CPF distinguishes ordinary wages, paid for the month, from additional wages, such as a performance bonus, a 13th month or leave encashment. Enter the first in the salary field and the second in the bonus field. Allowances that are paid every month, for transport or meals, are ordinary wages. Reimbursements of expenses you actually incurred are not wages at all. If you are paid more than {formatMoney(P.cpf.ow_ceiling_month)}, the calculator shows the capped contribution and the note in the result tells you the ceiling applied. For the payroll view month by month, including a bonus month, use the <a href={route('contribution', lang)}>CPF contribution calculator</a>.</p>
+  <h2>If the figure does not match your statement</h2>
+  <p>Check three things. Your status: a PR in the first two years pays graduated rates unless a joint application was approved. Your age band: CPF uses the age reached at your birthday, and the new rate starts from the first day of the month after it. Your wages: overtime and allowances count in the month they are paid, which can move a contribution from one month to the next. If none of these explains the gap, your employer can correct it through the CPF Board’s adjustment procedure.</p>
+</ToolPage>

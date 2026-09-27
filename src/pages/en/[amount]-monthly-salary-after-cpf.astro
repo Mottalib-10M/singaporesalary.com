@@ -1,0 +1,19 @@
+---
+import AmountPage from '../../components/AmountPage.astro';
+import { route, MONTHLY } from '../../i18n/routes';
+import { monthlyLabel } from '../../i18n/nav';
+import { monthlyAngle } from '../../lib/amount-angles';
+import { ex } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+export function getStaticPaths() { return MONTHLY.map((a) => ({ params: { amount: String(a) } })); }
+const amount = Number(Astro.params.amount);
+const cases = [['Citizen, 30', 30, 'SC'], ['Citizen, 58', 58, 'SC'], ['Citizen, 62', 62, 'SC'], ['PR year 1, 30', 30, 'SPR1_GG'], ['PR year 2, 30', 30, 'SPR2_GG'], ['Foreigner, 30', 30, 'FOREIGNER']] as const;
+const rows = cases.map(([l, age, s]) => { const r = ex(amount, { age, status: s }); return [l, formatMoney(r.monthly.employee), formatMoney(r.takeHomeMonthly), formatMoney(r.monthly.employer), formatMoney(r.annual.tax), formatMoney(r.annual.net)]; });
+const i = MONTHLY.indexOf(amount as (typeof MONTHLY)[number]);
+const near = [MONTHLY[i - 1], MONTHLY[i + 1], MONTHLY[i - 2], MONTHLY[i + 2]].filter(Boolean) as number[];
+---
+<AmountPage id={`m-${amount}`} crumb={monthlyLabel(amount)} angle={monthlyAngle(amount)} monthly={amount}
+  table={{ caption: `${formatMoney(amount)} a month by age and status`, headers: ['Situation', 'Employee CPF', 'Take-home', 'Employer CPF', 'Tax YA 2027', 'Net per year'], rows }}
+  neighbours={[...near.map((n) => ({ href: route(`m-${n}`, 'en'), name: monthlyLabel(n) })), { href: route('home', 'en'), name: 'Salary calculator' }]}
+  sources={[SRC.cpf_rates, SRC.iras_rates, SRC.cpf_alloc]} />

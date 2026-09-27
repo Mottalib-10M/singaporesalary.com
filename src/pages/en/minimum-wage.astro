@@ -1,0 +1,48 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, P } from '../../lib/tables';
+import { hourlyFromMonthly } from '../../lib/engine/sg';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const W = P.wages;
+const l = ex(W.lqs_monthly, { age: 30 }); const lold = ex(W.lqs_previous);
+const rows = [[W.lqs_previous, 'LQS until 30 June 2026'], [W.lqs_monthly, 'LQS from 1 July 2026'], [2500, 'Common entry-level salary'], [W.mom_p20_2025, '20th percentile, MOM 2025 (incl. employer CPF)']].map(([m, lab]) => { const r = ex(m as number); return [lab as string, formatMoney(m as number), formatMoney(hourlyFromMonthly(m as number), 2), formatMoney(r.takeHomeMonthly), formatMoney(r.monthly.employer)]; });
+const faqs = [
+  { q: 'Does Singapore have a minimum wage?', a: `There is no single national minimum wage. Instead, the Progressive Wage Model sets minimum wages and wage ladders in specific sectors and occupations, such as cleaning, security, landscape, retail and food services, and the Local Qualifying Salary sets a floor of ${formatMoney(W.lqs_monthly)} a month, since 1 July 2026, for local employees of firms that hire foreign workers.` },
+  { q: 'What is the Local Qualifying Salary in 2026?', a: `${formatMoney(W.lqs_monthly)} a month for full-time local employees, raised from ${formatMoney(W.lqs_previous)} on 1 July 2026 as announced in Budget 2026. Firms must pay at least this amount to every local employee not covered by a Progressive Wage Model in order to hire foreign workers. Locals paid at least half of it count as half a local worker in the quota computation.` },
+  { q: 'How much take-home pay is $1,800 a month?', a: `For a citizen aged 30, ${formatMoney(l.takeHomeMonthly)} a month after the 20 % employee CPF of ${formatMoney(l.monthly.employee)}. No income tax is due at this salary, since annual income of ${formatMoney(W.lqs_monthly * 12)} minus reliefs stays under the ${formatMoney(20000)} tax-free band. Lower-wage workers aged 30 and above may also qualify for the Workfare Income Supplement.` },
+];
+---
+<Guide id="minimumWage" title="Minimum Wage Singapore 2026: LQS $1,800 and Sector Wages" h1="Minimum wage in Singapore: the LQS, Progressive Wage Models and what they pay"
+  description="Singapore has no single minimum wage. How the Local Qualifying Salary of $1,800 from July 2026 and the Progressive Wage Models set pay floors, with take-home."
+  intro="Three mechanisms protect low-wage workers in Singapore instead of one national minimum: sector wage ladders, a salary floor tied to foreign hiring, and a wage top-up."
+  resume={`Singapore does not have a national minimum wage in the sense used in Europe or Australia. Low wages are set instead by three instruments. The Progressive Wage Model fixes minimum wages and skills-based wage ladders in specific sectors and occupations, including cleaning, security, landscaping, lift and escalator maintenance, retail, food services and waste management, and extends to administrators and drivers in all firms. The Local Qualifying Salary is a floor that firms must pay every local employee if they want to hire foreign workers: ${formatMoney(W.lqs_monthly)} a month for full-time staff since 1 July 2026, up from ${formatMoney(W.lqs_previous)}. The Workfare Income Supplement tops up the pay of lower-wage workers aged 30 and above with cash and CPF contributions paid by the government. At the LQS, a citizen aged 30 takes home ${formatMoney(l.takeHomeMonthly)} a month after CPF and owes no income tax.`}
+  faqs={faqs} related={['hourly', 'averageSalary', 'takeHome', 'm-1800', 'employerCost', 'home']} sources={[SRC.mom_income, SRC.cpf_rates, SRC.mom_hourly]}>
+  <h2>Pay floors compared</h2>
+  <ContentTable headers={['Reference point', 'Monthly', 'Hourly (MOM formula)', 'Take-home, citizen 30', 'Employer CPF']} align={['l', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The hourly column uses the Ministry of Manpower’s conversion, 12 × monthly ÷ (52 × 44). A worker at the new LQS earns about {formatMoney(hourlyFromMonthly(W.lqs_monthly), 2)} an hour on a 44-hour week. The raise from {formatMoney(W.lqs_previous)} to {formatMoney(W.lqs_monthly)} adds {formatMoney(l.takeHomeMonthly - lold.takeHomeMonthly)} to monthly take-home pay and {formatMoney(l.monthly.employer - lold.monthly.employer)} to the employer’s CPF.</p>
+
+  <h2>The Progressive Wage Model</h2>
+  <p>Each Progressive Wage Model is negotiated by a tripartite committee of unions, employers and government for one sector or occupation. It sets a minimum basic wage for the entry grade and higher minimums for each skill level, tied to training requirements, and a schedule of increases over several years. Employers bound by a PWM must pay at least those wages to local staff, and for some sectors, such as cleaning and security, compliance is a condition of the business licence or of government contracts. Because the ladders differ by sector and change on set dates, this site does not reproduce them; the Ministry of Manpower publishes the current wage tables for each model.</p>
+
+  <h2>The Local Qualifying Salary</h2>
+  <p>The LQS works through the foreign worker quota. A firm’s entitlement to Work Permit and S Pass holders depends on its number of local employees, and only locals paid at least the LQS count as a full local worker; those paid at least half of it count as half. By raising the LQS, the government raises the effective wage floor for local employees across most employers, without imposing a legal minimum wage on all. Part-time local workers must be paid at least the hourly equivalent set by the Ministry of Manpower for the quota to recognise them.</p>
+
+  <h2>Workfare: the top-up paid by the government</h2>
+  <p>The Workfare Income Supplement pays lower-wage citizens aged 30 and above, and persons with disabilities at any age, a supplement split between cash and CPF. It is not a wage paid by the employer and does not appear on the payslip. It is not taxable and does not affect CPF contributions on the salary. The amount depends on age and monthly income, within an income ceiling set by the government.</p>
+
+  <h2>What a low salary costs and pays</h2>
+  <p>At these salaries, CPF works in the worker’s favour: the employer adds 17 % on top, and the employee’s 20 % is fully credited to their own accounts, mostly the Ordinary Account at younger ages. Income tax is nil: with the earned income relief and the CPF relief, annual income of {formatMoney(W.lqs_monthly * 12)} leaves chargeable income well below {formatMoney(20000)}. For wages below $750 a month, typical of part-time work, the employee share of CPF phases in gradually and is nil below $500, as explained in the <a href={route('cpfRates', lang)}>CPF rates guide</a>.</p>
+
+  <h2>Why Singapore chose ladders over a single minimum</h2>
+  <p>The government’s argument is that a single national minimum wage would be too low to matter in well-paid sectors and too high for some small firms, and that it would not push workers to build skills. The Progressive Wage Model instead ties each wage step to a training requirement and to productivity in the sector, and is negotiated by unions and employers. Critics point out that workers outside the covered sectors rely on the LQS and on Workfare. Coverage has widened steadily since the first model for cleaners in 2015, and now includes occupations found in every industry, such as administrators and drivers.</p>
+
+  <h2>For employers hiring at the floor</h2>
+  <p>A firm hiring locals at {formatMoney(W.lqs_monthly)} pays employer CPF of {formatMoney(l.monthly.employer)} a month and SDL of about {formatMoney(4.5, 2)} on top, and should check whether a Progressive Wage Model covers the role, since its wage may be higher than the LQS.</p>
+
+  <h2>If you are paid less than you should be</h2>
+  <p>Employees covered by a Progressive Wage Model who are paid below its wage, or local employees paid below the LQS where their employer uses it to hire foreigners, can raise the matter with the Ministry of Manpower or the Tripartite Alliance for Dispute Management. Salary claims under the Employment Act go to the Employment Claims Tribunals after mediation. Keep your payslips, which employers must issue with the basic pay, allowances, deductions and CPF of each month.</p>
+</Guide>

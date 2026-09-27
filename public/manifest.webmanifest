@@ -1,9 +1,21 @@
 {
-  "name": "salarycalculator.sg",
-  "short_name": "salarycalculator",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1e40af",
-  "icons": [{"src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml"}]
+ "name": "Salary Calculator SG",
+ "short_name": "Salary Calc SG",
+ "description": "Singapore salary, CPF and income tax calculator 2026: take-home pay, employer CPF, allocation to OA, SA and MA.",
+ "start_url": "/en/",
+ "display": "standalone",
+ "background_color": "#ffffff",
+ "theme_color": "#C8102E",
+ "icons": [
+  {
+   "src": "/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
 }

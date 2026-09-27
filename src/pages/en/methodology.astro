@@ -1,0 +1,55 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { breadcrumbSchema, webPageSchema } from '../../lib/seo';
+import { P, cpf, ex } from '../../lib/tables';
+import { allocate, residentTax } from '../../lib/engine/sg';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const title = 'CPF and Tax Calculation Method: Sources, Tests and Limits';
+const description = 'How salarycalculator.sg computes CPF, allocation, income tax and employer cost: official sources, rounding rules, test cases, update cycle and known limits.';
+const checks = [
+  ['CPF, $5,000, age 30, citizen', `${formatMoney(cpf(5000).employee)} / ${formatMoney(cpf(5000).employer)}`, 'Table 1: 20 % / 17 %'],
+  ['CPF at the $8,000 ceiling', `${formatMoney(cpf(12000).total)} total, ${formatMoney(cpf(12000).employee)} employee`, 'Table 1 maxima $2,960 / $1,600'],
+  ['CPF, $600 (phase-in)', `${formatMoney(cpf(600).employee)} employee`, '0.6 × (TW − $500)'],
+  ['SPR year 1 graduated, $9,000', `${formatMoney(cpf(9000, 30, 'SPR1_GG').total)} total`, 'Table 2 maximum $720'],
+  ['Allocation of $100 at 30', (() => { const a = allocate(100, 30); return `${a.oa} / ${a.sa} / ${a.ma}`; })(), 'CPF Board example: 62.17 / 16.21 / 21.62'],
+  ['Allocation of $100 at 57', (() => { const a = allocate(100, 57); return `${a.oa} / ${a.sa} / ${a.ma}`; })(), 'CPF Board example: 35.30 / 33.82 / 30.88'],
+  ['Tax on $80,000 chargeable', formatMoney(residentTax(80000)), 'IRAS cumulative: $3,350'],
+  ['Tax on $320,000 chargeable', formatMoney(residentTax(320000)), 'IRAS cumulative: $44,550'],
+  ['Tax on $1,000,000 chargeable', formatMoney(residentTax(1000000)), 'IRAS cumulative: $199,150'],
+  ['AW ceiling at $8,000 a month', formatMoney(ex(8000, { bonus: 16000 }).awCeiling), '$102,000 − $96,000'],
+];
+const jsonLd = [webPageSchema({ name: title, description, path: route('method', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Methodology', path: route('method', lang) }])];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Methodology' }]} sources={Object.values(SRC)}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">How the calculations are made</h1>
+    <p class="mt-3 text-lg text-navy-600">Every figure on this site comes from one engine, written as pure functions that run in your browser, and every parameter it uses is read from a single file of 2026 values, each with the official source it was taken from.</p></header>
+  <div class="prose prose-slate max-w-none">
+    <h2>Sources and update cycle</h2>
+    <p>The CPF contribution rates come from the CPF Board’s five rate tables from 1 January 2026; the allocation ratios from the CPF Board’s allocation table of the same date; the 2027 senior rates from the CPF Board’s announcement of the contribution changes from 1 January 2027. Income tax follows the IRAS resident rates in force since YA 2024 and the IRAS pages on the earned income relief, the CPF relief and the $80,000 relief cap. The Skills Development Levy parameters come from the CPF Board. Wage statistics come from the Ministry of Manpower. All values were last read on {P.retrieved_at}. They are reviewed at least once a year, when the CPF Board publishes the next year’s tables and the Budget is announced, and whenever an official change is published in between.</p>
+    <h2>CPF</h2>
+    <p>The engine selects the table from the status (citizen or PR from the third year; PR in the first or second year on graduated rates or with full employer rates; foreigner, with no CPF), and the age band from the age in whole years. It reads the wage band from total wages: nil up to $50, employer only up to $500, phase-in up to $750, full rates above. It caps ordinary wages at $8,000 a month. It rounds the total to the nearest dollar, the employee share down to the dollar, and gives the employer the difference, adding ordinary and additional wages of the same month before rounding, as the notes under the CPF Board tables require. A bonus is treated as additional wages paid in December and charged to CPF up to the Additional Wage ceiling, $102,000 minus the ordinary wages subject to CPF in the year.</p>
+    <h2>Allocation</h2>
+    <p>The total contribution is split with the CPF Board’s ratios: MediSave first, then the Special Account (Retirement Account from 55), each rounded to the cent, and the remainder to the Ordinary Account. The engine does not apply the Basic Healthcare Sum or Full Retirement Sum overflows, which depend on your balances.</p>
+    <h2>Income tax</h2>
+    <p>Assessable income is the year’s salary plus bonus. Reliefs are the earned income relief for your age, the CPF relief equal to your compulsory employee contributions, and any other reliefs you enter, capped at $80,000 in total. The resident rates are applied band by band. No personal income tax rebate is applied, since none has been announced for YA 2027. For non-residents, the engine computes 15 % of gross employment income and the resident rates on the same amount without reliefs, and keeps the higher, as IRAS does.</p>
+    <h2>Employer cost and hourly conversion</h2>
+    <p>Employer cost is salary plus bonus, employer CPF and the Skills Development Levy computed month by month: 0.25 % of the first $4,500 of wages, at least $2 and at most $11.25. Hourly and monthly pay are converted with the Ministry of Manpower’s formula for the hourly basic rate, 12 × monthly pay ÷ (52 × 44).</p>
+    <h2>Checks against official figures</h2>
+    <p>These cases are part of the automated tests that run before every publication; the build fails if any of them changes.</p>
+    <ContentTable headers={['Case', 'Engine result', 'Official reference']} align={['l', 'r', 'l']} rows={checks} />
+    <h2>Known limits</h2>
+    <ul>
+      <li>Self-help group contributions (CDAC, ECF, MBMF, SINDA) are not deducted.</li>
+      <li>The salary is assumed constant over the year, and the bonus paid in December; mid-year changes alter the Additional Wage ceiling.</li>
+      <li>Age is taken in whole years; the CPF Board changes rates from the month after a birthday.</li>
+      <li>Self-employed MediSave, pensionable civil servant rates and platform worker rates are not computed.</li>
+      <li>Workfare, the foreign worker levy, the parenthood tax rebate and donations are not included.</li>
+      <li>For 2027, the allocation assumes the 2026 ratios with the extra contribution credited to the Retirement Account, as announced.</li>
+    </ul>
+    <p>Results are estimates for planning. Your payslip, your CPF statement and your IRAS notice of assessment prevail. If you find a difference that these limits do not explain, write to us through the <a href={route('contact', lang)}>contact page</a>: corrections are dated in the <a href={route('editorial', lang)}>editorial policy</a>.</p>
+  </div>
+</PageLayout>

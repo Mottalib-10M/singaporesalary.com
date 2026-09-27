@@ -1,0 +1,32 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, cpf, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const T = P.cpf.tables.SC.rates['55_below'];
+const bandRows = [40, 300, 500, 600, 700, 750, 751, 1000].map((w) => { const c = cpf(w); return [formatMoney(w), { nil: 'Nil', employer_only: 'Employer only', phase_in: 'Phase-in', full: 'Full rates', foreigner: '' }[c.rule], formatMoney(c.employee), formatMoney(c.employer), formatMoney(c.total)]; });
+const b = ex(6000, { bonus: 12000 });
+const faqs = [
+  { q: 'How is CPF calculated when the salary is between $500 and $750?', a: `The employer pays its usual percentage of total wages, 17 % below 55, and the employee pays 0.6 times the amount above $500. On $600 the total is ${formatMoney(cpf(600).total)} and the employee share ${formatMoney(cpf(600).employee)}. The phase-in avoids a cliff: at $750 the employee share reaches ${formatMoney(cpf(750).employee)}, which is exactly 20 % of $750, so the two formulas meet.` },
+  { q: 'Why does the CPF Board round the employee share down?', a: 'Because the rules say so: the total is rounded to the nearest dollar, the employee share is rounded down to the dollar, and the employer pays the remainder. In practice the employer absorbs up to 99 cents a month that would otherwise have come out of your pay. Over a year the effect is a few dollars at most.' },
+  { q: 'Is CPF charged on a bonus paid in the same month as my salary?', a: `Yes, on both, but the bonus counts as additional wages. CPF applies to it only up to the Additional Wage ceiling, ${formatMoney(P.cpf.annual_salary_ceiling)} minus your ordinary wages subject to CPF for the year. The contributions on salary and bonus are added together first and the rounding is applied to the sum, not to each part separately.` },
+];
+---
+<ToolPage id="contribution" title="CPF Contribution Calculator 2026: Payroll Month by Month" h1="CPF contribution calculator for payroll, 2026 rules"
+  description="Compute the CPF contribution for one month exactly as payroll does: wage bands, $8,000 ceiling, bonus as additional wages, rounding, all five 2026 rate tables."
+  intro="Built for payroll checks: the same rules the CPF Board prints under its rate tables, including the $50, $500 and $750 wage bands, the rounding and the Additional Wage ceiling."
+  mode="contribution" initialMonthly={6000} initialBonus={12000} faqs={faqs} related={['cpf', 'employerCpf', 'awCeiling', 'bonus', 'cpfRates', 'employerCost']}
+  sources={[SRC.cpf_rates, SRC.cpf_2027, SRC.sdl]}>
+  <p>Payroll computes CPF one month at a time, in four steps that the CPF Board sets out under each of its rate tables. First, the total contribution is worked out on total wages, ordinary wages capped at {formatMoney(P.cpf.ow_ceiling_month)} plus any additional wages, and rounded to the nearest dollar, with 50 cents going up. Second, the employee share is computed with the same wages and rounded down to the dollar. Third, the employer share is simply the difference between the two. Fourth, when ordinary and additional wages are paid in the same month, the contributions on both are added before rounding. On a {formatMoney(6000)} salary with a {formatMoney(12000)} bonus paid in December, the calculator gives {formatMoney(b.bonusMonth.total)} for that month, of which {formatMoney(b.bonusMonth.employee)} comes out of the employee’s pay, against {formatMoney(b.monthly.total)} in an ordinary month. This is the calculation to use when you check a payslip or prepare the CPF submission, rather than an approximate 37 %.</p>
+  <h2>The four wage bands</h2>
+  <p>The rate tables do not apply one percentage to every salary. They define four bands on total wages for the month, and the calculator switches between them automatically.</p>
+  <ContentTable headers={['Total wages', 'Band', 'Employee', 'Employer', 'Total']} align={['r', 'l', 'r', 'r', 'r']} rows={bandRows} />
+  <p>Above {formatMoney(P.cpf.tw_phase_in_max)} the full rates apply: for a citizen aged 55 or below, {T.total * 100} % in total including {T.employee * 100} % from the employee, up to {formatMoney(T.max_total)} and {formatMoney(T.max_employee)} on ordinary wages. The same bands exist in all five tables; only the percentages change with status and age.</p>
+  <h2>Bonus months and the Additional Wage ceiling</h2>
+  <p>A bonus does not escape CPF, but it is capped differently. The yearly cap on total wages subject to CPF is {formatMoney(P.cpf.annual_salary_ceiling)}; the part left for additional wages is that amount minus the ordinary wages that attracted CPF during the year. An employee paid {formatMoney(6000)} a month has {formatMoney(72000)} of ordinary wages, which leaves an Additional Wage ceiling of {formatMoney(b.awCeiling)}: a {formatMoney(12000)} bonus is fully subject to CPF. At {formatMoney(8000)} a month the ceiling falls to {formatMoney(6000)}, and anything above it is paid without CPF. The <a href={route('awCeiling', lang)}>Additional Wage ceiling guide</a> covers mid-year joiners, salary changes and leavers, for whom payroll must estimate the ceiling and correct it at year end.</p>
+  <h2>What the employer also owes</h2>
+  <p>The CPF submission carries a second amount: the Skills Development Levy, 0.25 % of the first {formatMoney(P.sdl.wage_cap)} of wages, at least {formatMoney(P.sdl.min, 2)} and at most {formatMoney(P.sdl.max, 2)} per employee per month, due for every employee including foreigners. The <a href={route('employerCost', lang)}>employer cost calculator</a> adds it to salary and employer CPF for a full-year budget.</p>
+</ToolPage>

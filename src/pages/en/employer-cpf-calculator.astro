@@ -1,0 +1,30 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { cpf, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const statuses = [['SC', 'Citizen, PR year 3+'], ['SPR2_GG', 'PR year 2, graduated'], ['SPR1_GG', 'PR year 1, graduated'], ['SPR2_FG', 'PR year 2, full employer'], ['SPR1_FG', 'PR year 1, full employer'], ['FOREIGNER', 'Foreign employee']] as const;
+const rows = statuses.map(([s, l]) => [l, formatMoney(cpf(4500, 30, s).employer), formatMoney(cpf(4500, 58, s).employer), formatMoney(cpf(4500, 62, s).employer), formatMoney(cpf(4500, 72, s).employer)]);
+const faqs = [
+  { q: 'What percentage does the employer pay into CPF in 2026?', a: `For citizens and PRs from their third year, 17 % of ordinary wages up to age 55, 16 % above 55 to 60, 12.5 % above 60 to 65, 9 % above 65 to 70 and 7.5 % above 70. The employer share is capped with the $8,000 ceiling, so it never exceeds ${formatMoney(P.cpf.tables.SC.rates['55_below'].max_total - P.cpf.tables.SC.rates['55_below'].max_employee)} a month on ordinary wages.` },
+  { q: 'Can an employer deduct its own CPF share from the employee’s salary?', a: 'No. The CPF Act makes the employer share a cost for the employer. It may deduct only the employee share from wages, and only from the wages of the month concerned. Recovering an employer share from an employee, even with their agreement, is an offence, and late payment of contributions attracts interest charges from the CPF Board.' },
+  { q: 'Does an employer pay CPF for a foreign worker?', a: 'No CPF is payable for Employment Pass, S Pass or Work Permit holders. The employer still pays the Skills Development Levy on their wages, and for S Pass and Work Permit holders a monthly foreign worker levy set by the Ministry of Manpower according to sector and quota tier, which is not included in this calculator.' },
+];
+---
+<ToolPage id="employerCpf" title="Employer CPF Calculator 2026: Rates by Age and PR Year" h1="Employer CPF calculator: what you pay on top of salary in 2026"
+  description="The employer's CPF share for any salary, age and status in 2026: citizens, PRs on graduated or full rates, foreign staff. With SDL and the 2027 rate changes."
+  intro="For employers and HR teams: the employer contribution depends on the employee’s age and, for new PRs, on the rate option chosen. This calculator uses the five official 2026 tables."
+  mode="employerCpf" initialMonthly={4500} faqs={faqs} related={['employerCost', 'contribution', 'sprRates', 'cpf2027', 'cpfRates', 'awCeiling']}
+  sources={[SRC.cpf_rates, SRC.cpf_2027, SRC.sdl]}>
+  <p>An employer in Singapore pays CPF on top of the salary, not out of it, and the amount depends on three facts about the employee: citizenship or PR year, age, and whether a new PR has opted into full rates. On {formatMoney(4500)} a month for a citizen aged 30, the employer contribution is {formatMoney(cpf(4500).employer)}, or {formatPercent(cpf(4500).employer / 4500)} of salary. The same salary costs {formatMoney(cpf(4500, 30, 'SPR1_GG').employer)} for a first-year PR on the default graduated rates, and nothing at all for an Employment Pass holder. These gaps matter when you compare offers across candidates or budget a team, which is why the calculator lets you switch status and age and see the employer share, the employee share and the total side by side. The figures follow the CPF Board’s tables from 1 January {P.year}, with the $8,000 ordinary wage ceiling and the dollar rounding the CPF Board applies.</p>
+  <h2>Employer CPF on {formatMoney(4500)} a month, by status and age</h2>
+  <ContentTable headers={['Status', 'Age 30', 'Age 58', 'Age 62', 'Age 72']} align={['l', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>Hiring a senior worker costs less in employer CPF, by design: the rates fall in steps after 55 to encourage employment of older workers. The gap narrows from 2027, when the employer rate for ages above 55 to 60 rises from 16 % to 16.5 % and for ages above 60 to 65 from 12.5 % to 13 %. Choose 2027 in the calculator to budget for it, and see <a href={route('cpf2027', lang)}>the 2027 changes</a> for the detail.</p>
+  <h2>Graduated or full rates for a new PR</h2>
+  <p>For the first two years of PR status, the default is graduated rates for both sides: 4 % then 9 % for the employer below 55. The employer and employee can instead apply jointly to the CPF Board for the employer to pay full rates, 17 %, while the employee stays on graduated rates, or for both to pay full rates. Employers sometimes offer the full employer rate as a retention benefit; for the employee it means more money in CPF from the first month. The <a href={route('sprRates', lang)}>SPR rates guide</a> compares the three options.</p>
+  <h2>When the contribution is due</h2>
+  <p>Contributions for a month are due by the 14th of the following month, submitted with the Skills Development Levy through CPF EZPay. A salary paid late still attracts CPF for the month it relates to. The employee share may only be recovered from that month’s wages: if payroll forgot to deduct it, the employer cannot claw back more than the current month allows.</p>
+</ToolPage>

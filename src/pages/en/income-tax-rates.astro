@@ -1,0 +1,49 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { residentTax } from '../../lib/engine/sg';
+import { ex, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const B = P.tax.resident_brackets;
+let prev = 0;
+const bandsRows = B.map((b) => { const lo = prev; const hi = b.upto; prev = hi ?? prev; return [hi ? `${formatMoney(lo)} to ${formatMoney(hi)}` : `Above ${formatMoney(lo)}`, formatPercent(b.rate, 1), hi ? formatMoney(residentTax(hi)) : 'no ceiling']; });
+const sal = [3000, 5000, 8000, 12000, 20000, 40000].map((m) => { const r = ex(m); return [formatMoney(m), formatMoney(r.annual.chargeable), formatMoney(r.annual.tax), formatPercent(r.annual.effectiveTaxRate), formatPercent(r.annual.marginal, 1)]; });
+const faqs = [
+  { q: 'What are the income tax rates in Singapore for 2026 income?', a: 'Income earned in 2026 is assessed in YA 2027 at the resident rates in force since YA 2024: 0 % on the first $20,000 of chargeable income, then 2 %, 3.5 %, 7 %, 11.5 %, 15 %, 18 %, 19 %, 19.5 %, 20 %, 22 % and 23 % on successive bands, and 24 % on income above $1,000,000. Non-residents pay 15 % on employment income or the resident rates, whichever is higher.' },
+  { q: 'Is the top income tax rate in Singapore 24 %?', a: 'Yes, since YA 2024, on chargeable income above $1,000,000. The previous top rate was 22 % on income above $320,000. Budget 2022 added the 23 % and 24 % bands for the highest earners. The same 24 % now applies to most income of non-residents other than employment income, such as director’s fees.' },
+  { q: 'Why is the first $20,000 of income tax-free?', a: 'The resident scale starts at 0 % on the first $20,000 of chargeable income. Combined with the earned income relief and the CPF relief, a citizen employee can earn more than $2,000 a month before owing any income tax. Below that level, the notice of assessment simply shows no tax payable.' },
+];
+---
+<Guide id="taxRates" title="Income Tax Rates Singapore YA 2027: Residents, Non-Residents" h1="Singapore income tax rates for YA 2027 (income earned in 2026)"
+  description="Singapore resident income tax rates from 0 % to 24 % for YA 2027, with the tax at each threshold, non-resident rules, rebates by year and salary examples."
+  intro="The IRAS resident scale in full, the cumulative tax at each threshold, how non-residents are taxed and what the rates mean for common monthly salaries."
+  resume={`Singapore taxes residents on a progressive scale that runs from 0 % to 24 % of chargeable income, and income earned in ${P.tax.income_year} is assessed in the Year of Assessment ${P.tax.year_of_assessment} at the rates in force since YA 2024. The first $20,000 of chargeable income is tax-free; the next $10,000 is taxed at 2 %, the next $10,000 at 3.5 %, then 7 % up to $80,000, 11.5 % up to $120,000 and 15 % up to $160,000. Rates continue to rise by small steps to 22 % between $320,000 and $500,000, 23 % up to $1 million and 24 % above. Chargeable income is employment income minus reliefs, capped at ${formatMoney(P.tax.relief_cap)} in total. Non-resident employees pay the higher of a flat 15 % on gross employment income or the resident rates. No personal income tax rebate was granted for YA 2026, and none is assumed for YA 2027.`}
+  faqs={faqs} related={['incomeTax', 'afterTax', 'reliefs', 'residency', 'bonus', 'home']} sources={[SRC.iras_rates, SRC.iras_eir, SRC.iras_cpf_relief]}>
+  <h2>The resident scale and the tax at each threshold</h2>
+  <p>The third column is the total tax due on a chargeable income exactly at the top of the band, which is how IRAS publishes the scale. To find the tax on any income, take the figure for the band below and add the rate times the part above it.</p>
+  <ContentTable headers={['Chargeable income', 'Rate', 'Tax at top of band']} align={['l', 'r', 'r']} rows={bandsRows} />
+  <p>On {formatMoney(95000)} of chargeable income, the tax is {formatMoney(residentTax(80000))} on the first {formatMoney(80000)} plus 11.5 % of {formatMoney(15000)}, that is {formatMoney(residentTax(95000))}. The calculator does this for any figure, after reliefs.</p>
+
+  <h2>What the rates mean for monthly salaries</h2>
+  <p>For a citizen aged 30 with no bonus and only the automatic reliefs:</p>
+  <ContentTable headers={['Monthly salary', 'Chargeable income', 'Tax YA 2027', 'Effective rate', 'Marginal rate']} align={['r', 'r', 'r', 'r', 'r']} rows={sal} />
+  <p>The effective rate, tax divided by gross salary, stays below 10 % until salaries well into five figures a month. At {formatMoney(40000)} a month it approaches the marginal rates of the middle bands. The CPF relief is capped by the {formatMoney(P.cpf.ow_ceiling_month)} ordinary wage ceiling, which is why the effective rate climbs faster above that salary.</p>
+
+  <h2>Rebates by Year of Assessment</h2>
+  <p>In some years the Budget grants a personal income tax rebate. For YA 2024 it was 50 % of tax payable, capped at $200; for YA 2025, 60 % capped at $200. Budget 2026 announced no rebate for YA 2026. The calculators on this site assume none for YA 2027, which is the prudent assumption for budgeting. A rebate, if announced in February 2027, would reduce the bill by at most a few hundred dollars and would be applied automatically by IRAS.</p>
+
+  <h2>Non-residents</h2>
+  <p>You are a tax resident if you are a citizen or PR residing in Singapore, or a foreigner who stayed or worked here for 183 days or more in the calendar year, or across two consecutive years under the two-year administrative concession. Non-residents pay tax on employment income at 15 % of gross, or at the resident rates without personal reliefs if that gives more tax. Director’s fees, consultancy fees and most other income of non-residents are taxed at 24 %. Short visits of up to 60 days a year are exempt from tax on employment income, except for directors and public entertainers. The <a href={route('residency', lang)}>resident versus non-resident guide</a> explains the tests and the three-year concession.</p>
+
+  <h2>History of the top rate</h2>
+  <p>The top resident rate was 20 % until YA 2016, rose to 22 % from YA 2017 for income above $320,000, and to 24 % from YA 2024 for income above $1 million, with a new 23 % band from $500,000. The bands below $320,000 have not changed since YA 2017. Because the thresholds are not indexed to inflation, a constant real salary slowly moves up the scale over the years, a gradual rise in tax that no Budget has to announce.</p>
+
+  <h2>Marginal rate versus average rate</h2>
+  <p>The marginal rate is the tax on the next dollar of chargeable income; the average rate is the total tax divided by income. Because each rate applies only to the slice of income within its band, moving into a higher band never reduces what you keep: a raise that takes chargeable income from {formatMoney(79000)} to {formatMoney(81000)} is taxed at 7 % on the first {formatMoney(1000)} and 11.5 % on the second. For salary decisions the marginal rate matters, for budgeting the average.</p>
+
+  <h2>From rates to your bill</h2>
+  <p>The notice of assessment starts from your assessable income, deducts your reliefs to reach chargeable income, applies the scale, then deducts any rebate and parenthood tax rebate. The <a href={route('incomeTax', lang)}>income tax calculator</a> follows the same order for employment income, with the earned income relief and CPF relief applied automatically and room for the reliefs you claim yourself.</p>
+</Guide>

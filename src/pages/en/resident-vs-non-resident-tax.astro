@@ -1,0 +1,46 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, P } from '../../lib/tables';
+import { residentTax } from '../../lib/engine/sg';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const cmp = [4000, 8000, 15000, 30000, 60000, 100000].map((m) => { const res = ex(m, { status: 'FOREIGNER', resident: true }); const nr = ex(m, { status: 'FOREIGNER', resident: false }); return [formatMoney(m * 12), formatMoney(res.annual.tax), formatMoney(nr.annual.tax), nr.annual.taxMethod === 'nr_flat' ? '15 % flat' : 'resident rates']; });
+const cross = (() => { for (let y = 100000; y < 1000000; y += 1000) { if (residentTax(y) >= 0.15 * y) return y; } return 0; })();
+const faqs = [
+  { q: 'How many days make me a tax resident in Singapore?', a: 'A foreigner is a tax resident for a year of assessment if they stayed or worked in Singapore for at least 183 days in the previous calendar year. Two administrative concessions extend residency: a stay spanning two calendar years for a continuous 183 days or more, and a stay of three consecutive years, which makes you resident for all three even if the first or last is short.' },
+  { q: 'Do non-residents get any tax reliefs?', a: 'No personal reliefs are available to non-residents: no earned income relief, no spouse or child relief. Their employment income is taxed at a flat 15 % of gross, or at the resident rates on the gross amount if that gives more tax. Reasonable employment expenses can still be deducted, and short visits of up to 60 days are exempt.' },
+  { q: 'At what salary do non-residents pay resident rates instead of 15 %?', a: `When the resident scale applied to gross employment income exceeds 15 % of it. That happens at around ${formatMoney(cross)} a year: below, the flat 15 % is higher and applies; above, the progressive rates, which climb to 24 %, give more tax and apply instead. Most non-resident employees therefore pay exactly 15 % of their salary.` },
+];
+---
+<Guide id="residency" title="Resident vs Non-Resident Tax Singapore: 183 Days, 15 % Rule" h1="Tax resident or non-resident in Singapore: what changes"
+  description="How IRAS decides tax residency, the 183-day rule and the two- and three-year concessions, and how non-residents are taxed at 15 % or resident rates on salaries."
+  intro="Residency decides whether you get reliefs and progressive rates or a flat 15 %. For foreigners on a first assignment, it can move the tax bill by several thousand dollars."
+  resume={`Your tax residency, not your nationality, decides how Singapore taxes your salary. Citizens and permanent residents living in Singapore are residents. A foreigner is resident for a year of assessment after staying or working in Singapore for at least 183 days in the previous calendar year, or under the two-year and three-year administrative concessions. Residents are taxed at progressive rates from 0 % to 24 % after personal reliefs. Non-resident employees get no reliefs and pay the higher of a flat 15 % on gross employment income or the resident rates applied to the same gross; director’s fees and most other income of non-residents are taxed at 24 %. On ${formatMoney(96000)} a year, a resident foreigner owes ${formatMoney(ex(8000, { status: 'FOREIGNER' }).annual.tax)} while a non-resident owes ${formatMoney(ex(8000, { status: 'FOREIGNER', resident: false }).annual.tax)}, which is why the timing of an arrival or a departure can matter as much as the salary itself.`}
+  faqs={faqs} related={['incomeTax', 'taxRates', 'afterTax', 'reliefs', 'employeeVsSelf', 'home']} sources={[SRC.iras_rates, SRC.iras_eir, SRC.mom_income]}>
+  <h2>The residency tests</h2>
+  <p>IRAS looks at the calendar year before the Year of Assessment. You are a tax resident if you are a Singapore Citizen or PR residing in Singapore except for temporary absences, or a foreigner who stayed or worked here for 183 days or more in that year. Days of physical presence count, including the days of arrival and departure. The test is applied year by year, which creates two problems for foreigners who arrive or leave mid-year, and IRAS solves them with concessions.</p>
+  <p><strong>The two-year concession</strong> covers someone whose continuous stay spans two calendar years and totals at least 183 days, for example from 1 October 2025 to 30 April 2026. They are treated as resident for both years, even though neither year alone reaches 183 days. <strong>The three-year concession</strong> covers foreigners who work in Singapore for three consecutive years: they are resident for all three, including a short first or last year. Both are administrative concessions rather than law, and they do not apply to directors in some cases.</p>
+
+  <h2>How non-residents are taxed on salary</h2>
+  <p>A non-resident’s employment income is taxed at the higher of two amounts: 15 % of gross employment income, or the tax at resident rates on the same income without any personal relief. The table compares a foreign employee who is resident with one who is not, on the same salary, with no bonus.</p>
+  <ContentTable headers={['Annual salary', 'Tax if resident', 'Tax if non-resident', 'Rule applied to the non-resident']} align={['r', 'r', 'r', 'l']} rows={cmp} />
+  <p>Up to about {formatMoney(cross)} a year, the flat 15 % is higher than the resident scale and applies. Above, the progressive rates give more and take over, and the gap with a resident narrows to the value of the earned income relief. The difference is largest for mid-level salaries: a non-resident on {formatMoney(96000)} pays roughly {formatPercent((ex(8000, { status: 'FOREIGNER', resident: false }).annual.tax) / (ex(8000, { status: 'FOREIGNER' }).annual.tax))} of what a resident pays.</p>
+
+  <h2>Short-term visitors</h2>
+  <p>A foreigner who works in Singapore for 60 days or less in a calendar year is exempt from tax on that employment income, unless they are a director of a Singapore company or a public entertainer. Between 61 and 182 days, the non-resident rules apply. Many business travellers therefore owe nothing, while a consultant on a four-month project owes 15 % of the salary attributed to those months.</p>
+
+  <h2>Leaving Singapore: tax clearance</h2>
+  <p>When a foreign employee resigns, is posted overseas for more than three months, or leaves Singapore, the employer must file a tax clearance form with IRAS at least one month before the last day of employment and withhold all money due to the employee from that date. IRAS then computes the tax on income up to the departure, and the employer pays it from the withheld sum. The residency status for that final year is decided under the tests above, and the three-year concession often makes the final year resident even if it is short.</p>
+
+  <h2>What this means for CPF</h2>
+  <p>Tax residency has nothing to do with CPF. A foreign employee does not contribute to CPF whatever their tax status, and a PR contributes whatever their days of presence. In the calculator, choose “Foreigner” as CPF status to see the residency switch, then compare the two results. For a salary quoted in another currency or with housing provided, add the value of the benefits to the salary: they are taxable employment income for residents and non-residents alike.</p>
+
+  <h2>Benefits in kind</h2>
+  <p>Housing, a car, home leave passages and school fees paid by the employer are taxable benefits for residents and non-residents alike, valued under IRAS rules. For expatriates they can add a large amount to employment income; the calculator treats only the cash salary and bonus you enter.</p>
+
+  <h2>Planning an arrival or departure</h2>
+  <p>Because the test is by calendar year, an arrival in early July can leave the first year just short of 183 days. If the stay continues into the next year, the two-year concession usually rescues it; if it does not, the first year is taxed at 15 %. A departure planned for February can likewise make the last year non-resident unless the three-year concession applies. The <a href={route('incomeTax', lang)}>income tax calculator</a> shows both outcomes for your salary.</p>
+</Guide>

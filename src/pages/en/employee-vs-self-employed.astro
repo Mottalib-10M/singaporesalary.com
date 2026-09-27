@@ -1,0 +1,59 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, P } from '../../lib/tables';
+import { residentTax, earnedIncomeRelief } from '../../lib/engine/sg';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const salaried = ex(7000, { bonus: 7000 });
+const cost = salaried.annual.employerCost;
+// Offre en indépendant au même coût pour le client : le coût employeur devient le chiffre d'affaires.
+const fee = cost; const expenses = 6000; const nti = fee - expenses;
+const selfTax = residentTax(Math.max(0, nti - earnedIncomeRelief(30, nti)));
+const rows = [
+  ['Gross pay or fees', formatMoney(salaried.annual.gross), formatMoney(fee)],
+  ['Employer CPF (goes to your CPF)', formatMoney(salaried.annual.cpfEmployer), 'none'],
+  ['Business expenses assumed', 'none', formatMoney(expenses)],
+  ['Your CPF, compulsory', formatMoney(salaried.annual.cpfEmployee), 'MediSave only, set by the CPF Board'],
+  ['Income tax YA 2027', formatMoney(salaried.annual.tax), `${formatMoney(selfTax)} before MediSave relief`],
+  ['Cash kept before MediSave', formatMoney(salaried.annual.net), formatMoney(nti - selfTax)],
+];
+const faqs = [
+  { q: 'Should I become a freelancer or stay an employee in Singapore?', a: 'Compare the full cost of your salaried job to the client, not your salary. An employer pays salary, employer CPF, SDL and benefits; a client paying a freelancer the same total gives you more cash, but no employer CPF, no paid leave, no medical benefits and no protection under the Employment Act. A freelance rate should cover those, plus unpaid gaps between contracts.' },
+  { q: 'Do freelancers get paid leave or sick leave in Singapore?', a: 'No. Paid annual leave, sick leave, public holidays, maternity and childcare leave come from the Employment Act and apply to employees. A self-employed person is not an employee, so a week off is a week without income. Budget at least four to six weeks of unpaid time a year when you set a day rate.' },
+  { q: 'Can the same person be both an employee and self-employed?', a: 'Yes. Someone with a salaried job and a side business pays normal CPF on the salary and, if their net trade income from the business exceeds $6,000, a MediSave contribution on it. Both incomes are added for income tax, so the business profit is taxed at the marginal rate reached by the salary.' },
+];
+---
+<Guide id="employeeVsSelf" title="Employee vs Self-Employed Singapore 2026: CPF, Tax, Cash" h1="Employee or self-employed in Singapore: the same money, two outcomes"
+  description="Compare a salaried job with freelancing in Singapore in 2026: employer CPF, MediSave, income tax, leave and protection, and what a freelance rate must cover."
+  intro="A freelance offer often looks better on paper. The comparison only holds if you put the employer’s CPF, the leave you lose and the tax timing on the same page."
+  resume={`The choice between a salaried job and self-employment in Singapore is mostly a choice about CPF and protection, not about tax rates. An employee on ${formatMoney(7000)} a month with a one-month bonus costs the employer ${formatMoney(cost)} a year once employer CPF and the Skills Development Levy are added. A freelancer paid that full amount by a client, with ${formatMoney(expenses)} of business expenses, keeps more cash in the year, because only MediSave is compulsory and no employer share is diverted into CPF. But the salaried employee receives ${formatMoney(salaried.annual.cpfEmployer)} of employer CPF, paid annual leave, sick leave, public holidays and the protections of the Employment Act, none of which a self-employed person has. A fair freelance rate therefore has to exceed the employer’s cost by enough to fund unpaid leave, insurance and voluntary CPF savings.`}
+  faqs={faqs} related={['selfEmployed', 'employerCost', 'afterTax', 'hourly', 'reliefs', 'home']} sources={[SRC.cpf_rates, SRC.sdl, SRC.iras_rates]}>
+  <h2>One budget, two statuses</h2>
+  <p>The comparison below keeps the client’s budget constant: the employer’s full annual cost for a {formatMoney(7000)}-a-month employee aged 30 with a one-month bonus, paid either as salary or as fees to a freelancer.</p>
+  <ContentTable headers={['Item', 'Employee', 'Self-employed']} align={['l', 'r', 'r']} rows={rows} />
+  <p>The freelancer’s cash advantage looks large, but part of it is the employer CPF the employee receives into their own accounts, and part is money the freelancer must spend on what the employer used to provide. The MediSave contribution, computed by the CPF Board from net trade income and age, will reduce the freelancer’s cash further while lowering the tax through relief.</p>
+
+  <h2>What the employee has and the freelancer does not</h2>
+  <p>Under the Employment Act, an employee who has served at least three months receives paid annual leave, starting at seven days in the first year and rising by a day for each year of service up to 14 days, plus paid sick leave and hospitalisation leave, eleven paid public holidays, maternity and childcare leave. The employer carries work injury compensation insurance, often provides medical and group insurance, and must give notice to end the contract. A self-employed person carries all these risks personally. Pricing that risk is the first step in comparing offers.</p>
+
+  <h2>Setting a freelance rate that holds up</h2>
+  <p>Start from the employer cost of the equivalent job, including CPF and SDL. Add the value of paid leave and holidays, roughly a month of income. Add insurance you now pay yourself and a buffer for gaps between contracts, which many freelancers put at one to two months a year. Divide by the days you really expect to bill. The <a href={route('employerCost', lang)}>employer cost calculator</a> gives the first figure and the <a href={route('hourly', lang)}>hourly calculator</a> converts a monthly figure into an hourly one.</p>
+
+  <h2>Tax timing and cash flow</h2>
+  <p>Neither employees nor the self-employed have tax withheld from their income in Singapore, so both pay the next year. The difference is that an employee’s CPF is deducted automatically each month, while the self-employed person’s MediSave arrives as a single notice after the tax assessment, sometimes more than a year after the income was earned. Setting aside a fixed share of every payment for tax and MediSave avoids a difficult second year of freelancing, when the bills for the first year arrive together.</p>
+
+  <h2>Retirement: the gap that grows</h2>
+  <p>An employee in their thirties sees 37 % of salary go into CPF every month. A self-employed person with the same income sees only the MediSave contribution. Over twenty years the gap in Ordinary and Special Account balances is large, and it affects both housing, since CPF is often used for mortgage payments, and retirement, since CPF LIFE payouts depend on the Retirement Account. Voluntary contributions and cash top-ups can close part of the gap and earn tax relief; see <a href={route('selfEmployed', lang)}>CPF for the self-employed</a> for the limits.</p>
+
+  <h2>Insurance and income protection</h2>
+  <p>An employee injured at work is covered by the employer’s work injury compensation insurance and continues to receive paid sick leave within the Employment Act limits. A self-employed person needs their own disability income insurance and hospitalisation cover beyond MediShield Life, and should budget for them in the rate. MediSave contributions made as a self-employed person can pay MediShield Life premiums and approved Integrated Shield plan premiums, within the withdrawal limits, which softens part of that cost.</p>
+
+  <h2>Getting paid</h2>
+  <p>An employer must pay salary within seven days after the end of the salary period. A freelancer’s payment terms are whatever the contract says, commonly 30 to 60 days after the invoice, and late payment is a real cost. Clients that are corporate service buyers may also have to pay the MediSave share directly under the Contribute As You Earn scheme, which reduces the amount received but spreads the contribution through the year.</p>
+
+  <h2>Misclassification</h2>
+  <p>A worker called a freelancer but treated as an employee, with fixed hours, supervision, the employer’s tools and no business risk, may legally be an employee. The CPF Board and the Ministry of Manpower look at the substance of the relationship. If they conclude it was employment, the company owes the CPF contributions that should have been paid, with interest. Workers in that position can ask the CPF Board to review their status.</p>
+</Guide>

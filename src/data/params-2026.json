@@ -1,0 +1,497 @@
+{
+  "_lisezmoi": "Every legal parameter lives here, never hard-coded (RECETTE-SITE.md §4). Each value was read on the official source cited in `sources`, on the date given in retrieved_at.",
+  "year": 2026,
+  "retrieved_at": "2026-09-27",
+  "valid_from": "2026-01-01",
+  "valid_to": "2026-12-31",
+  "sources": {
+    "cpf_rates": {
+      "url": "https://www.cpf.gov.sg/content/dam/web/employer/employer-obligations/documents/CPFcontributionratesfrom1Jan2026.pdf",
+      "label": {
+        "en": "CPF Board: CPF Contribution Rate Tables from 1 January 2026 (Tables 1 to 5)"
+      }
+    },
+    "cpf_alloc": {
+      "url": "https://www.cpf.gov.sg/content/dam/web/employer/employer-obligations/documents/CPFAllocationRatesfromJanuary2026.pdf",
+      "label": {
+        "en": "CPF Board: CPF Allocation Rates from 1 January 2026"
+      }
+    },
+    "cpf_2027": {
+      "url": "https://www.cpf.gov.sg/employer/infohub/news/cpf-related-announcements/new-contribution-rates",
+      "label": {
+        "en": "CPF Board: CPF Contribution Changes from 1 January 2027"
+      }
+    },
+    "iras_rates": {
+      "url": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-residency-and-tax-rates/individual-income-tax-rates",
+      "label": {
+        "en": "IRAS: Individual Income Tax rates (resident rates from YA 2024, non-resident rates)"
+      }
+    },
+    "iras_eir": {
+      "url": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/earned-income-relief",
+      "label": {
+        "en": "IRAS: Earned Income Relief"
+      }
+    },
+    "iras_cpf_relief": {
+      "url": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/central-provident-fund%28cpf%29-relief-for-employees",
+      "label": {
+        "en": "IRAS: CPF Relief for employees and the $80,000 relief cap"
+      }
+    },
+    "sdl": {
+      "url": "https://www.cpf.gov.sg/employer/employer-obligations/skills-development-levy",
+      "label": {
+        "en": "CPF Board: Skills Development Levy (SDL)"
+      }
+    },
+    "mom_income": {
+      "url": "https://stats.mom.gov.sg/Statistics/Pages/income.aspx",
+      "label": {
+        "en": "Ministry of Manpower: Income statistics (Labour Force in Singapore)"
+      }
+    },
+    "mom_hourly": {
+      "url": "https://www.mom.gov.sg/-/media/mom/documents/press-releases/2013/appendix-2illustration-of-calculation-of-overtime-pay-current-and-new.pdf",
+      "label": {
+        "en": "Ministry of Manpower: formula for the hourly basic rate of pay (12 × monthly ÷ 52 × 44)"
+      }
+    },
+    "cpf_sums": {
+      "url": "https://www.cpf.gov.sg/service/article/what-are-the-retirement-sums-basic-retirement-sum-brs-full-retirement-sum-frs-and-enhanced-retirement-sum-ers",
+      "label": {
+        "en": "CPF Board: Basic, Full and Enhanced Retirement Sums"
+      }
+    },
+    "mom_ep": {
+      "url": "https://www.mom.gov.sg/passes-and-permits/employment-pass",
+      "label": {
+        "en": "Ministry of Manpower: Employment Pass (qualifying salary)"
+      }
+    }
+  },
+  "cpf": {
+    "ow_ceiling_month": 8000,
+    "annual_salary_ceiling": 102000,
+    "tw_nil_max": 50,
+    "tw_employer_only_max": 500,
+    "tw_phase_in_max": 750,
+    "age_bands": [
+      "55_below",
+      "55_60",
+      "60_65",
+      "65_70",
+      "70_above"
+    ],
+    "tables": {
+      "SC": {
+        "label": "Singapore Citizen, or SPR from the 3rd year",
+        "rates": {
+          "55_below": {
+            "total": 0.37,
+            "employee": 0.2,
+            "employer_low": 0.17,
+            "phase_k": 0.6,
+            "max_total": 2960,
+            "max_employee": 1600
+          },
+          "55_60": {
+            "total": 0.34,
+            "employee": 0.18,
+            "employer_low": 0.16,
+            "phase_k": 0.54,
+            "max_total": 2720,
+            "max_employee": 1440
+          },
+          "60_65": {
+            "total": 0.25,
+            "employee": 0.125,
+            "employer_low": 0.125,
+            "phase_k": 0.375,
+            "max_total": 2000,
+            "max_employee": 1000
+          },
+          "65_70": {
+            "total": 0.165,
+            "employee": 0.075,
+            "employer_low": 0.09,
+            "phase_k": 0.225,
+            "max_total": 1320,
+            "max_employee": 600
+          },
+          "70_above": {
+            "total": 0.125,
+            "employee": 0.05,
+            "employer_low": 0.075,
+            "phase_k": 0.15,
+            "max_total": 1000,
+            "max_employee": 400
+          }
+        }
+      },
+      "SPR1_GG": {
+        "label": "SPR, 1st year, graduated employer and employee rates (default)",
+        "rates": {
+          "55_below": {
+            "total": 0.09,
+            "employee": 0.05,
+            "employer_low": 0.04,
+            "phase_k": 0.15,
+            "max_total": 720,
+            "max_employee": 400
+          },
+          "55_60": {
+            "total": 0.09,
+            "employee": 0.05,
+            "employer_low": 0.04,
+            "phase_k": 0.15,
+            "max_total": 720,
+            "max_employee": 400
+          },
+          "60_65": {
+            "total": 0.085,
+            "employee": 0.05,
+            "employer_low": 0.035,
+            "phase_k": 0.15,
+            "max_total": 680,
+            "max_employee": 400
+          },
+          "65_70": {
+            "total": 0.085,
+            "employee": 0.05,
+            "employer_low": 0.035,
+            "phase_k": 0.15,
+            "max_total": 680,
+            "max_employee": 400
+          },
+          "70_above": {
+            "total": 0.085,
+            "employee": 0.05,
+            "employer_low": 0.035,
+            "phase_k": 0.15,
+            "max_total": 680,
+            "max_employee": 400
+          }
+        }
+      },
+      "SPR2_GG": {
+        "label": "SPR, 2nd year, graduated employer and employee rates (default)",
+        "rates": {
+          "55_below": {
+            "total": 0.24,
+            "employee": 0.15,
+            "employer_low": 0.09,
+            "phase_k": 0.45,
+            "max_total": 1920,
+            "max_employee": 1200
+          },
+          "55_60": {
+            "total": 0.185,
+            "employee": 0.125,
+            "employer_low": 0.06,
+            "phase_k": 0.375,
+            "max_total": 1480,
+            "max_employee": 1000
+          },
+          "60_65": {
+            "total": 0.11,
+            "employee": 0.075,
+            "employer_low": 0.035,
+            "phase_k": 0.225,
+            "max_total": 880,
+            "max_employee": 600
+          },
+          "65_70": {
+            "total": 0.085,
+            "employee": 0.05,
+            "employer_low": 0.035,
+            "phase_k": 0.15,
+            "max_total": 680,
+            "max_employee": 400
+          },
+          "70_above": {
+            "total": 0.085,
+            "employee": 0.05,
+            "employer_low": 0.035,
+            "phase_k": 0.15,
+            "max_total": 680,
+            "max_employee": 400
+          }
+        }
+      },
+      "SPR1_FG": {
+        "label": "SPR, 1st year, full employer and graduated employee rates (joint application)",
+        "rates": {
+          "55_below": {
+            "total": 0.22,
+            "employee": 0.05,
+            "employer_low": 0.17,
+            "phase_k": 0.15,
+            "max_total": 1760,
+            "max_employee": 400
+          },
+          "55_60": {
+            "total": 0.21,
+            "employee": 0.05,
+            "employer_low": 0.16,
+            "phase_k": 0.15,
+            "max_total": 1680,
+            "max_employee": 400
+          },
+          "60_65": {
+            "total": 0.175,
+            "employee": 0.05,
+            "employer_low": 0.125,
+            "phase_k": 0.15,
+            "max_total": 1400,
+            "max_employee": 400
+          },
+          "65_70": {
+            "total": 0.14,
+            "employee": 0.05,
+            "employer_low": 0.09,
+            "phase_k": 0.15,
+            "max_total": 1120,
+            "max_employee": 400
+          },
+          "70_above": {
+            "total": 0.125,
+            "employee": 0.05,
+            "employer_low": 0.075,
+            "phase_k": 0.15,
+            "max_total": 1000,
+            "max_employee": 400
+          }
+        }
+      },
+      "SPR2_FG": {
+        "label": "SPR, 2nd year, full employer and graduated employee rates (joint application)",
+        "rates": {
+          "55_below": {
+            "total": 0.32,
+            "employee": 0.15,
+            "employer_low": 0.17,
+            "phase_k": 0.45,
+            "max_total": 2560,
+            "max_employee": 1200
+          },
+          "55_60": {
+            "total": 0.285,
+            "employee": 0.125,
+            "employer_low": 0.16,
+            "phase_k": 0.375,
+            "max_total": 2280,
+            "max_employee": 1000
+          },
+          "60_65": {
+            "total": 0.2,
+            "employee": 0.075,
+            "employer_low": 0.125,
+            "phase_k": 0.225,
+            "max_total": 1600,
+            "max_employee": 600
+          },
+          "65_70": {
+            "total": 0.14,
+            "employee": 0.05,
+            "employer_low": 0.09,
+            "phase_k": 0.15,
+            "max_total": 1120,
+            "max_employee": 400
+          },
+          "70_above": {
+            "total": 0.125,
+            "employee": 0.05,
+            "employer_low": 0.075,
+            "phase_k": 0.15,
+            "max_total": 1000,
+            "max_employee": 400
+          }
+        }
+      }
+    },
+    "changes_2027": {
+      "from": "2027-01-01",
+      "note": "Wages earned from 1 January 2027. Only Singapore Citizens and SPR from the 3rd year (and joint full/full applications) aged above 55 to 65. Graduated SPR rates unchanged.",
+      "SC": {
+        "55_60": {
+          "total": 0.355,
+          "employee": 0.19,
+          "employer_low": 0.165
+        },
+        "60_65": {
+          "total": 0.26,
+          "employee": 0.13,
+          "employer_low": 0.13
+        }
+      }
+    },
+    "allocation": {
+      "35_below": {
+        "oa": 0.6217,
+        "sa": 0.1621,
+        "ma": 0.2162,
+        "second": "SA"
+      },
+      "35_45": {
+        "oa": 0.5677,
+        "sa": 0.1891,
+        "ma": 0.2432,
+        "second": "SA"
+      },
+      "45_50": {
+        "oa": 0.5136,
+        "sa": 0.2162,
+        "ma": 0.2702,
+        "second": "SA"
+      },
+      "50_55": {
+        "oa": 0.4055,
+        "sa": 0.3108,
+        "ma": 0.2837,
+        "second": "SA"
+      },
+      "55_60": {
+        "oa": 0.353,
+        "sa": 0.3382,
+        "ma": 0.3088,
+        "second": "RA"
+      },
+      "60_65": {
+        "oa": 0.14,
+        "sa": 0.44,
+        "ma": 0.42,
+        "second": "RA"
+      },
+      "65_70": {
+        "oa": 0.0607,
+        "sa": 0.303,
+        "ma": 0.6363,
+        "second": "RA"
+      },
+      "70_above": {
+        "oa": 0.08,
+        "sa": 0.08,
+        "ma": 0.84,
+        "second": "RA"
+      }
+    },
+    "retirement_sums_2026": {
+      "brs": 110200,
+      "frs": 220400,
+      "ers": 440800
+    },
+    "basic_healthcare_sum_2026": 79000
+  },
+  "tax": {
+    "year_of_assessment": 2027,
+    "income_year": 2026,
+    "resident_brackets": [
+      {
+        "upto": 20000,
+        "rate": 0
+      },
+      {
+        "upto": 30000,
+        "rate": 0.02
+      },
+      {
+        "upto": 40000,
+        "rate": 0.035
+      },
+      {
+        "upto": 80000,
+        "rate": 0.07
+      },
+      {
+        "upto": 120000,
+        "rate": 0.115
+      },
+      {
+        "upto": 160000,
+        "rate": 0.15
+      },
+      {
+        "upto": 200000,
+        "rate": 0.18
+      },
+      {
+        "upto": 240000,
+        "rate": 0.19
+      },
+      {
+        "upto": 280000,
+        "rate": 0.195
+      },
+      {
+        "upto": 320000,
+        "rate": 0.2
+      },
+      {
+        "upto": 500000,
+        "rate": 0.22
+      },
+      {
+        "upto": 1000000,
+        "rate": 0.23
+      },
+      {
+        "upto": null,
+        "rate": 0.24
+      }
+    ],
+    "rebate": {
+      "rate": 0,
+      "cap": 0,
+      "note": "No Personal Income Tax Rebate announced for YA 2026 (Budget 2026); none assumed for YA 2027. YA 2025: 60 % capped at $200. YA 2024: 50 % capped at $200."
+    },
+    "non_resident_employment_flat": 0.15,
+    "non_resident_other_rate": 0.24,
+    "earned_income_relief": [
+      {
+        "age_below": 55,
+        "amount": 1000
+      },
+      {
+        "age_below": 60,
+        "amount": 6000
+      },
+      {
+        "age_below": 999,
+        "amount": 8000
+      }
+    ],
+    "relief_cap": 80000
+  },
+  "sdl": {
+    "rate": 0.0025,
+    "wage_cap": 4500,
+    "min": 2,
+    "max": 11.25,
+    "min_threshold": 800
+  },
+  "hourly": {
+    "weeks": 52,
+    "hours_per_week": 44,
+    "months": 12,
+    "ot_multiplier": 1.5
+  },
+  "wages": {
+    "mom_median_2025": 5775,
+    "mom_p20_2025": 3164,
+    "mom_median_2024": 5500,
+    "median_note": "Median gross monthly income from employment of full-time employed residents, June 2025, including employer CPF contributions.",
+    "lqs_monthly": 1800,
+    "lqs_from": "2026-07-01",
+    "lqs_previous": 1600,
+    "ep_min": 5600,
+    "ep_min_finance": 6200,
+    "spass_min": 3300,
+    "spass_min_finance": 3800,
+    "workman_ot_ceiling": 4500,
+    "nonworkman_ot_ceiling": 2600,
+    "ot_hours_cap": 72
+  }
+}

@@ -1,0 +1,48 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { residentTax } from '../../lib/engine/sg';
+import { ex, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const nti = [60000, 90000, 120000];
+const rows = nti.map((n) => { const emp = ex(n / 12); return [formatMoney(n), formatMoney(emp.annual.cpfEmployee), formatMoney(emp.annual.cpfEmployer), formatMoney(emp.annual.tax), formatMoney(residentTax(Math.max(0, n - 1000)))]; });
+const faqs = [
+  { q: 'Do self-employed people in Singapore have to contribute to CPF?', a: 'Only to MediSave, and only if they are Singapore Citizens or PRs with a net trade income of more than $6,000 in the year. There is no compulsory contribution to the Ordinary or Special Account, and no employer share. Contributions to the other accounts are voluntary and can earn tax relief within the annual limits.' },
+  { q: 'How is my MediSave contribution as a self-employed person calculated?', a: 'The CPF Board computes it from your age and your net trade income, the business profit IRAS assesses after allowable expenses. The rate rises with income and with age, in bands set by the CPF Board. You receive a notice of contributions once IRAS has completed your assessment, and payment is due within 30 days or by monthly instalments.' },
+  { q: 'Is the self-employed MediSave contribution tax deductible?', a: 'Yes. Compulsory MediSave contributions made as a self-employed person qualify for full tax relief in the year they are paid, within the overall $80,000 cap on personal reliefs. Voluntary contributions to MediSave or to your other CPF accounts are relieved within the annual CPF contribution limit and the cash top-up relief limits.' },
+];
+---
+<Guide id="selfEmployed" title="Self-Employed CPF Singapore 2026: MediSave for Freelancers" h1="CPF for the self-employed: MediSave, net trade income and tax"
+  description="What CPF a self-employed person owes in Singapore in 2026: MediSave on net trade income above $6,000, how it is assessed and paid, and the voluntary options."
+  intro="Freelancers, sole proprietors and partners do not pay CPF like employees. The obligation is narrower, the timing different, and the retirement gap theirs to close."
+  resume={`A self-employed person in Singapore does not pay the 37 % CPF that an employee and employer share. The only compulsory contribution is to MediSave, and it applies to Singapore Citizens and permanent residents whose net trade income for the year exceeds $6,000. Net trade income is the business profit assessed by IRAS: gross income minus allowable business expenses, capital allowances and trade losses. The CPF Board works out the MediSave amount from that figure and the person’s age, and issues a notice once IRAS has assessed the income; there is no separate declaration to make. Payment is due within 30 days of the notice or by instalments. Contributions are fully tax-deductible. Nothing is paid into the Ordinary or Special Account unless the self-employed person chooses to, which is the main reason self-employed Singaporeans reach retirement with smaller CPF balances than employees on the same income.`}
+  faqs={faqs} related={['employeeVsSelf', 'cpf', 'reliefs', 'retirement', 'incomeTax', 'cpfRates']} sources={[SRC.cpf_rates, SRC.iras_cpf_relief, SRC.cpf_sums]}>
+  <h2>Who counts as self-employed</h2>
+  <p>A self-employed person, for CPF, is someone who earns income from a trade, business, profession or vocation and is in a position to realise a profit or a loss: freelancers, sole proprietors, partners in a partnership, commission-based agents paid as independent contractors, and taxi drivers who rent their vehicle. Directors paid a salary by their own company are employees of that company for CPF purposes, and their director’s salary attracts normal contributions. Platform workers, such as food delivery riders and private-hire drivers, are covered by a separate scheme since 2025, with contributions deducted by the platform operator.</p>
+
+  <h2>How MediSave is assessed</h2>
+  <p>The process runs through IRAS. You file your income tax return, declaring your net trade income. IRAS completes the assessment. The CPF Board then computes your MediSave contribution from the assessed income and your age, and sends a notice of contributions that you can view on the self-employment dashboard with Singpass. The contribution becomes compulsory once net trade income exceeds $6,000, and the rate rises with income and with age, according to bands published by the CPF Board. The exact amount for your case is best checked with the CPF Board’s self-employed MediSave calculator, which uses the current bands; this site does not reproduce them.</p>
+
+  <h2>Paying on time</h2>
+  <p>The contribution is due 30 days after the notice. You can pay in one go through PayNow or set up a GIRO plan of up to 12 monthly instalments. The Contribute As You Earn scheme lets you pay MediSave gradually from each payment made by corporate clients and some platforms. Late payment brings interest charges and, for regulated trades, can block the renewal of a licence such as a taxi or hawker licence until the arrears are settled.</p>
+
+  <h2>Employee versus self-employed at the same income</h2>
+  <p>The table compares an employee whose salary equals the self-employed person’s net trade income, both aged 30. The employee’s CPF includes 20 % from their own pay and 17 % from the employer. The self-employed person’s tax is shown before the MediSave relief, which would lower it further once the contribution is known.</p>
+  <ContentTable headers={['Annual income', 'Employee CPF', 'Employer CPF', 'Employee tax', 'Self-employed tax, before MediSave relief']} align={['r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The employee pays less tax thanks to the CPF relief, and receives an employer contribution that has no equivalent for the self-employed. To match an employee’s retirement savings, a self-employed person would need to put aside voluntarily a similar share of their income.</p>
+
+  <h2>Voluntary contributions</h2>
+  <p>Self-employed persons can contribute voluntarily to all three accounts, up to the annual CPF contribution limit of {formatMoney(37740)}, which covers compulsory and voluntary contributions together. Voluntary contributions are split among the accounts according to the allocation rates for your age, and earn the same interest as employee contributions, including the extra interest on the first $60,000. They qualify for tax relief within that limit. Cash top-ups under the Retirement Sum Topping-Up Scheme, directly to the Special or Retirement Account, earn up to $8,000 of relief.</p>
+
+  <h2>Housing and loans without a payslip</h2>
+  <p>Banks and HDB assess a self-employed applicant’s income from the notices of assessment of the past one to two years rather than from payslips, and usually apply a haircut to variable income. Without Ordinary Account contributions, the down payment and monthly instalments must come from cash or from voluntary CPF contributions made earlier. Many freelancers who plan to buy a flat therefore make voluntary contributions for a few years before applying, which builds the Ordinary Account and documents their income at the same time.</p>
+
+  <h2>Mixing salary and self-employment</h2>
+  <p>A person with both a salaried job and a side business pays normal CPF on the salary through the employer and MediSave on the business profit once it exceeds $6,000. The two incomes are added for tax, so the profit is taxed at the marginal rate reached by the salary.</p>
+
+  <h2>Tax for the self-employed</h2>
+  <p>Self-employed income is taxed at the same resident rates as salaries. The earned income relief applies, since trade income is earned income. Business expenses are deducted before the rates, and the compulsory MediSave contribution is relieved in full. The main difference is cash flow: nothing is withheld during the year, and the bill arrives after the assessment, so both the tax and the MediSave must be set aside from each payment received. The <a href={route('employeeVsSelf', lang)}>employee versus self-employed comparison</a> takes this further for someone weighing a freelance offer against a salaried job.</p>
+</Guide>

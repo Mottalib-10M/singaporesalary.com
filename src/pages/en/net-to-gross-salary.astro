@@ -1,0 +1,29 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { grossForTakeHome, cpfMonth } from '../../lib/engine/sg';
+import { P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const g4 = grossForTakeHome(4000, { age: 30, status: 'SC' });
+const rows = [2000, 3000, 4000, 5000, 6000, 6400, 7000].map((n) => { const sc = grossForTakeHome(n, { age: 30, status: 'SC' }); const pr = grossForTakeHome(n, { age: 30, status: 'SPR1_GG' }); return [formatMoney(n), formatMoney(Math.ceil(sc)), formatMoney(Math.ceil(pr)), formatMoney(n)]; });
+const faqs = [
+  { q: 'What gross salary gives $4,000 take-home in Singapore?', a: `${formatMoney(Math.ceil(g4))} a month for a citizen or PR from the third year, aged 55 or below. The employee CPF of 20 % is ${formatMoney(cpfMonth({ ow: Math.ceil(g4), age: 30, status: 'SC' }).employee)} on that salary, rounded down to the dollar, which leaves ${formatMoney(4000)}. A first-year PR on graduated rates needs only ${formatMoney(Math.ceil(grossForTakeHome(4000, { age: 30, status: 'SPR1_GG' })))}, and a foreigner exactly ${formatMoney(4000)}.` },
+  { q: 'How do I convert a net salary to gross above the CPF ceiling?', a: `Above ${formatMoney(P.cpf.ow_ceiling_month)} of ordinary wages the employee CPF is fixed at ${formatMoney(P.cpf.tables.SC.rates['55_below'].max_employee)} a month for someone aged 55 or below, so you add that amount to the net figure. A take-home of ${formatMoney(7000)} therefore needs ${formatMoney(7000 + 1600)} gross. Below the ceiling you divide the net by 0.8.` },
+  { q: 'Should I negotiate my salary in gross or net terms?', a: 'Offers in Singapore are almost always quoted gross, per month, with the number of months paid a year, such as 13 or 14. Negotiate on the same basis so that CPF, bonus and leave calculations stay consistent, and use the net figure only to check the offer fits your monthly budget. Ask whether the bonus is contractual or variable.' },
+];
+---
+<ToolPage id="netToGross" title="Net to Gross Salary Singapore 2026: From Take-Home to Offer" h1="Net to gross salary: the gross pay behind a take-home figure"
+  description="Work backwards from the take-home pay you need to the gross monthly salary to ask for, with the exact CPF rounding and ceiling for citizens, PRs and foreigners."
+  intro="Type the amount you want in your bank account each month. The calculator finds the gross salary that produces it after employee CPF, using the CPF Board’s rounding."
+  mode="netToGross" faqs={faqs} related={['takeHome', 'home', 'afterTax', 'cpf', 'sprRates', 'averageSalary']}
+  sources={[SRC.cpf_rates, SRC.iras_rates, SRC.mom_income]}>
+  <p>Knowing your target take-home pay is the easiest way to prepare a salary negotiation, but offers are made in gross terms. Going from one to the other in Singapore means undoing the employee CPF contribution, which is not quite a division by 0.8: the CPF Board rounds the employee share down to the dollar, stops charging CPF above {formatMoney(P.cpf.ow_ceiling_month)} of ordinary wages, and applies lower rates to older employees and new PRs. To take home {formatMoney(4000)} a month, a citizen aged 30 needs {formatMoney(Math.ceil(g4))} gross, not {formatMoney(5000)}, because the rounding leaves an extra dollar at that salary. The calculator searches for the lowest gross salary whose take-home reaches your target, with your age, status and year, and then runs the full year to show what that gross means in income tax and in employer cost. Use it to set the number you ask for, then check the annual figures before signing, since the tax bill is paid separately from the monthly salary.</p>
+  <h2>Gross salary needed for a monthly take-home</h2>
+  <ContentTable headers={['Take-home wanted', 'Citizen or PR year 3+, age 30', 'PR year 1, graduated', 'Foreigner']} align={['r', 'r', 'r', 'r']} rows={rows} />
+  <p>The gap between the second and third columns is the value of graduated rates for a new PR: several hundred dollars less to ask for the same cash. It closes over two years, as the rates rise to the full scale. A foreigner’s gross and net are the same, since no CPF applies.</p>
+  <h2>From gross to the full package</h2>
+  <p>Once you have the gross, look at what surrounds it. A 13th month or annual wage supplement adds a twelfth to the annual package and attracts CPF up to the Additional Wage ceiling. A variable bonus is not guaranteed. Allowances paid monthly are part of ordinary wages. Income tax on the resulting total is shown in the result; for the full year after tax, switch to the <a href={route('afterTax', lang)}>salary after tax calculator</a>.</p>
+</ToolPage>

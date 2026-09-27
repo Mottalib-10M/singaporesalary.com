@@ -1,160 +1,44 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import SalaryCalculator from '../components/SalaryCalculator';
-import '../styles/global.css';
+// Racine : redirige vers la langue par défaut. Page noindex, mais elle doit rester
+// lisible et navigable sans JS — un visiteur d'une autre langue du site doit pouvoir
+// atteindre sa version depuis ici.
+import { DEFAULT_LOCALE, LOCALES, route } from '../i18n/routes';
+import { SITE_NAMES, SITE_URL } from '../data/site-config';
+
+const target = route('home', DEFAULT_LOCALE);
+const title = SITE_NAMES[DEFAULT_LOCALE];
+const languageName = (loc: string) => {
+  const name = new Intl.DisplayNames([loc], { type: 'language' }).of(loc) ?? loc;
+  return name.charAt(0).toUpperCase() + name.slice(1);
+};
+const links = LOCALES.map((loc) => ({
+  href: route('home', loc),
+  label: `${SITE_NAMES[loc] ?? title} (${languageName(loc)})`,
+}));
 ---
-
-<Layout title="Singapore Salary Calculator 2026 - CPF, Income Tax & Take-Home Pay">
-  <!-- Hero -->
-  <section class="text-center mb-12">
-    <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight">
-      Singapore Salary Calculator <span class="text-primary">2026</span>
-    </h1>
-    <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-      Calculate your take-home pay after CPF contributions and income tax. Updated for YA2026 with the latest CPF rates, tax brackets, and wage ceilings.
-    </p>
-  </section>
-
-  <!-- Calculator -->
-  <section id="calculator" class="mb-16">
-    <SalaryCalculator client:idle />
-  </section>
-
-  <!-- Content Section -->
-  <article class="prose prose-lg max-w-4xl mx-auto text-gray-700">
-
-    <h2 class="text-3xl font-bold text-gray-900">Understanding Your Singapore Salary</h2>
-
-    <p>
-      Singapore is widely recognised as one of the most attractive destinations for professionals and businesses in the Asia-Pacific region. The city-state combines competitive salaries, a transparent tax system, and a robust social security framework through the Central Provident Fund (CPF). Whether you are a Singaporean citizen, a Permanent Resident (PR), or a foreign professional working on an Employment Pass, understanding exactly how your gross salary translates into take-home pay is essential for financial planning.
-    </p>
-
-    <p>
-      This comprehensive salary calculator for 2026 takes into account every major component of Singapore's compensation framework: CPF contributions (both employee and employer portions), progressive income tax brackets, tax reliefs and deductions, and the various wage ceilings that affect how much of your salary is subject to CPF. The calculator is updated for Year of Assessment (YA) 2026, reflecting the latest rates published by the CPF Board and the Inland Revenue Authority of Singapore (IRAS).
-    </p>
-
-    <h2 class="text-3xl font-bold text-gray-900">How CPF Works in Singapore</h2>
-
-    <p>
-      The Central Provident Fund is Singapore's compulsory social security savings scheme. Both employees and employers make monthly contributions into three accounts: the Ordinary Account (OA), the Special Account (SA), and the MediSave Account (MA). These funds are used for housing, retirement, healthcare, and investment purposes.
-    </p>
-
-    <h3 class="text-2xl font-semibold text-gray-900">CPF Contribution Rates by Age Group</h3>
-
-    <p>
-      CPF contribution rates vary significantly based on the employee's age. For Singapore Citizens and Permanent Residents who have completed their third year of PR status, the rates for 2026 are as follows:
-    </p>
-
-    <ul>
-      <li><strong>Age 55 and below:</strong> The employee contributes 20% and the employer contributes 17% of ordinary wages, for a combined rate of 37%. This is the highest CPF rate and applies to the majority of the working population.</li>
-      <li><strong>Age 55 to 60:</strong> Both employee and employer contribute 15% each, for a total of 30%. The reduction reflects the transition towards retirement.</li>
-      <li><strong>Age 60 to 65:</strong> The employee contributes 9.5% and the employer contributes 11.5%, totalling 21%. This graduated reduction helps older workers maintain their take-home pay.</li>
-      <li><strong>Age 65 to 70:</strong> Employee contribution drops to 7% and employer contribution to 9%, for a total of 16%.</li>
-      <li><strong>Above 70:</strong> The lowest rates apply with 5% from the employee and 7.5% from the employer, totalling 12.5%.</li>
-    </ul>
-
-    <h3 class="text-2xl font-semibold text-gray-900">CPF Wage Ceilings</h3>
-
-    <p>
-      An important concept in Singapore's CPF system is the wage ceiling. The Ordinary Wage (OW) ceiling is set at <strong>$6,800 per month</strong> for 2026. This means that CPF contributions are calculated on the lower of your actual monthly ordinary wages or $6,800. If you earn $10,000 per month, your CPF contributions are still calculated based on $6,800.
-    </p>
-
-    <p>
-      For additional wages such as annual bonuses and the Annual Wage Supplement (AWS), there is a separate ceiling. The Additional Wage (AW) ceiling is calculated as <strong>$102,000 minus the total ordinary wages subject to CPF for the year</strong>. For example, if your monthly ordinary wage is $6,800 (the OW ceiling), your annual ordinary wages subject to CPF would be $81,600, leaving an AW ceiling of $20,400 for bonus contributions.
-    </p>
-
-    <h3 class="text-2xl font-semibold text-gray-900">CPF Account Allocation</h3>
-
-    <p>
-      The total CPF contribution is split among three accounts in ratios that change with age. For younger workers (35 and below), approximately 62% goes to the Ordinary Account, 16% to the Special Account, and 22% to the MediSave Account. As workers age, a larger proportion is directed to MediSave to help cover rising healthcare costs. For those above 65, the vast majority of contributions flow into MediSave.
-    </p>
-
-    <h2 class="text-3xl font-bold text-gray-900">Singapore Income Tax System</h2>
-
-    <p>
-      Singapore employs a progressive income tax system for tax residents, which means higher income is taxed at higher marginal rates. However, compared to most developed countries, Singapore's tax rates are remarkably low, which is a major factor in its attractiveness as a business and employment hub.
-    </p>
-
-    <h3 class="text-2xl font-semibold text-gray-900">Tax Brackets for YA2026</h3>
-
-    <p>
-      The personal income tax brackets for Year of Assessment 2026 (income earned in 2025) are progressive, starting at 0% for the first $20,000 of chargeable income and rising in graduated steps. Income between $20,001 and $30,000 is taxed at just 2%, while the next band from $30,001 to $40,000 is taxed at 3.5%. The rate increases to 7% for income between $40,001 and $80,000, then 11.5% for $80,001 to $120,000. Higher earners face rates of 15%, 18%, 19%, 19.5%, 20%, and 22% in successive bands. The highest marginal rates of 23% and 24% apply only to income above $500,000 and $1,000,000 respectively.
-    </p>
-
-    <p>
-      It is worth noting that these are <em>marginal</em> rates, not flat rates. Your effective tax rate is always lower than your highest marginal rate. For example, someone earning $100,000 per year does not pay 11.5% on the entire amount; rather, only the portion above $80,000 is taxed at 11.5%, with lower rates applying to lower portions.
-    </p>
-
-    <h3 class="text-2xl font-semibold text-gray-900">Tax Reliefs and Deductions</h3>
-
-    <p>
-      Singapore provides several tax reliefs that reduce your chargeable income. The most widely applicable is the <strong>Earned Income Relief</strong>, which provides $1,000 for individuals below 55, $6,000 for those aged 55 to 59, and $8,000 for those aged 60 and above. Your employee CPF contributions also qualify as a tax relief, effectively reducing your taxable income by the amount you contribute to CPF.
-    </p>
-
-    <p>
-      National Servicemen (NSmen) who have completed their full-time National Service are eligible for the NSman Self Relief of $3,000. There are additional reliefs available for spouses, parents, and wives of NSmen. Other common reliefs include the Qualifying Child Relief, Working Mother's Child Relief, Parent Relief, and the Supplementary Retirement Scheme (SRS) contribution relief. These reliefs collectively help to keep Singapore's effective tax rates among the lowest in the developed world.
-    </p>
-
-    <h2 class="text-3xl font-bold text-gray-900">Impact of Residency Status</h2>
-
-    <p>
-      Your residency status significantly affects both your CPF obligations and your tax treatment in Singapore. There are three broad categories:
-    </p>
-
-    <h3 class="text-2xl font-semibold text-gray-900">Singapore Citizens</h3>
-    <p>
-      Citizens receive the full CPF contribution rates and are taxed on the progressive scale. They benefit from all available tax reliefs and deductions. The high employer CPF contribution of 17% (for those 55 and below) effectively adds a substantial amount to the total compensation package.
-    </p>
-
-    <h3 class="text-2xl font-semibold text-gray-900">Permanent Residents</h3>
-    <p>
-      PRs undergo a graduated CPF contribution schedule. In their first year of PR status, both employee and employer contributions are significantly lower (5% and 4% respectively for those 55 and below). In the second year, these increase to 15% and 9%. From the third year onwards, PRs contribute at the same rates as citizens (20% and 17%). This graduated approach helps PRs adjust to the CPF system gradually.
-    </p>
-
-    <h3 class="text-2xl font-semibold text-gray-900">Foreigners</h3>
-    <p>
-      Foreign professionals on Employment Passes or S Passes do not contribute to CPF and do not receive employer CPF contributions. This means their gross-to-net calculation is simpler, but they also miss out on the employer's CPF contribution, which represents a significant portion of total compensation for citizens and PRs. Non-resident foreigners (those who have not been in Singapore for at least 183 days in a calendar year) are taxed at a flat rate of 15% or the progressive resident rates, whichever produces a higher tax amount.
-    </p>
-
-    <h2 class="text-3xl font-bold text-gray-900">Singapore vs Regional Competitors</h2>
-
-    <p>
-      Singapore's tax and CPF system positions it favourably compared to other major employment hubs in the region. Hong Kong has a similar low-tax philosophy with a maximum rate of 17%, but lacks the comprehensive social security savings that CPF provides. Japan and South Korea have significantly higher income tax rates, with top marginal rates exceeding 40% when local taxes are included. Australia's top marginal rate reaches 45% at incomes above AUD $190,000, and it applies a Medicare Levy of 2% on top.
-    </p>
-
-    <p>
-      The key advantage of Singapore's system is the combination of low income tax rates with the CPF system, which - while it reduces immediate take-home pay - builds substantial retirement savings, housing funds, and healthcare coverage. For a professional earning $10,000 per month, the effective income tax rate in Singapore is approximately 6-7%, far below what the same income would attract in countries like the United Kingdom (where the effective rate would be closer to 25%) or Germany (where combined income tax and social contributions can exceed 40%).
-    </p>
-
-    <h2 class="text-3xl font-bold text-gray-900">Employer's Perspective</h2>
-
-    <p>
-      From an employer's standpoint, the cost of hiring in Singapore includes the mandatory employer CPF contribution. For a citizen or established PR aged 55 and below earning $6,800 or more per month, the employer must contribute an additional $1,156 per month (17% of $6,800) to CPF. This brings the total employment cost to the gross salary plus the employer CPF contribution. Unlike many Western countries, Singapore does not impose payroll taxes, social security employer taxes, or workers' compensation levies beyond CPF, making the overall cost of employment more predictable.
-    </p>
-
-    <p>
-      The Skills Development Levy (SDL) and Foreign Worker Levy (for S Pass and Work Permit holders) are additional employer costs not covered in this calculator but are worth noting. SDL is capped at $11.25 per month per employee, while the Foreign Worker Levy varies based on the pass type and the proportion of foreign workers in the company's workforce.
-    </p>
-
-    <h2 class="text-3xl font-bold text-gray-900">Maximising Your Take-Home Pay</h2>
-
-    <p>
-      While the CPF system and tax rates are mandatory and fixed, there are legitimate strategies to optimise your take-home pay in Singapore. Contributing to the Supplementary Retirement Scheme (SRS) provides tax relief on contributions up to $15,300 for citizens and PRs or $35,700 for foreigners. Ensuring you claim all eligible tax reliefs - including parent relief, spouse relief, and course fee relief for approved courses - can meaningfully reduce your tax liability.
-    </p>
-
-    <p>
-      Understanding the OW ceiling is also important for salary negotiation. Since CPF is only calculated on the first $6,800 of monthly wages, any salary above this threshold does not attract additional CPF from the employer. Some professionals negotiate to receive a larger portion of their compensation as monthly salary rather than bonuses, or vice versa, depending on their CPF preferences and the AW ceiling implications.
-    </p>
-
-    <h2 class="text-3xl font-bold text-gray-900">About This Calculator</h2>
-
-    <p>
-      This Singapore salary calculator uses the official CPF contribution rates and IRAS income tax brackets for Year of Assessment 2026. It is designed for general estimation and financial planning purposes. For precise calculations or specific tax situations, we recommend consulting the <a href="https://www.cpf.gov.sg" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-dark">CPF Board website</a> and the <a href="https://www.iras.gov.sg" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-primary-dark">IRAS website</a>, or engaging a qualified tax professional.
-    </p>
-
-    <p>
-      The calculator accounts for CPF Ordinary Wage and Additional Wage ceilings, CPF allocation ratios by age, progressive income tax, and basic tax reliefs including Earned Income Relief, CPF contribution relief, and NSman relief. It supports calculations for Singapore Citizens, Permanent Residents (at each graduated stage), and foreigners.
-    </p>
-
-  </article>
-</Layout>
+<!doctype html>
+<html lang={DEFAULT_LOCALE}>
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={`${SITE_URL}${target}`} />
+    <meta name="robots" content="noindex" />
+    <!-- La racine doit declarer sa favicon comme n'importe quelle page. Le robot
+         de Google qui collecte les favicons interroge d'abord la racine du
+         domaine et /favicon.ico ; une racine muette le laisse repartir les mains
+         vides, et Search Console affiche une icone generique pendant des
+         semaines. Constate le 2026-09-26 sur huit sites du portefeuille. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script is:inline define:vars={{ locales: LOCALES, target }}>
+      const nav = (navigator.language || '').slice(0, 2).toLowerCase();
+      const m = locales.find((l) => l === nav);
+      location.replace(m ? `/${m}/` : target);
+    </script>
+  </head>
+  <body>
+    {links.map((l, i) => <>{i > 0 && ' · '}<a href={l.href}>{l.label}</a></>)}
+  </body>
+</html>

@@ -1,0 +1,30 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const b = ex(7000, { bonus: 14000 });
+const keep = (m: number, bonus: number) => { const r = ex(m, { bonus }); const cpfOnBonus = r.bonusMonth.employee - r.monthly.employee; const tax = r.annual.tax - r.annual.taxWithoutBonus; return { cpfOnBonus, tax, net: bonus - cpfOnBonus - tax, subject: r.awSubject }; };
+const bk = keep(7000, 14000);
+const rows = [[4000, 8000], [6000, 12000], [8000, 16000], [10000, 30000], [15000, 45000]].map(([m, bn]) => { const k = keep(m, bn); return [formatMoney(m), formatMoney(bn), formatMoney(k.subject), formatMoney(k.cpfOnBonus), formatMoney(k.tax), formatMoney(k.net), formatPercent(k.net / bn)]; });
+const faqs = [
+  { q: 'How much tax will I pay on my bonus in Singapore?', a: `The bonus is added to your income for the year and taxed at your marginal rate. On ${formatMoney(14000)} on top of ${formatMoney(7000)} a month, a citizen aged 30 pays about ${formatMoney(bk.tax)} of extra tax, an average ${formatPercent(bk.tax / 14000)} on the bonus, plus ${formatMoney(bk.cpfOnBonus)} of employee CPF. There is no separate bonus tax: it is simply more income in the year it is paid.` },
+  { q: 'Why is there no CPF on part of my bonus?', a: `Because of the Additional Wage ceiling. CPF on wages is capped at ${formatMoney(P.cpf.annual_salary_ceiling)} a year in total; your ordinary wages subject to CPF use up part of that, and the bonus can only fill what is left. At ${formatMoney(8000)} a month or more, only ${formatMoney(6000)} of additional wages attract CPF. Above that, the bonus is paid without CPF.` },
+  { q: 'Is a 13th month bonus treated differently from a performance bonus?', a: 'Not for CPF or tax. The annual wage supplement, often called the 13th month, and a performance bonus are both additional wages: both count towards the Additional Wage ceiling and both are taxed in the year they are paid. The difference is contractual, since the 13th month is usually guaranteed while a performance bonus is discretionary.' },
+];
+---
+<ToolPage id="bonus" title="Bonus Tax Calculator Singapore 2026: CPF and Tax on a Bonus" h1="Bonus tax calculator: what you keep from a bonus or 13th month"
+  description="See what a bonus leaves after CPF and income tax in Singapore: Additional Wage ceiling, the extra IRAS tax it triggers for YA 2027 and the share you keep."
+  intro="Enter your monthly salary and the bonus. The calculator shows how much of the bonus attracts CPF under the Additional Wage ceiling and how much extra tax it adds to the year."
+  mode="bonus" initialMonthly={7000} initialBonus={14000} faqs={faqs} related={['awCeiling', 'contribution', 'incomeTax', 'afterTax', 'employerCost', 'taxRates']}
+  sources={[SRC.cpf_rates, SRC.iras_rates, SRC.iras_cpf_relief]}>
+  <p>A bonus in Singapore is taxed and charged to CPF like the rest of your pay, with one twist: CPF on it is capped by the Additional Wage ceiling. On a salary of {formatMoney(7000)} a month, the ordinary wages subject to CPF over the year come to {formatMoney(84000)}, which leaves room for {formatMoney(b.awCeiling)} of additional wages under the annual {formatMoney(P.cpf.annual_salary_ceiling)} cap. A {formatMoney(14000)} bonus is therefore charged to CPF on {formatMoney(bk.subject)} only; the employee pays {formatMoney(bk.cpfOnBonus)} on it and the rest arrives without CPF. For tax, the bonus is simply added to the year’s income. The CPF you paid on it is relieved, and the balance is taxed at your marginal rate, which pushes the YA {P.tax.year_of_assessment} bill up by about {formatMoney(bk.tax)}. In total you keep {formatMoney(bk.net)} of the {formatMoney(14000)}, or {formatPercent(bk.net / 14000)}. The calculator computes the year twice, with and without the bonus, so the extra tax it shows is exact for your situation rather than an average rate applied to the bonus.</p>
+  <h2>Bonuses of one to three months, citizen aged 30</h2>
+  <ContentTable headers={['Monthly salary', 'Bonus', 'Bonus under CPF', 'Your CPF on it', 'Extra tax', 'You keep', 'Share kept']} align={['r', 'r', 'r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>Two effects pull in opposite directions as salaries rise. The share of the bonus that attracts CPF falls, because the ceiling is used up by ordinary wages, so more of the bonus reaches you in cash. The marginal tax rate rises, so more of it goes to IRAS.  The last column shows the net effect for each salary, computed on the full year.</p>
+  <h2>Timing a bonus</h2>
+  <p>Tax follows the year of payment, not the year the bonus rewards. A bonus paid in January 2027 for 2026 performance falls into YA 2028. If your income will be much lower one year, because of a career break or a move abroad, the timing can matter. For CPF, the ceiling is also computed per calendar year; the <a href={route('awCeiling', lang)}>Additional Wage ceiling guide</a> explains the adjustments for leavers and salary changes.</p>
+</ToolPage>

@@ -1,0 +1,52 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { cpf, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent, formatDecimal } from '../../lib/format';
+const lang = 'en';
+const T = P.cpf.tables.SC.rates;
+const bandLabel: Record<string, string> = { '55_below': '55 and below', '55_60': 'Above 55 to 60', '60_65': 'Above 60 to 65', '65_70': 'Above 65 to 70', '70_above': 'Above 70' };
+const main = Object.entries(T).map(([b, r]) => [bandLabel[b], formatPercent(r.employer_low, 1), formatPercent(r.employee, 1), formatPercent(r.total, 1), formatMoney(r.max_total), formatMoney(r.max_employee)]);
+const low = Object.entries(T).map(([b, r]) => [bandLabel[b], `${formatPercent(r.employer_low, 1)} of TW`, `${formatPercent(r.employer_low, 1)} TW + ${formatDecimal(r.phase_k, 3)} × (TW − $500)`, `${formatDecimal(r.phase_k, 3)} × (TW − $500)`]);
+const ex3k = [30, 58, 62, 67, 72].map((a) => { const c = cpf(3000, a); return [String(a), formatMoney(c.employee), formatMoney(c.employer), formatMoney(c.total)]; });
+const faqs = [
+  { q: 'What are the CPF contribution rates for 2026?', a: 'For Singapore Citizens and PRs from their third year earning more than $750 a month: 37 % in total up to age 55 (17 % employer, 20 % employee), 34 % above 55 to 60, 25 % above 60 to 65, 16.5 % above 65 to 70 and 12.5 % above 70. The rates apply to ordinary wages up to $8,000 a month and to additional wages up to the annual ceiling.' },
+  { q: 'Did CPF rates change on 1 January 2026?', a: 'Yes, for older workers. The rates for employees above 55 to 65 went up again on 1 January 2026, continuing the increases recommended by the Tripartite Workgroup on Older Workers. Rates for employees aged 55 and below have not changed since 2016. A further increase for ages above 55 to 65 takes effect on 1 January 2027.' },
+  { q: 'What does “TW”, “OW” and “AW” mean in the CPF tables?', a: 'OW is ordinary wages, the salary due for the month and paid before the CPF due date. AW is additional wages, pay not earned wholly in the month, such as a bonus or leave encashment. TW, total wages, is the sum of both. The wage bands of the tables are read on TW, while the percentages above $750 apply to OW and AW separately.' },
+  { q: 'At what age do the lower CPF rates start to apply?', a: 'From the first day of the month after the employee’s 55th, 60th, 65th and 70th birthday. Someone born on 10 March 1971 turns 55 on 10 March 2026 and moves to the “above 55 to 60” rates from 1 April 2026, not on the birthday itself. The calculator works in whole years of age.' },
+  { q: 'Are the CPF rates different for public servants?', a: 'Pensionable civil servants follow separate tables with lower rates, because their pension replaces part of the CPF savings. The tables on this page are those for private sector employees and non-pensionable employees of ministries, statutory boards and aided schools, which cover almost every salaried worker in Singapore.' },
+];
+---
+<Guide id="cpfRates" title="CPF Contribution Rates 2026: Tables by Age for Singapore" h1="CPF contribution rates 2026: the official tables, explained"
+  description="CPF contribution rates from 1 January 2026 for citizens and PRs by age band: employer and employee shares, the $750 phase-in formula, maximums and 2027 changes."
+  intro="The CPF Board’s table 1 for 2026, set out in full with the wage bands, the maximum contributions at the $8,000 ceiling and the examples that show how they combine."
+  resume={`CPF contribution rates for 2026 depend on age and wage level. For Singapore Citizens and permanent residents from their third year who earn more than $750 a month, the total contribution is 37 % of wages up to age 55, of which the employer pays 17 % and the employee 20 %. It falls to 34 % above 55, 25 % above 60, 16.5 % above 65 and 12.5 % above 70. The percentages apply to ordinary wages up to $8,000 a month, so the maximum monthly contribution at 55 or below is $2,960, including $1,600 from the employee. Below $750 of monthly wages the employee share phases in, and below $500 only the employer contributes. First- and second-year PRs have their own graduated tables. The figures on this page are those published by the CPF Board for wages paid from 1 January 2026, read on ${P.retrieved_at}.`}
+  faqs={faqs} related={['cpf', 'contribution', 'sprRates', 'allocation', 'cpf2027', 'awCeiling']} sources={[SRC.cpf_rates, SRC.cpf_2027, SRC.cpf_alloc]}>
+  <h2>Table 1: citizens and PRs from the third year, wages above $750</h2>
+  <p>This is the table that applies to most employees. The last two columns are the maximum monthly contributions on ordinary wages, reached at the {formatMoney(P.cpf.ow_ceiling_month)} ceiling.</p>
+  <ContentTable headers={['Employee’s age', 'Employer', 'Employee', 'Total', 'Max. total', 'Max. employee']} align={['l', 'r', 'r', 'r', 'r', 'r']} rows={main} />
+  <p>The employer share is what remains once the employee share is subtracted from the total, which is why the CPF Board prints only the total and the employee share. The maximums are computed on ordinary wages. A bonus, as additional wages, is charged at the same percentages on top, until the Additional Wage ceiling is reached.</p>
+
+  <h2>Below $750: the employer-only and phase-in bands</h2>
+  <p>Low wages follow different formulas, so that an employee earning a little does not lose a fifth of it to CPF. Between $50 and $500 of total wages (TW) only the employer contributes. Between $500 and $750 the employee share grows from zero to the full rate. At $50 or less, nothing is due at all.</p>
+  <ContentTable headers={['Age', '$50 to $500: total', '$500 to $750: total', '$500 to $750: employee']} align={['l', 'l', 'l', 'l']} rows={low} />
+  <p>The formulas are designed to meet the full rates at $750. For an employee aged 30 earning $750, the employee share is 0.6 × $250, which is {formatMoney(cpf(750).employee)}, exactly 20 % of $750, and the total is {formatMoney(cpf(750).total)}. One dollar more and the full rate applies with no jump. The phase-in bands matter for part-time workers, students with holiday jobs and anyone whose hours vary from month to month.</p>
+
+  <h2>How the rounding works</h2>
+  <p>Printed under every table, four rules turn the percentages into dollars. The total contribution is rounded to the nearest dollar, with 50 cents rounded up. The employee share is rounded down to the dollar. The employer share is the difference. When ordinary and additional wages are paid in the same month, the contributions on both are added and then rounded once. The practical result is that the employer absorbs any fraction of a dollar: on {formatMoney(3001.5, 2)} of wages the total is {formatMoney(cpf(3001.5).total)}, the employee pays {formatMoney(cpf(3001.5).employee)} and the employer {formatMoney(cpf(3001.5).employer)}, a split slightly more generous than 17 and 20 %.</p>
+
+  <h2>The same {formatMoney(3000)} salary at five ages</h2>
+  <ContentTable headers={['Age', 'Employee', 'Employer', 'Total']} align={['l', 'r', 'r', 'r']} rows={ex3k} />
+  <p>From 30 to 72, the total falls by two thirds. Two policies meet here. Lower rates for older workers make them cheaper to employ and leave them more cash, at a stage when many have finished paying for housing. And the rates for ages 55 to 65 have been raised step by step since 2022, because Singaporeans live longer and need more in their Retirement Account. The next step is described in <a href={route('cpf2027', lang)}>CPF changes in 2027</a>.</p>
+
+  <h2>Who the table does not cover</h2>
+  <p>Permanent residents in their first two years contribute at graduated rates by default, much lower than table 1: for them the CPF Board publishes tables 2 to 5, detailed in our <a href={route('sprRates', lang)}>guide to SPR graduated rates</a>. Foreign employees on an Employment Pass, S Pass or Work Permit do not contribute to CPF at all. Self-employed persons do not pay into all three accounts but only into MediSave, on a separate scale set by their net trade income; see <a href={route('selfEmployed', lang)}>CPF for the self-employed</a>. Pensionable civil servants have their own lower rates. Platform workers, such as delivery riders and private-hire drivers, are being brought into CPF gradually under a separate transition schedule.</p>
+
+  <h2>Where the contributions go</h2>
+  <p>The total contribution is split between the Ordinary Account, the Special Account (the Retirement Account from 55) and MediSave, according to the allocation rates, which change at 35, 45, 50, 55, 60, 65 and 70. The <a href={route('allocation', lang)}>CPF allocation rates</a> page gives the ratios and shows how a contribution is divided. The split does not change what you or your employer pay; it only changes which account receives it, and so what the money can be used for.</p>
+
+  <h2>Checking your own contributions</h2>
+  <p>To check a payslip, take the ordinary wages of the month, capped at {formatMoney(P.cpf.ow_ceiling_month)}, find your age band and apply the percentages, then the rounding. If a bonus was paid, add it to the wages of that month, within your Additional Wage ceiling. The <a href={route('contribution', lang)}>CPF contribution calculator</a> does these steps and shows the band applied. Your CPF statement, available through the CPF website with Singpass, lists the contributions received for each month and from which employer, which is the quickest way to spot a month that was missed.</p>
+</Guide>

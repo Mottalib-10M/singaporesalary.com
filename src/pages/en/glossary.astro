@@ -1,0 +1,45 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { route } from '../../i18n/routes';
+import { breadcrumbSchema, webPageSchema } from '../../lib/seo';
+import { P } from '../../lib/tables';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const title = 'CPF and Payroll Glossary Singapore: OW, AW, TW, OA, SA, MA';
+const description = 'Plain definitions of the terms on a Singapore payslip, CPF statement and tax notice: ordinary and additional wages, AW ceiling, OA, SA, RA, MediSave, reliefs.';
+const terms: Array<[string, string, string?]> = [
+  ['Additional wages (AW)', 'Pay not granted wholly for the month: annual bonus, 13th month, leave encashment, incentives paid at longer intervals.', 'awCeiling'],
+  ['Additional Wage ceiling', `The yearly cap on additional wages subject to CPF: ${formatMoney(P.cpf.annual_salary_ceiling)} minus the ordinary wages subject to CPF in the year.`, 'awCeiling'],
+  ['Annual salary ceiling', `The total wages on which CPF is due in a year, ${formatMoney(P.cpf.annual_salary_ceiling)} in 2026.`, 'y-102000'],
+  ['Assessable income', 'Your income for the year after allowable expenses and before personal reliefs.', 'incomeTax'],
+  ['Basic Healthcare Sum', `The cap on MediSave savings, ${formatMoney(P.cpf.basic_healthcare_sum_2026)} in 2026; contributions above it overflow to other accounts.`, 'allocation'],
+  ['Chargeable income', 'Assessable income minus personal reliefs; the amount the resident tax rates apply to.', 'taxRates'],
+  ['CPF LIFE', 'The national annuity that turns the Retirement Account into monthly payouts for life from 65.', 'retirement'],
+  ['CPF relief', 'The tax relief equal to your compulsory employee CPF contributions.', 'reliefs'],
+  ['Earned income relief', 'A relief of $1,000 below 55, $6,000 from 55 to 59 and $8,000 from 60, capped at your earned income.', 'reliefs'],
+  ['Employment Pass (EP)', `The work pass for foreign professionals, with a qualifying salary of at least ${formatMoney(P.wages.ep_min)} a month for new applications.`, 'm-6000'],
+  ['Full Retirement Sum (FRS)', `The default amount set aside in the Retirement Account at 55: ${formatMoney(P.cpf.retirement_sums_2026.frs)} for members turning 55 in 2026.`, 'retirement'],
+  ['Graduated rates', 'Lower CPF rates for permanent residents in their first two years of PR status.', 'sprRates'],
+  ['Local Qualifying Salary (LQS)', `The minimum pay, ${formatMoney(P.wages.lqs_monthly)} a month since 1 July 2026, for a local employee to count in a firm’s foreign worker quota.`, 'minimumWage'],
+  ['MediSave Account (MA)', 'The CPF account for hospital bills, MediShield Life premiums and approved outpatient care.', 'allocation'],
+  ['Net trade income (NTI)', 'A self-employed person’s profit after allowable business expenses, as assessed by IRAS.', 'selfEmployed'],
+  ['Ordinary Account (OA)', 'The CPF account for housing, insurance, education and investment; the remainder of each contribution.', 'allocation'],
+  ['Ordinary wages (OW)', `Pay due for the month and paid before the CPF due date; subject to CPF up to ${formatMoney(P.cpf.ow_ceiling_month)} a month.`, 'cpfRates'],
+  ['Progressive Wage Model (PWM)', 'Sector wage ladders with minimum pay at each skill level, set by tripartite committees.', 'minimumWage'],
+  ['Retirement Account (RA)', 'Created at 55 with savings from the Special and Ordinary Accounts; it funds CPF LIFE.', 'retirement'],
+  ['Skills Development Levy (SDL)', 'An employer levy of 0.25 % of the first $4,500 of monthly wages, between $2 and $11.25 per employee.', 'employerCost'],
+  ['Special Account (SA)', 'The CPF retirement account before 55; closed at 55 since 2025.', 'allocation'],
+  ['Supplementary Retirement Scheme (SRS)', 'A voluntary retirement account; contributions are tax-deductible up to $15,300 a year for citizens and PRs.', 'reliefs'],
+  ['Tax resident', 'A citizen or PR living in Singapore, or a foreigner present or working 183 days or more in the year.', 'residency'],
+  ['Total wages (TW)', 'Ordinary plus additional wages of the month; the CPF wage bands are read on this total.', 'contribution'],
+  ['Year of Assessment (YA)', 'The year in which income of the previous year is taxed: 2026 income falls in YA 2027.', 'taxRates'],
+];
+const jsonLd = [webPageSchema({ name: title, description, path: route('glossary', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Glossary', path: route('glossary', lang) }])];
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Glossary' }]}>
+  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Glossary of CPF, payroll and tax terms</h1>
+    <p class="mt-3 text-lg text-navy-600">The words used on Singapore payslips, CPF statements and IRAS notices, each with a link to the page that explains it in full.</p></header>
+  <dl class="prose prose-slate max-w-none">
+    {terms.map(([t, d, id]) => <><dt class="font-semibold text-navy-900">{id ? <a href={route(id, lang)}>{t}</a> : t}</dt><dd>{d}</dd></>)}
+  </dl>
+</PageLayout>

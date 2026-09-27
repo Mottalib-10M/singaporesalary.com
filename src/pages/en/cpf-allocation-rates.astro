@@ -1,0 +1,48 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, cpf, P } from '../../lib/tables';
+import { allocate } from '../../lib/engine/sg';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatDecimal } from '../../lib/format';
+const lang = 'en';
+const A = P.cpf.allocation;
+const lab: Record<string, string> = { '35_below': '35 and below', '35_45': 'Above 35 to 45', '45_50': 'Above 45 to 50', '50_55': 'Above 50 to 55', '55_60': 'Above 55 to 60', '60_65': 'Above 60 to 65', '65_70': 'Above 65 to 70', '70_above': 'Above 70' };
+const ratio = Object.entries(A).map(([k, v]) => [lab[k], formatDecimal(v.oa, 4), `${formatDecimal(v.sa, 4)} (${v.second})`, formatDecimal(v.ma, 4)]);
+const ages = [30, 40, 48, 53, 58, 63, 68, 72];
+const perMonth = ages.map((a) => { const c = cpf(5000, a); const al = allocate(c.total, a); return [String(a), formatMoney(c.total), formatMoney(al.oa, 2), `${formatMoney(al.sa, 2)} ${al.second}`, formatMoney(al.ma, 2)]; });
+const e30 = ex(5000); const y = e30.allocation;
+const faqs = [
+  { q: 'How much of my CPF goes to the Ordinary Account at 30?', a: `${formatDecimal(A['35_below'].oa * 100)} % of every contribution, or ${formatMoney(allocate(cpf(5000).total, 30).oa, 2)} out of ${formatMoney(cpf(5000).total)} on a ${formatMoney(5000)} salary. The CPF Board computes MediSave first at ${formatDecimal(A['35_below'].ma * 100)} %, then the Special Account at ${formatDecimal(A['35_below'].sa * 100)} %, and the Ordinary Account receives what is left, so it absorbs the rounding.` },
+  { q: 'What happened to my Special Account when I turned 55?', a: 'Since January 2025, the Special Account is closed for members aged 55 and above. Its savings moved to the Retirement Account up to the Full Retirement Sum, and any excess to the Ordinary Account. New contributions that would have gone to the Special Account now go to the Retirement Account, until the Full Retirement Sum is reached, after which they flow to the Ordinary Account.' },
+  { q: 'Why does MediSave take most of my CPF after 65?', a: `Because healthcare needs rise with age and MediSave pays for hospital bills, MediShield Life premiums and approved outpatient treatment. Above 65 to 70, ${formatDecimal(A['65_70'].ma * 100)} % of contributions go to MediSave, and above 70 ${formatDecimal(A['70_above'].ma * 100)} %. Once your MediSave reaches the Basic Healthcare Sum, ${formatMoney(P.cpf.basic_healthcare_sum_2026)} in 2026, further MediSave contributions overflow to your other accounts.` },
+  { q: 'Do my employer’s contributions go to different accounts from mine?', a: 'No. The employer and employee shares are added into one total contribution, and it is that total that is split between the accounts. You cannot direct your own share to the Ordinary Account and your employer’s to MediSave. You can, however, make voluntary top-ups to specific accounts separately.' },
+];
+---
+<Guide id="allocation" title="CPF Allocation Rates 2026: OA, SA, RA and MediSave by Age" h1="CPF allocation rates 2026: how each contribution is split"
+  description="How the CPF Board divides your contribution between the Ordinary, Special or Retirement and MediSave accounts in 2026, by age band, with worked examples."
+  intro="The ratios the CPF Board applies from 1 January 2026, the order in which accounts are credited, and what the split means for housing, retirement and healthcare."
+  resume={`CPF allocation rates decide which account receives each dollar of your contribution, and they change with age. From 1 January 2026, a member aged 35 or below has ${formatDecimal(A['35_below'].ma * 100)} % of each contribution credited to MediSave, ${formatDecimal(A['35_below'].sa * 100)} % to the Special Account and the remaining ${formatDecimal(A['35_below'].oa * 100)} % to the Ordinary Account. The Ordinary Account share falls at every step, to ${formatDecimal(A['50_55'].oa * 100)} % above 50 and ${formatDecimal(A['60_65'].oa * 100)} % above 60, while the shares for retirement and healthcare rise. From 55 the Retirement Account replaces the Special Account, which the CPF Board closed for older members in 2025. The CPF Board applies the ratios in a fixed order: MediSave first, then the Special or Retirement Account, and the Ordinary Account takes whatever is left, including the rounding. For a citizen aged 30 on ${formatMoney(5000)} a month, a year of contributions puts ${formatMoney(y.oa)} in the Ordinary Account, ${formatMoney(y.sa)} in the Special Account and ${formatMoney(y.ma)} in MediSave.`}
+  faqs={faqs} related={['cpf', 'cpfRates', 'retirement', 'cpf2027', 'home', 'selfEmployed']} sources={[SRC.cpf_alloc, SRC.cpf_rates, SRC.cpf_sums]}>
+  <h2>The allocation ratios from 1 January 2026</h2>
+  <p>The CPF Board publishes the allocation as ratios of the contribution rather than percentages of wages, which is easier to use: multiply the total contribution by each ratio.</p>
+  <ContentTable headers={['Age', 'Ordinary Account', 'Special or Retirement', 'MediSave']} align={['l', 'r', 'r', 'r']} rows={ratio} />
+  <p>The ratios in each row add up to one. The second column is labelled SA up to age 55 and RA from 55, which reflects the closure of the Special Account for members aged 55 and above. The ratios for members above 55 to 65 were revised on 1 January 2026, alongside the increase in contribution rates for those ages, so that the extra contributions go towards retirement.</p>
+
+  <h2>What {formatMoney(5000)} a month becomes at each age</h2>
+  <ContentTable headers={['Age', 'Total CPF per month', 'Ordinary', 'Special or Retirement', 'MediSave']} align={['l', 'r', 'r', 'r', 'r']} rows={perMonth} />
+  <p>The total falls with age because contribution rates fall, and the Ordinary Account falls faster still because its ratio drops too. At 63, only {formatMoney(allocate(cpf(5000, 63).total, 63).oa, 2)} a month reaches the Ordinary Account, against {formatMoney(allocate(cpf(5000, 30).total, 30).oa, 2)} at 30. Anyone servicing a housing loan from CPF into their sixties should budget for that drop.</p>
+
+  <h2>The order in which accounts are credited</h2>
+  <p>The CPF Board computes MediSave first, then the Special or Retirement Account, each rounded to the cent, and credits the remainder to the Ordinary Account. In the CPF Board’s own example, a contribution of $100 for a member aged 30 gives {formatMoney(21.62, 2)} to MediSave, {formatMoney(16.21, 2)} to the Special Account and {formatMoney(62.17, 2)} to the Ordinary Account. For a member aged 57 the same $100 gives {formatMoney(30.88, 2)} to MediSave, {formatMoney(33.82, 2)} to the Retirement Account and {formatMoney(35.3, 2)} to the Ordinary Account. Our calculator follows the same order, so its annual figures match your statement to the cent when your salary is constant.</p>
+
+  <h2>What each account is for</h2>
+  <p>The <strong>Ordinary Account</strong> pays for housing, approved insurance, education and investments, and earns at least 2.5 % a year. The <strong>Special Account</strong>, until 55, is for retirement and approved investments, earning at least 4 %. The <strong>Retirement Account</strong>, created at 55, holds the savings that will fund CPF LIFE monthly payouts from 65; for members turning 55 in {P.year}, the Full Retirement Sum is {formatMoney(P.cpf.retirement_sums_2026.frs)}. <strong>MediSave</strong> pays for hospitalisation, MediShield Life and approved outpatient care, earning at least 4 %, and is capped at the Basic Healthcare Sum. The first {formatMoney(60000)} of combined balances earn an extra 1 % a year, with the first $30,000 earning up to 2 % extra from age 55; those extra-interest rules are set out on the <a href={route('retirement', lang)}>retirement sums page</a>.</p>
+
+  <h2>When the ratios are overridden</h2>
+  <p>Three situations change what reaches each account. Once MediSave reaches the Basic Healthcare Sum, the excess of any new MediSave contribution goes to the Special or Retirement Account. Once the Retirement Account reaches the Full Retirement Sum, further contributions meant for it go to the Ordinary Account. And voluntary contributions, which you or your employer can make on top of the compulsory ones, are credited to the accounts you choose within the annual CPF limit of {formatMoney(37740)}, which covers mandatory and voluntary contributions together.</p>
+
+  <h2>Using the calculator for your own split</h2>
+  <p>The <a href={route('cpf', lang)}>CPF calculator</a> shows the annual allocation for your salary and age, bonus included. If your birthday falls during the year, the ratios change from the month after it, so a year that straddles 35, 45, 50 or 55 will split slightly differently from what a single age suggests.</p>
+</Guide>

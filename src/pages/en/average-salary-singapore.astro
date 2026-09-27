@@ -1,0 +1,52 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, cpf, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const W = P.wages;
+// La médiane MOM inclut le CPF employeur : on retrouve le salaire brut correspondant (salaire + 17 % sous le plafond).
+const grossFromMomMedian = (() => { let lo = 0, hi = W.mom_median_2025; for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (m + cpf(m).employer < W.mom_median_2025) lo = m; else hi = m; } return Math.round(hi); })();
+const med = ex(grossFromMomMedian);
+const growth = W.mom_median_2025 / W.mom_median_2024 - 1;
+const rows = [[W.mom_p20_2025, '20th percentile (P20)'], [W.mom_median_2025, 'Median'], [W.mom_median_2024, 'Median, 2024']].map(([v, lab]) => { let lo = 0, hi = v as number; for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (m + cpf(m).employer < (v as number)) lo = m; else hi = m; } const g = Math.round(hi); const r = ex(g); return [lab as string, formatMoney(v as number), formatMoney(g), formatMoney(r.takeHomeMonthly)]; });
+const faqs = [
+  { q: 'What is the median salary in Singapore in 2025?', a: `The Ministry of Manpower reports a median gross monthly income from employment of ${formatMoney(W.mom_median_2025)} for full-time employed residents in June 2025, up from ${formatMoney(W.mom_median_2024)} in 2024. The figure includes the employer’s CPF contribution; the corresponding salary before employer CPF is about ${formatMoney(grossFromMomMedian)} a month.` },
+  { q: 'Is the MOM median the same as the salary on a payslip?', a: 'No. MOM’s headline measure adds the employer CPF contribution to the gross salary, because it measures total income from employment. The payslip shows gross salary without employer CPF, then deducts the employee CPF. To compare your own salary with the median, either add 17 % employer CPF to your gross or remove it from the median, as done on this page.' },
+  { q: 'Why is the average salary higher than the median?', a: 'Because a minority of very high earners pulls the average up. The median is the salary in the middle: half of full-time residents earn more, half earn less. Averages are useful for public finances, but the median describes a typical worker better, which is why MOM leads with it.' },
+];
+---
+<Guide id="averageSalary" title="Average Salary Singapore 2026: MOM Median and Take-Home" h1="Average and median salary in Singapore: what a typical worker earns"
+  description="Singapore's median monthly income from employment was $5,775 in 2025 (MOM). What it means as a salary, take-home pay and CPF, and how to compare your own pay."
+  intro="The Ministry of Manpower’s headline figure includes employer CPF, which confuses most comparisons. This page converts it into a salary, a take-home pay and a tax bill."
+  resume={`The typical full-time worker in Singapore earns a little under ${formatMoney(Math.round(grossFromMomMedian / 100) * 100)} a month in gross salary. The Ministry of Manpower reports a median gross monthly income from employment of ${formatMoney(W.mom_median_2025)} for full-time employed residents in June 2025, ${formatPercent(growth)} more than the ${formatMoney(W.mom_median_2024)} of 2024; the 20th percentile stood at ${formatMoney(W.mom_p20_2025)}. These figures include the employer’s CPF contribution. Removing it gives a median salary of about ${formatMoney(grossFromMomMedian)}, which is the number to compare with the gross figure on a payslip. For a citizen aged 30, that salary leaves ${formatMoney(med.takeHomeMonthly)} of take-home pay after the 20 % employee CPF, and an income tax bill of ${formatMoney(med.annual.tax)} for YA ${P.tax.year_of_assessment}. The statistics cover residents only, citizens and permanent residents, and exclude foreign workers.`}
+  faqs={faqs} related={['home', 'minimumWage', 'takeHome', 'netToGross', 'afterTax', 'm-6000']} sources={[SRC.mom_income, SRC.cpf_rates, SRC.iras_rates]}>
+  <h2>From MOM’s income figures to a salary</h2>
+  <ContentTable headers={['Measure', 'MOM figure (incl. employer CPF)', 'Equivalent gross salary', 'Take-home, citizen 30']} align={['l', 'r', 'r', 'r']} rows={rows} />
+  <p>The conversion removes the employer contribution of 17 %, which applies in full at these salaries. It assumes a worker aged 55 or below; for older workers the employer rate is lower and the gap between the MOM figure and the salary is smaller.</p>
+
+  <h2>What the median measures</h2>
+  <p>MOM’s figure comes from the Labour Force Survey and covers full-time employed residents, meaning citizens and permanent residents working at least 35 hours a week. It counts gross monthly income from employment, including employer CPF, and includes regular bonuses spread over the year in the annual report. It excludes foreign employees, part-time workers and the self-employed in the full-time series. For comparison across years, MOM also publishes the figure in real terms, adjusted for inflation: in 2025 real median income grew faster than prices, which had not been true in every recent year.</p>
+
+  <h2>Median salary after CPF and tax</h2>
+  <p>At the median salary of about {formatMoney(grossFromMomMedian)}, a citizen aged 30 contributes {formatMoney(med.monthly.employee)} a month to CPF and takes home {formatMoney(med.takeHomeMonthly)}. Their employer adds {formatMoney(med.monthly.employer)}. Over a year, income tax comes to {formatMoney(med.annual.tax)}, an effective rate of {formatPercent(med.annual.effectiveTaxRate)} on gross salary. Net of CPF and tax, the median worker keeps {formatMoney(med.annual.net)} a year, while {formatMoney(med.annual.cpfTotal)} goes into their CPF accounts. Try your own figures in the <a href={route('home', lang)}>salary calculator</a>.</p>
+
+  <h2>Why your comparison may not match</h2>
+  <p>Salaries vary widely by occupation, industry, age and education. Professionals, managers, executives and technicians earn well above the median; service and sales workers and cleaners below it. Income rises with age until the late forties and then flattens. A comparison with the overall median is therefore rough. MOM publishes detailed tables by occupation and age group in its annual Labour Force report and its Occupational Wage Survey; the latter reports basic and gross wages without employer CPF, which makes it directly comparable with a payslip.</p>
+
+  <h2>Median and minimum</h2>
+  <p>At the lower end, the 20th percentile of {formatMoney(W.mom_p20_2025)}, including employer CPF, corresponds to a salary of about {rows[0][2]}. The Local Qualifying Salary, the floor for local employees of firms hiring foreigners, stands at {formatMoney(W.lqs_monthly)} since July 2026; see the <a href={route('minimumWage', lang)}>minimum wage guide</a> for the Progressive Wage Model ladders that lift the lowest wages in specific sectors.</p>
+
+  <h2>How pay grows with age and experience</h2>
+  <p>MOM’s tables by age show the same pattern every year: median income rises steeply through the twenties and thirties, peaks in the forties, and eases in the fifties and sixties. Part of the decline after 55 comes from the CPF rules themselves, because the employer contribution included in MOM’s figure falls from 17 % to 16 %, 12.5 % and less as workers age, and part from older workers moving to part-time or less senior roles. A 25-year-old graduate starting near {formatMoney(4500)} and a 45-year-old manager earning twice that are both typical of their age group, and neither is well described by the overall median. For a fair comparison, look at the median of your own age group and occupation in MOM’s annual report, then convert it with the same method as above.</p>
+  <h2>Real wages and the cost of living</h2>
+  <p>MOM also reports incomes in real terms, deflated by consumer prices. In 2025 the nominal median grew by {formatPercent(growth)}, and real growth was positive, meaning pay rose faster than prices. That has not held every year: in periods of high inflation, nominal raises of 4 to 5 % left real incomes flat or lower. When you judge a raise, compare it with the latest consumer price index change published by the Department of Statistics rather than with the headline salary alone. The CPF part of a raise also matters, since 37 % of the increase below the {formatMoney(P.cpf.ow_ceiling_month)} ceiling goes into your CPF accounts rather than your bank account.</p>
+
+  <h2>Residents only</h2>
+  <p>Foreign employees are not in MOM’s resident income figures. Employment Pass holders, by definition paid at least the qualifying salary, would raise the median if included; Work Permit holders would lower it. Salary surveys by recruitment firms often mix both groups and quote averages rather than medians, which is why their figures are usually higher than MOM’s.</p>
+
+  <h2>How to use these figures in a negotiation</h2>
+  <p>Quote your expectations as a gross monthly salary, as employers do, and state the number of months: twelve plus the annual wage supplement is common. When comparing with the MOM median, add 17 % to your gross for a like-for-like figure. When comparing offers, look at the total including employer CPF for citizens and PRs, since that contribution is yours; for foreigners, the salary is the whole package.</p>
+</Guide>

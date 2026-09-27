@@ -1,0 +1,54 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { compute, residentTax } from '../../lib/engine/sg';
+import { P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const base = compute({ monthly: 8000, bonus: 8000, age: 38, status: 'SC' });
+const withRel = compute({ monthly: 8000, bonus: 8000, age: 38, status: 'SC', otherReliefs: 2000 + 8000 + 9000 + 8000 });
+const reliefs = [
+  ['Earned income relief', '$1,000 below 55, $6,000 at 55 to 59, $8,000 from 60', 'automatic'],
+  ['CPF relief', 'your compulsory employee CPF contributions', 'automatic'],
+  ['Spouse relief', '$2,000, if your spouse’s income did not exceed $8,000', 'claim'],
+  ['Qualifying child relief', '$4,000 per child', 'claim'],
+  ['Working mother’s child relief', '$8,000, $10,000 and $12,000 for children born from 2024; 15 %, 20 % or 25 % of earned income for older children', 'claim'],
+  ['Parent relief', '$9,000 if living with you, $5,500 if not, per parent', 'claim'],
+  ['Grandparent caregiver relief', '$3,000 for working mothers', 'claim'],
+  ['NSman relief', '$1,500, $3,000 or $5,000 depending on service; $750 for wives and parents', 'pre-filled'],
+  ['CPF cash top-up relief', 'up to $8,000 for yourself and $8,000 for family members', 'pre-filled'],
+  ['Supplementary Retirement Scheme', `up to $15,300 a year for citizens and PRs`, 'pre-filled'],
+];
+const faqs = [
+  { q: 'What is the maximum tax relief I can claim in Singapore?', a: `The total of all personal reliefs is capped at ${formatMoney(P.tax.relief_cap)} per Year of Assessment, including the CPF relief and the earned income relief. Deductions for donations and the parenthood tax rebate are separate and not part of the cap. Most employees are far below it, but high earners with several dependants, SRS contributions and CPF top-ups can reach it.` },
+  { q: 'Is course fees relief still available?', a: 'No. Course fees relief was discontinued from YA 2026, so fees paid in 2025 or later cannot be claimed. Its last year was YA 2025, for courses taken in 2024. Training support now goes mostly through SkillsFuture credits and course subsidies, which reduce the fee paid rather than your taxable income.' },
+  { q: 'Can both parents claim the qualifying child relief?', a: 'The $4,000 relief for each qualifying child can be shared between the parents in any proportion they agree, but the total claimed for one child cannot exceed $4,000. Working mothers can claim the working mother’s child relief on top, within the overall caps. The combined child reliefs per child are limited to $50,000.' },
+  { q: 'How much tax does a relief actually save?', a: `A relief reduces chargeable income, so it saves tax at your marginal rate. At a 7 % marginal rate, $1,000 of relief saves $70; at 11.5 %, $115. For someone on ${formatMoney(8000)} a month with a one-month bonus, adding spouse, child, parent and top-up reliefs of $27,000 cuts the bill from ${formatMoney(base.annual.tax)} to ${formatMoney(withRel.annual.tax)}.` },
+];
+---
+<Guide id="reliefs" title="Tax Relief Singapore YA 2027: Every Relief, $80,000 Cap" h1="Tax reliefs in Singapore for YA 2027: what you can deduct"
+  description="The personal income tax reliefs available for YA 2027 in Singapore: earned income, CPF, spouse, child, parent, NSman, SRS, top-ups and the $80,000 cap."
+  intro="Reliefs are deducted from your income before the tax rates apply. Two are automatic for employees; the others depend on your family and your savings choices."
+  resume={`Personal reliefs lower your chargeable income before Singapore’s tax rates are applied, so each dollar of relief saves tax at your marginal rate. Every employee receives two reliefs automatically: the earned income relief, $1,000 below age 55, and the CPF relief, equal to the compulsory employee contributions made in the year. Others must be claimed or are pre-filled from government records: spouse relief of $2,000, qualifying child relief of $4,000 per child, the working mother’s child relief, parent relief of up to $9,000 per parent, NSman relief, and reliefs for cash top-ups to CPF and contributions to the Supplementary Retirement Scheme. The total of all personal reliefs is capped at ${formatMoney(P.tax.relief_cap)} per Year of Assessment. Course fees relief ended after YA 2025. For an employee on ${formatMoney(8000)} a month with a one-month bonus, adding $27,000 of family and savings reliefs reduces the YA ${P.tax.year_of_assessment} bill from ${formatMoney(base.annual.tax)} to ${formatMoney(withRel.annual.tax)}.`}
+  faqs={faqs} related={['incomeTax', 'afterTax', 'taxRates', 'retirement', 'residency', 'home']} sources={[SRC.iras_eir, SRC.iras_cpf_relief, SRC.iras_rates]}>
+  <h2>The main reliefs for employees</h2>
+  <ContentTable headers={['Relief', 'Amount', 'How it gets on your return']} align={['l', 'l', 'l']} rows={reliefs} />
+  <p>“Pre-filled” means IRAS receives the information from MINDEF, the CPF Board or SRS operators and adds the relief to your return; you only need to check it. “Claim” means you enter it yourself, or confirm a relief IRAS carried over from the previous year. The income limit for spouse, child and parent reliefs was raised from $4,000 to $8,000 of the dependant’s annual income, a change that brought many families with a part-time earner back into the reliefs.</p>
+
+  <h2>Reliefs that follow your CPF</h2>
+  <p>The CPF relief covers compulsory contributions on ordinary wages up to {formatMoney(P.cpf.ow_ceiling_month)} a month and on additional wages up to the AW ceiling. It is therefore capped in practice at {formatMoney(Math.round(P.cpf.annual_salary_ceiling * 0.2))} a year for someone aged 55 or below, 20 % of the {formatMoney(P.cpf.annual_salary_ceiling)} annual salary ceiling. Voluntary contributions above the compulsory amounts are not relieved, except cash top-ups to the Special, Retirement or MediSave accounts under the top-up schemes, which have their own $8,000 limits. New PRs on graduated rates contribute less and so receive a smaller CPF relief, which is why their tax can be slightly higher than a citizen’s on the same salary.</p>
+
+  <h2>Family reliefs in practice</h2>
+  <p>Qualifying child relief can be split between parents; the working mother’s child relief goes to the mother. For children born or adopted from 1 January 2024, it is a fixed amount per child rather than a percentage of the mother’s income, which removes the incentive that made it most valuable to the highest earners. Parent relief can be shared among siblings supporting the same parent. The grandparent caregiver relief rewards the family members who look after a working mother’s child, and is claimed by the mother.</p>
+
+  <h2>Retirement savings as a relief</h2>
+  <p>Two savings choices bring relief. A cash top-up to your own Special or Retirement Account, or to MediSave, earns up to $8,000 of relief, and another $8,000 for top-ups to parents, grandparents, spouse or siblings, within the conditions of the Retirement Sum Topping-Up Scheme. A contribution to the Supplementary Retirement Scheme, up to $15,300 a year for citizens and PRs, is fully relieved in the year paid; withdrawals after the statutory retirement age are taxed on only half their amount. For a high earner, both are among the few ways to lower the bill, but the money is locked for the long term.</p>
+
+  <h2>What each relief is worth to you</h2>
+  <p>The same relief saves more tax for a higher earner, because it removes income from the top of the scale. At a chargeable income of {formatMoney(60000)}, the marginal rate is {formatPercent(0.07, 0)} and $10,000 of relief saves {formatMoney(residentTax(60000) - residentTax(50000))}. At {formatMoney(150000)}, it is {formatPercent(0.15, 0)} and the same $10,000 saves {formatMoney(residentTax(150000) - residentTax(140000))}. Below {formatMoney(20000)} of chargeable income, a relief saves nothing at all, since no tax is due. Enter your total reliefs in the calculator to see the exact effect.</p>
+
+  <h2>Beyond reliefs: deductions and rebates</h2>
+  <p>Donations to approved institutions of a public character are deducted at 250 % of the amount given, outside the {formatMoney(P.tax.relief_cap)} cap. The parenthood tax rebate, $5,000 for the first child, $10,000 for the second and $20,000 for the third and later children, is set off against the tax itself rather than the income, and can be carried forward until used. Employment expenses actually incurred for work and not reimbursed can also be deducted, but for most salaried employees they are small.</p>
+</Guide>

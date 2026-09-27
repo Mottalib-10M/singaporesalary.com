@@ -1,0 +1,31 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, P } from '../../lib/tables';
+import { residentTax, marginalRate } from '../../lib/engine/sg';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const e = ex(9000);
+const rows = [30000, 50000, 80000, 100000, 150000, 250000, 400000].map((c) => [formatMoney(c), formatMoney(residentTax(c)), formatPercent(residentTax(c) / c), formatPercent(marginalRate(c), 1)]);
+const faqs = [
+  { q: 'How is income tax calculated in Singapore for YA 2027?', a: `IRAS adds your employment income for ${P.tax.income_year}, deducts allowable expenses and your personal reliefs, capped at ${formatMoney(P.tax.relief_cap)}, and applies the progressive resident rates to what remains, the chargeable income. The first ${formatMoney(20000)} is tax-free, the next ${formatMoney(10000)} is taxed at 2 %, and rates rise in steps to 24 % above ${formatMoney(1000000)}.` },
+  { q: 'Will there be a tax rebate for YA 2027?', a: 'None has been announced. Budget 2026 gave no personal income tax rebate for YA 2026, after rebates of 60 % capped at $200 for YA 2025 and 50 % capped at $200 for YA 2024. The calculator assumes no rebate. If Budget 2027 announces one, it would reduce the bill by at most a few hundred dollars and the calculator will be updated.' },
+  { q: 'When do I pay the tax on my 2026 salary?', a: 'Employers file your 2026 income with IRAS by 1 March 2027 under the Auto-Inclusion Scheme. You check and complete your return by mid-April, and the notice of assessment usually arrives between May and September. Payment is due within one month of the notice, or by GIRO in up to 12 interest-free monthly instalments.' },
+];
+---
+<ToolPage id="incomeTax" title="Income Tax Calculator Singapore YA 2027: IRAS Resident Rates" h1="Income tax calculator for YA 2027 (income earned in 2026)"
+  description="Estimate the income tax IRAS will assess on your 2026 salary: resident rates from 0 % to 24 %, earned income relief, CPF relief and the $80,000 relief cap."
+  intro="The calculator starts from your salary, applies the reliefs every employee gets and any others you add, then runs the IRAS resident scale. Non-residents get the 15 % comparison."
+  mode="incomeTax" initialMonthly={9000} faqs={faqs} related={['afterTax', 'taxRates', 'reliefs', 'residency', 'bonus', 'home']}
+  sources={[SRC.iras_rates, SRC.iras_eir, SRC.iras_cpf_relief]}>
+  <p>Income tax in Singapore is annual and assessed after the fact. For money earned in {P.tax.income_year}, the Year of Assessment is {P.tax.year_of_assessment}, and IRAS uses the resident rates in force since YA 2024. On a salary of {formatMoney(9000)} a month, {formatMoney(e.annual.gross)} a year, a citizen aged 30 has {formatMoney(e.annual.reliefs.total)} of reliefs, {formatMoney(e.annual.reliefs.eir)} of earned income relief and {formatMoney(e.annual.reliefs.cpf)} of CPF relief, leaving a chargeable income of {formatMoney(e.annual.chargeable)}. The scale then gives {formatMoney(e.annual.tax)} of tax: {formatMoney(3350)} on the first {formatMoney(80000)}, and 11.5 % on the part above. That is an effective rate of {formatPercent(e.annual.effectiveTaxRate)} on gross salary even though the marginal rate, the rate on the next dollar, is {formatPercent(e.annual.marginal, 1)}. Tax residents are citizens, PRs and foreigners present or working in Singapore for at least 183 days in the year; for others, the calculator compares 15 % of gross employment income with the resident rates and keeps the higher amount, as IRAS does.</p>
+  <h2>Tax at the resident rates, before any rebate</h2>
+  <ContentTable headers={['Chargeable income', 'Tax', 'Average rate', 'Marginal rate']} align={['r', 'r', 'r', 'r']} rows={rows} />
+  <p>The average rate stays in single digits up to around {formatMoney(150000)} of chargeable income, which is why salary negotiations in Singapore rarely hinge on tax. The <a href={route('taxRates', lang)}>income tax rates page</a> shows every band with the cumulative tax at each threshold, as published by IRAS.</p>
+  <h2>What counts as employment income</h2>
+  <p>Salary, bonus, director’s fees, commissions, allowances, and most benefits in kind: housing provided by the employer, a car, club memberships. Employer CPF within the statutory limits is not taxable, nor is the Workfare Income Supplement. Reimbursements for business expenses are not income. Stock options and awards are taxed when they vest or are exercised, which can create a large one-off bill; enter them in the bonus field to see the effect.</p>
+  <h2>Getting the reliefs right</h2>
+  <p>The two reliefs applied automatically are the ones IRAS grants to every employee who qualifies. Many others need you to claim them, or are pre-filled only if IRAS has the information. Spouse relief, qualifying child relief, working mother’s child relief, parent relief, NSman relief and SRS contributions can each save hundreds of dollars; course fees relief, by contrast, ended after YA 2025. Add their total under “More tax reliefs”; the <a href={route('reliefs', lang)}>reliefs guide</a> explains the conditions.</p>
+</ToolPage>

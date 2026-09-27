@@ -1,33 +1,19 @@
-# SalaryCalculator.sg
+# Salary Calculator SG
 
-> Singapore Salary Calculator for 2026 — Calculate take-home pay after CPF and income tax.
+> Free Singapore salary, CPF and income tax calculators for 2026, published by Radif Partners. Every rate is read from the CPF Board and IRAS, with the source and date on each page. Calculations run in the browser.
 
-## About
-SalaryCalculator.sg is a free online tool that calculates Singapore take-home salary after CPF (Central Provident Fund) contributions and income tax for Year of Assessment 2026.
+## Calculators
+- [Salary calculator](https://salarycalculator.sg/en/): take-home pay, employee and employer CPF, allocation to OA, SA/RA and MediSave, income tax for YA 2027.
+- [CPF calculator](https://salarycalculator.sg/en/cpf-calculator/): contribution and account split by age.
+- [CPF contribution calculator](https://salarycalculator.sg/en/cpf-contribution-calculator/): payroll view, wage bands, rounding, Additional Wage ceiling.
+- [Employer CPF calculator](https://salarycalculator.sg/en/employer-cpf-calculator/) and [employer cost calculator](https://salarycalculator.sg/en/employer-cost-calculator/).
+- [Income tax calculator](https://salarycalculator.sg/en/income-tax-calculator/), [salary after tax](https://salarycalculator.sg/en/salary-after-tax/), [bonus tax](https://salarycalculator.sg/en/bonus-tax-calculator/).
+- [Net to gross](https://salarycalculator.sg/en/net-to-gross-salary/), [hourly to salary](https://salarycalculator.sg/en/hourly-to-salary-calculator/).
 
-## Features
-- Gross-to-net salary calculation
-- CPF contribution breakdown (Ordinary Account, Special Account, MediSave Account)
-- Progressive income tax calculation with YA2026 brackets
-- Support for Singapore Citizens, Permanent Residents (1st/2nd/3rd year+), and Foreigners
-- Annual bonus / AWS handling with Additional Wage ceiling
-- CPF Ordinary Wage ceiling ($6,800/month)
-- Tax reliefs: Earned Income Relief, CPF Relief, NSman Relief
-- Employer cost calculation
+## Data
+- All five CPF Board rate tables from 1 January 2026, including the graduated rates for Singapore Permanent Residents in their first two years: https://salarycalculator.sg/en/spr-cpf-contribution-rates/
+- CPF allocation rates 2026 and the 2027 senior rate changes.
+- IRAS resident rates from YA 2024, non-resident rules, reliefs and the $80,000 cap.
 
-## Key Data Points
-- CPF rates (Citizen, age ≤55): Employee 20%, Employer 17%
-- OW Ceiling: $6,800/month
-- AW Ceiling: $102,000 - annual OW subject to CPF
-- Tax-free threshold: First $20,000
-- Top marginal tax rate: 24% (above $1,000,000)
-
-## Pages
-- [Calculator](https://salarycalculator.sg/)
-- [FAQ](https://salarycalculator.sg/faq/)
-- [Legal](https://salarycalculator.sg/legal/)
-- [Privacy](https://salarycalculator.sg/privacy/)
-
-## Sources
-- CPF Board: https://www.cpf.gov.sg
-- IRAS: https://www.iras.gov.sg
+## Method
+- https://salarycalculator.sg/en/methodology/

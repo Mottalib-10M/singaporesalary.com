@@ -1,0 +1,55 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, cpf, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const basic = 4200, allowance = 300, ot = 180; const ow = basic + allowance + ot;
+const c = cpf(ow, 32);
+const lines = [
+  ['Basic salary', formatMoney(basic)],
+  ['Fixed allowance (transport)', formatMoney(allowance)],
+  ['Overtime (6 h at 1.5 × hourly rate)', formatMoney(ot)],
+  ['Gross salary', formatMoney(ow)],
+  ['Employee CPF (20 %)', `− ${formatMoney(c.employee)}`],
+  ['Self-help group fund (example: CDAC)', `− ${formatMoney(2, 2)}`],
+  ['Net salary paid', formatMoney(ow - c.employee - 2)],
+  ['Employer CPF (for information)', formatMoney(c.employer)],
+];
+const faqs = [
+  { q: 'Is my employer required to give me a payslip in Singapore?', a: 'Yes. Under the Employment Act, employers must issue an itemised payslip to every employee covered by the Act, in hard or soft copy, with or within three working days of the salary payment. It must show the basic salary, allowances, overtime hours and pay, deductions including CPF, and the employer CPF contribution.' },
+  { q: 'Why does my payslip show employer CPF if it is not deducted?', a: `Because the law requires it, so that you can check what goes into your CPF accounts. On ${formatMoney(ow)} of gross salary at 32, your employer pays ${formatMoney(c.employer)} on top of your pay. It never reduces your net salary, and your CPF statement should show the total of both shares, ${formatMoney(c.total)}.` },
+  { q: 'Can I stop the self-help group deduction on my payslip?', a: 'Yes. Contributions to CDAC, ECF, MBMF and SINDA are deducted by default from citizens and PRs according to race or religion, but they are voluntary. You opt out by submitting the relevant fund’s form to your employer or through the fund; the deduction then stops from the next month.' },
+];
+---
+<Guide id="payslip" title="Payslip Guide Singapore 2026: CPF, Allowances, Deductions" h1="How to read a Singapore payslip, line by line"
+  description="What each line of a Singapore payslip means in 2026: basic pay, allowances, overtime, employee and employer CPF, self-help group funds, and how to check them."
+  intro="A worked payslip with every line explained, the items the Employment Act makes compulsory, and the checks that catch the most common payroll errors."
+  resume={`A Singapore payslip starts from the basic salary, adds allowances and overtime to reach gross pay, and deducts the employee’s CPF contribution and a few optional items to reach the net salary paid. Income tax is not deducted, because Singapore does not withhold tax on most salaries. On a basic salary of ${formatMoney(basic)} with a ${formatMoney(allowance)} transport allowance and ${formatMoney(ot)} of overtime, a 32-year-old citizen has ${formatMoney(ow)} of gross pay, contributes ${formatMoney(c.employee)} to CPF and, after a small self-help group contribution, receives ${formatMoney(ow - c.employee - 2)}. The employer’s CPF of ${formatMoney(c.employer)} appears on the payslip for information but is not deducted from pay. The Employment Act requires an itemised payslip with these details, issued with or within three working days of the salary.`}
+  faqs={faqs} related={['takeHome', 'cpf', 'hourly', 'contribution', 'awCeiling', 'home']} sources={[SRC.cpf_rates, SRC.mom_hourly, SRC.iras_rates]}>
+  <h2>A worked example</h2>
+  <ContentTable headers={['Payslip line', 'Amount']} align={['l', 'r']} rows={lines} />
+  <p>Overtime is computed on the hourly basic rate, 12 × basic salary ÷ (52 × 44), and paid at 1.5 times for employees covered by Part IV of the Employment Act. Here, 6 hours at 1.5 × {formatMoney(12 * basic / (52 * 44), 2)} gives about {formatMoney(6 * 1.5 * 12 * basic / (52 * 44))}; the example rounds it to {formatMoney(ot)}.</p>
+
+  <h2>The lines the law requires</h2>
+  <p>An itemised payslip must name the employer and employee, give the date of payment and the salary period, and show the basic salary, the total allowances paid, any other additional payments such as a bonus, the overtime hours worked and overtime pay, the deductions with each item named, and the employer and employee CPF contributions. The overtime period must be stated if it differs from the salary period. Keeping payslips is the simplest protection in a salary dispute.</p>
+
+  <h2>Checking the CPF line</h2>
+  <p>Add the ordinary wages of the month: basic, fixed allowances, overtime. Cap the total at {formatMoney(P.cpf.ow_ceiling_month)}. Apply your employee rate, 20 % up to 55 for citizens and PRs from their third year, and round down to the dollar. On {formatMoney(ow)}, 20 % is {formatMoney(ow * 0.2, 2)}, which rounds down to {formatMoney(c.employee)}. If a bonus was paid in the month, it is added to the wages before the rates, within the Additional Wage ceiling. The <a href={route('contribution', lang)}>CPF contribution calculator</a> does these steps for you.</p>
+
+  <h2>Deductions allowed from salary</h2>
+  <p>Employers may deduct only what the Employment Act allows: absence from work, damage or loss caused by the employee’s neglect, accommodation, amenities and services provided with the employee’s agreement, recovery of advances and loans, recovery of overpaid salary, CPF and other deductions required by law, and deductions the employee has agreed to in writing. The total deducted in a salary period must not exceed half of the salary, except for deductions for absence and some others. A payslip with an unexplained deduction is worth querying.</p>
+
+  <h2>Lines that surprise new employees</h2>
+  <p><strong>Self-help group funds.</strong> CDAC, ECF, MBMF and SINDA contributions are deducted by default for citizens and PRs according to their race or religion. They are small and voluntary. <strong>No tax line.</strong> New arrivals often expect PAYE; in Singapore, tax is billed by IRAS the following year. <strong>A CPF line on the bonus month</strong> that does not match 20 % of the bonus: that is the Additional Wage ceiling at work, explained in the <a href={route('awCeiling', lang)}>AW ceiling guide</a>. <strong>Pro-rated salary</strong> in the first or last month: for incomplete months, MOM’s formula is monthly salary × days worked ÷ working days in the month.</p>
+
+  <h2>Payslips for part-timers and shift workers</h2>
+  <p>A part-time employee, working fewer than 35 hours a week, receives the same kind of itemised payslip, with the hours worked and the hourly rate. CPF is computed on the month’s total wages like everyone else’s: below $500 only the employer contributes, and between $500 and $750 the employee share phases in, so a part-timer’s CPF line can be much smaller than 20 %. Shift allowances, night allowances and public holiday pay paid for the month are ordinary wages and attract CPF. Tips and service charges distributed by the employer can also count as wages. If you work for two employers, each payslip applies CPF separately to its own wages.</p>
+  <h2>Keeping records</h2>
+  <p>Employers must keep payslip records for at least two years for current employees and for one year after an employee leaves, but your own copies are what you will use in a dispute or a loan application. Banks and HDB ask for recent payslips and CPF contribution histories to assess income; the CPF statement is often accepted instead of payslips, because it shows the contributions received each month. Save each payslip as a PDF with the month in the file name.</p>
+
+  <h2>When something is wrong</h2>
+  <p>Raise it with HR or payroll first, with the payslip and your contract. A missed or wrong CPF contribution can be corrected by the employer through the CPF Board. For unpaid salary or unlawful deductions, employees covered by the Employment Act can file a claim with the Tripartite Alliance for Dispute Management, which leads to the Employment Claims Tribunals if mediation fails. Your CPF statement, available with Singpass, shows every contribution received, which is the quickest way to spot a missing month.</p>
+</Guide>

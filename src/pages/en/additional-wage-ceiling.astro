@@ -1,0 +1,48 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const C = P.cpf.annual_salary_ceiling; const OW = P.cpf.ow_ceiling_month;
+const rows = [3000, 5000, 6500, 7000, 8000, 12000].map((m) => { const owY = Math.min(m, OW) * 12; return [formatMoney(m), formatMoney(owY), formatMoney(Math.max(0, C - owY))]; });
+const r7 = ex(7000, { bonus: 21000 });
+const faqs = [
+  { q: 'What is the Additional Wage ceiling for 2026?', a: `It is ${formatMoney(C)} minus the total ordinary wages that attract CPF in the year. Because ordinary wages are capped at ${formatMoney(OW)} a month, the lowest possible AW ceiling is ${formatMoney(C - OW * 12)}, for anyone earning ${formatMoney(OW)} or more every month. Someone on ${formatMoney(5000)} a month has an AW ceiling of ${formatMoney(C - 60000)}.` },
+  { q: 'Is my bonus above the AW ceiling taxed?', a: 'Yes. The ceiling only limits CPF. The whole bonus, including the part above the ceiling, is employment income and is taxed in the year it is paid. Only the CPF relief is limited, since it covers the contributions actually made, so the uncapped part of the bonus is taxed without any CPF relief.' },
+  { q: 'What happens to the AW ceiling if I leave my job mid-year?', a: 'Your employer recomputes the ceiling with the ordinary wages actually paid up to your last day, not with an estimate for the full year. If more CPF was charged on your bonus than the recomputed ceiling allows, the excess is refunded; if less, the employer pays the difference with the final salary.' },
+  { q: 'Does the AW ceiling apply per employer or overall?', a: 'It applies per employee across the year. If you work for two unrelated employers, each applies the ceiling to the wages it pays, which can lead to more CPF than the annual limit; the CPF Board then refunds the excess voluntary part on request. Related employers must share one ceiling.' },
+];
+---
+<Guide id="awCeiling" title="Additional Wage Ceiling 2026: CPF on Bonuses in Singapore" h1="The Additional Wage ceiling: how much of a bonus attracts CPF"
+  description="How the CPF Additional Wage ceiling works in 2026: $102,000 minus ordinary wages, examples by salary, mid-year joiners, leavers, salary changes and tax."
+  intro="A bonus, 13th month or leave encashment is an additional wage. CPF applies to it only up to a ceiling that depends on your ordinary wages for the year."
+  resume={`The Additional Wage ceiling limits how much of a bonus attracts CPF in Singapore. It equals the annual salary ceiling of ${formatMoney(C)} minus the total ordinary wages subject to CPF during the calendar year. Because ordinary wages are themselves capped at ${formatMoney(OW)} a month, the ceiling is never lower than ${formatMoney(C - OW * 12)}. A salary of ${formatMoney(5000)} a month uses ${formatMoney(60000)} of the annual ceiling and leaves ${formatMoney(C - 60000)} for bonuses and other additional wages; at ${formatMoney(OW)} a month or more, only ${formatMoney(C - OW * 12)} of any bonus attracts CPF. The part of a bonus above the ceiling is paid without CPF deductions but remains fully taxable. Employers compute the ceiling on an estimate of the year’s ordinary wages when a bonus is paid, and correct it at the end of the year or when the employee leaves.`}
+  faqs={faqs} related={['bonus', 'contribution', 'cpfRates', 'employerCost', 'incomeTax', 'payslip']} sources={[SRC.cpf_rates, SRC.iras_cpf_relief, SRC.iras_rates]}>
+  <h2>Ordinary wages versus additional wages</h2>
+  <p>CPF divides pay into two kinds. Ordinary wages are due or granted for employment in the month and paid before the CPF due date: basic salary, fixed allowances, overtime. Additional wages are not granted wholly and exclusively for the month: annual bonuses, the annual wage supplement or 13th month, leave encashment, incentive payments and commissions paid at intervals longer than a month. The distinction matters because the two are capped differently: ordinary wages month by month at {formatMoney(OW)}, additional wages year by year through the AW ceiling.</p>
+
+  <h2>The ceiling for common salaries</h2>
+  <ContentTable headers={['Monthly ordinary wages', 'Ordinary wages subject to CPF per year', 'AW ceiling']} align={['r', 'r', 'r']} rows={rows} />
+  <p>The table assumes the same salary every month. Up to {formatMoney(7000)} a month, a bonus of two or three months is usually covered in full. Above {formatMoney(7000)}, a larger share of any bonus escapes CPF. On {formatMoney(7000)} a month with a three-month bonus of {formatMoney(21000)}, only {formatMoney(r7.awSubject)} is subject to CPF and the remaining {formatMoney(21000 - r7.awSubject)} is paid gross.</p>
+
+  <h2>How payroll computes it during the year</h2>
+  <p>When a bonus is paid before the year ends, the employer does not yet know the ordinary wages of the remaining months. The CPF Board’s method is to estimate them: the ordinary wages paid so far plus the expected ordinary wages until December, each month capped at {formatMoney(OW)}. The AW ceiling is then {formatMoney(C)} minus that estimate. At the end of the year, or when the employee leaves, the ceiling is recomputed with the actual figures, and any excess or shortfall of CPF on the bonus is adjusted. The adjustment is why a December or final payslip sometimes shows a CPF line that looks out of proportion with the salary.</p>
+
+  <h2>Joiners, leavers and salary changes</h2>
+  <p>An employee who joins in July has only six months of ordinary wages with that employer, so the ceiling with that employer is larger: the whole bonus is more likely to attract CPF. An employee who leaves in March with a bonus paid in February has a ceiling computed on three months of ordinary wages, which can mean more CPF on the bonus than expected. A salary increase mid-year reduces the ceiling, because the months after the increase use more of the annual allowance. Payroll software handles these cases, but they explain most of the questions employees ask about CPF on bonuses.</p>
+
+  <h2>Several employers in the same year</h2>
+  <p>When an employee works for unrelated employers in the same year, each one applies the ceilings on the wages it pays. Total contributions can then exceed what a single employer would have charged. The part of the contributions on wages above the annual limit is treated as voluntary and can be refunded on application. Related companies, in the same group, must apply the ceiling jointly as if they were one employer.</p>
+
+  <h2>Commissions and leave encashment</h2>
+  <p>Commissions paid monthly for sales made in the month are ordinary wages; those paid quarterly or annually are additional wages and use the ceiling. Payment for unused leave when an employee leaves is also an additional wage, which is why a final payslip with leave encashment can show CPF even when the bonus has already used most of the ceiling.</p>
+
+  <h2>What the ceiling means for tax</h2>
+  <p>Income tax does not care about CPF ceilings: the whole bonus is employment income. What changes is the CPF relief, which covers only the compulsory contributions actually made. A bonus above the AW ceiling is therefore taxed without any CPF relief on the uncapped part, at your marginal rate. The <a href={route('bonus', lang)}>bonus tax calculator</a> shows both effects together for your salary and bonus.</p>
+
+  <h2>Checking a payslip</h2>
+  <p>To check the CPF on a bonus, add up your ordinary wages for the year, capped at {formatMoney(OW)} a month, subtract the total from {formatMoney(C)}, and compare with the bonus. The CPF on the bonus is your rate times the smaller of the two figures, added to the contribution on that month’s salary before rounding. The <a href={route('contribution', lang)}>CPF contribution calculator</a> does it for a constant salary.</p>
+</Guide>

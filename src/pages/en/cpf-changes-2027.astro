@@ -1,0 +1,48 @@
+---
+import Guide from '../../components/Guide.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { cpf, ex, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const R26 = P.cpf.tables.SC.rates; const R27 = P.cpf.changes_2027.SC;
+const rows = [['Above 55 to 60', R26['55_60'], R27['55_60']], ['Above 60 to 65', R26['60_65'], R27['60_65']]].map(([l, a, b]: any) => [l, formatPercent(a.total, 1), formatPercent(b.total, 1), formatPercent(a.employee, 1), formatPercent(b.employee, 1), formatPercent(a.total - a.employee, 1), formatPercent(b.total - b.employee, 1)]);
+const sal = [3000, 4500, 6000, 8000];
+const impact = sal.flatMap((m) => [58, 62].map((age) => { const a = cpf(m, age, 'SC', 2026); const b = cpf(m, age, 'SC', 2027); return [formatMoney(m), String(age), formatMoney(b.employee - a.employee), formatMoney(b.employer - a.employer), formatMoney((b.total - a.total) * 12)]; }));
+const e58 = ex(5000, { age: 58 }); const e58b = ex(5000, { age: 58, year: 2027 });
+const faqs = [
+  { q: 'What changes in CPF contributions on 1 January 2027?', a: 'For employees above 55 to 60, the total rate rises from 34 % to 35.5 %: 16.5 % from the employer and 19 % from the employee. For employees above 60 to 65, it rises from 25 % to 26 %, split 13 % and 13 %. Rates for other ages, and the graduated rates for first- and second-year PRs, do not change.' },
+  { q: 'Will my take-home pay fall in 2027 if I am 58?', a: `Slightly. On ${formatMoney(5000)} a month, the employee share rises from ${formatMoney(e58.monthly.employee)} to ${formatMoney(e58b.monthly.employee)}, so take-home pay falls by ${formatMoney(e58.takeHomeMonthly - e58b.takeHomeMonthly)} a month. In exchange, the total going into your CPF rises by ${formatMoney(e58b.monthly.total - e58.monthly.total)} a month, all of it credited to your Retirement Account until you reach the Full Retirement Sum.` },
+  { q: 'Which account receives the extra CPF from 2027?', a: 'The Retirement Account, up to the Full Retirement Sum. The CPF Board announced that the increase for employees above 55 to 65 will be fully allocated to the Retirement Account; if the member has already set aside the Full Retirement Sum, the extra contributions go to the Ordinary Account instead.' },
+  { q: 'Do the 2027 changes apply to wages for December 2026 paid in January 2027?', a: 'No. The new rates apply to wages earned from 1 January 2027. December 2026 wages, even if paid in January, are charged at the 2026 rates. A bonus paid in January 2027 is an additional wage of 2027, so ask payroll which rates it was charged at if the amount looks different.' },
+];
+---
+<Guide id="cpf2027" title="CPF Changes 2027: Higher Rates for Workers Aged 55 to 65" h1="CPF changes in 2027: what the new senior rates mean for your pay"
+  description="From 1 January 2027 CPF rates rise for employees above 55 to 65: 35.5 % and 26 % in total. Impact on take-home pay, employer cost and the Retirement Account."
+  intro="The CPF Board has published the rates for wages earned from 1 January 2027. Here is who is affected, by how much, and how to model it in the calculator."
+  resume={`CPF contribution rates rise again on 1 January 2027 for employees aged above 55 to 65, the last step of a schedule of increases that began in 2022. For employees above 55 to 60, the total rate goes from ${formatPercent(R26['55_60'].total, 1)} to ${formatPercent(R27['55_60'].total, 1)}, with the employer paying ${formatPercent(R27['55_60'].employer_low, 1)} and the employee ${formatPercent(R27['55_60'].employee, 1)}. For employees above 60 to 65, it goes from ${formatPercent(R26['60_65'].total, 1)} to ${formatPercent(R27['60_65'].total, 1)}, split equally at 13 %. The extra contributions are credited in full to the Retirement Account up to the Full Retirement Sum. Nothing changes for employees aged 55 and below or above 65, and the graduated rates for first- and second-year permanent residents stay as they are. For a 58-year-old earning ${formatMoney(5000)} a month, take-home pay falls by ${formatMoney(e58.takeHomeMonthly - e58b.takeHomeMonthly)} and CPF savings grow by ${formatMoney((e58b.monthly.total - e58.monthly.total) * 12)} a year.`}
+  faqs={faqs} related={['cpfRates', 'employerCpf', 'retirement', 'allocation', 'cpf', 'employerCost']} sources={[SRC.cpf_2027, SRC.cpf_rates, SRC.cpf_sums]}>
+  <h2>The rates from 1 January 2027</h2>
+  <ContentTable headers={['Age', 'Total 2026', 'Total 2027', 'Employee 2026', 'Employee 2027', 'Employer 2026', 'Employer 2027']} align={['l', 'r', 'r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The maximum monthly contribution, reached at the {formatMoney(P.cpf.ow_ceiling_month)} ceiling, rises accordingly: to {formatMoney(Math.round(R27['55_60'].total * 8000))} in total above 55 to 60 and {formatMoney(Math.round(R27['60_65'].total * 8000))} above 60 to 65. Workers earning between $500 and $750 a month also see their phased-in rates rise in proportion, according to the CPF Board.</p>
+
+  <h2>Monthly impact by salary and age</h2>
+  <ContentTable headers={['Monthly salary', 'Age', 'Extra from employee', 'Extra from employer', 'Extra CPF per year']} align={['r', 'l', 'r', 'r', 'r']} rows={impact} />
+  <p>The employee bears two thirds of the increase between 55 and 60, and half of it between 60 and 65. For employers, the extra cost is small per head, at most a few hundred dollars a year for a senior employee at the ceiling, but it adds up across a workforce with many older workers.</p>
+
+  <h2>Why the rates keep rising for older workers</h2>
+  <p>Contribution rates for workers above 55 were cut sharply in the late 1980s and 1990s to protect their employment. With longer lives and later retirement, the government has been restoring them in steps, following the recommendations of the Tripartite Workgroup on Older Workers. The aim is to bring rates for ages 55 to 60 close to those of younger workers and to strengthen the Retirement Account before CPF LIFE payouts begin at 65. The 2027 step for ages above 60 to 65 continues that path.</p>
+
+  <h2>What to do before January</h2>
+  <p>For employees, the change needs no action: payroll applies the new rates to wages earned from January. It is worth checking your budget if you are close to the Full Retirement Sum, because once it is reached the extra contributions go to your Ordinary Account instead. For employers, payroll software must be updated with the new tables, and budgets for 2027 should include the higher employer share; the <a href={route('employerCost', lang)}>employer cost calculator</a> takes the year as an input. The Senior Employment Credit and CPF Transition Offset, when provided in a given year, reduce the net cost of employing older workers; their parameters are announced in the Budget.</p>
+
+  <h2>Modelling 2027 in the calculator</h2>
+  <p>Every calculator on this site has a “Wages earned in” field. Choose 2027 to apply the new rates for ages above 55 to 65. Income tax is still computed with the current resident rates, which have not changed for YA 2028 as far as has been announced. The allocation ratios used for 2027 are the 2026 ratios with the increase added to the Retirement Account, which is what the CPF Board has described; the detailed allocation table for 2027 will replace this assumption when it is published.</p>
+
+  <h2>For new PRs and foreign employees</h2>
+  <p>Permanent residents in their first two years stay on the graduated rates, which the CPF Board has not changed since 2016, even if they are aged between 55 and 65. Once they reach their third year, they move to table 1 and therefore to the new 2027 rates for their age. Foreign employees remain outside CPF altogether. For employers with mixed teams, the 2027 change affects only citizens and PRs from the third year aged above 55 to 65, which payroll software can identify from the date of birth and the date PR status was granted.</p>
+
+  <h2>Earlier steps, for reference</h2>
+  <p>In 2025, the total rate for employees above 55 to 60 was 32.5 % and for those above 60 to 65, 23.5 %. The 2026 rates, 34 % and 25 %, added 1.5 points each. The 2027 step adds 1.5 and 1 point. Over three years, a 58-year-old at the ceiling sees their monthly CPF rise by {formatMoney(Math.round((0.355 - 0.325) * 8000))}, a meaningful sum over the seven years before CPF LIFE payouts begin.</p>
+</Guide>

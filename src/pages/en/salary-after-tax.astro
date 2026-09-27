@@ -1,0 +1,29 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { ex, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney, formatPercent } from '../../lib/format';
+const lang = 'en';
+const e = ex(7500, { bonus: 7500 });
+const rows = [48000, 72000, 96000, 120000, 180000, 240000].map((y) => { const m = y / 13; const c = ex(m, { bonus: m }); const f = ex(m, { bonus: m, status: 'FOREIGNER' }); return [formatMoney(y), formatMoney(c.annual.cpfEmployee), formatMoney(c.annual.tax), formatMoney(c.annual.net), formatMoney(f.annual.tax), formatMoney(f.annual.net)]; });
+const faqs = [
+  { q: 'What is my salary after tax in Singapore on $100,000 a year?', a: (() => { const r = ex(100000 / 13, { bonus: 100000 / 13 }); return `For a citizen aged 30 paid over 13 months, about ${formatMoney(r.annual.net)} after ${formatMoney(r.annual.cpfEmployee)} of employee CPF and ${formatMoney(r.annual.tax)} of income tax for YA 2027. Keep in mind the CPF is not lost: it sits in your own accounts. A foreign Employment Pass holder on the same package would pay no CPF and ${formatMoney(ex(100000 / 13, { bonus: 100000 / 13, status: 'FOREIGNER' }).annual.tax)} of tax.`; })() },
+  { q: 'Why do foreigners pay more tax than citizens on the same salary?', a: 'They usually do not, if they are tax residents. What differs is CPF: citizens and PRs get a CPF relief for their compulsory contributions, which lowers taxable income, while foreigners have no CPF and so no relief. The foreigner keeps more cash but builds no CPF savings. Non-resident foreigners, present for less than 183 days, are taxed at the higher of 15 % or the resident rates.' },
+  { q: 'Is my salary after tax the same as my take-home pay?', a: 'No. Take-home pay is what reaches your bank account each month: salary minus employee CPF. Income tax is paid separately the following year. Salary after tax deducts both, so it tells you what you really keep. On a monthly budget, the difference is the amount you should put aside every month for the tax bill.' },
+];
+---
+<ToolPage id="afterTax" title="Salary After Tax Singapore 2026: Net of CPF and IRAS Tax" h1="Salary after tax in Singapore: what you keep in a year"
+  description="Your annual salary after employee CPF and IRAS income tax for YA 2027, with bonus, reliefs and residency. Citizens, PRs and foreigners compared, free."
+  intro="Enter a monthly salary and your bonus: the calculator deducts your CPF and the income tax IRAS will assess on the year, and shows what is left, per year and per month."
+  mode="afterTax" initialMonthly={7500} initialBonus={7500} faqs={faqs} related={['incomeTax', 'takeHome', 'taxRates', 'reliefs', 'residency', 'home']}
+  sources={[SRC.iras_rates, SRC.iras_eir, SRC.iras_cpf_relief]}>
+  <p>On {formatMoney(7500)} a month with a one-month bonus, {formatMoney(e.annual.gross)} a year, a Singapore Citizen aged 30 keeps {formatMoney(e.annual.net)} after tax and CPF. The employee CPF contributions total {formatMoney(e.annual.cpfEmployee)}, and IRAS will assess {formatMoney(e.annual.tax)} of income tax for YA {P.tax.year_of_assessment}, an effective rate of {formatPercent(e.annual.effectiveTaxRate)} on gross pay. The tax is modest because two reliefs come off before any rate applies: the earned income relief of {formatMoney(1000)} and the CPF relief equal to your compulsory contributions, {formatMoney(e.annual.reliefs.cpf)} here. What remains, {formatMoney(e.annual.chargeable)}, is taxed at the resident scale, which charges nothing on the first {formatMoney(20000)} and 7 % between {formatMoney(40000)} and {formatMoney(80000)}. Unlike most countries, Singapore does not withhold this tax from monthly pay: the net figure shown here is what you keep only if you set aside about {formatMoney(e.annual.tax / 12)} a month for the bill.</p>
+  <h2>Annual salary after tax: citizen versus foreigner</h2>
+  <p>Packages below assume a 13-month structure, twelve salaries and a bonus of one month, and a resident taxpayer aged 30.</p>
+  <ContentTable headers={['Annual package', 'Citizen CPF', 'Citizen tax', 'Citizen keeps', 'Foreigner tax', 'Foreigner keeps']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The foreigner keeps more cash in every row, because no CPF is deducted, and pays more tax, because there is no CPF relief. The citizen’s CPF is savings rather than a cost: it earns at least 2.5 % in the Ordinary Account and 4 % in the Special, Retirement and MediSave accounts, and can pay for housing, healthcare and retirement. Comparing the two columns is a comparison of cash today, not of wealth.</p>
+  <h2>Reliefs that change the result</h2>
+  <p>The calculator applies the reliefs every employee gets. If you are married, have children, support parents, serve as an NSman or contribute to the Supplementary Retirement Scheme, open “More tax reliefs” and add the amount: each dollar lowers your chargeable income, until the total of all reliefs reaches {formatMoney(P.tax.relief_cap)}. The <a href={route('reliefs', lang)}>tax reliefs guide</a> lists the main ones with their amounts, and the <a href={route('incomeTax', lang)}>income tax calculator</a> shows the bracket you fall in.</p>
+</ToolPage>

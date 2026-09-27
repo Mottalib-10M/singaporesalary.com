@@ -1,0 +1,29 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import ContentTable from '../../components/ContentTable.astro';
+import { route } from '../../i18n/routes';
+import { hourlyFromMonthly, monthlyFromHourly } from '../../lib/engine/sg';
+import { ex, P } from '../../lib/tables';
+import { SRC } from '../../lib/sources';
+import { formatMoney } from '../../lib/format';
+const lang = 'en';
+const m15 = monthlyFromHourly(15);
+const rows = [10.5, 12, 15, 18, 20, 25, 30, 40].map((h) => { const m = monthlyFromHourly(h); return [formatMoney(h, 2), formatMoney(m), formatMoney(m * 12), formatMoney(ex(m).takeHomeMonthly), formatMoney(h * P.hourly.ot_multiplier, 2)]; });
+const faqs = [
+  { q: 'How does MOM convert a monthly salary into an hourly rate?', a: `The Ministry of Manpower uses 12 × monthly basic pay ÷ (52 × 44). The 12 turns the month into a year, 52 weeks and 44 hours make the normal working year. On ${formatMoney(3000)} that gives ${formatMoney(hourlyFromMonthly(3000), 2)} an hour, the rate on which overtime is paid at 1.5 times for employees covered by Part IV of the Employment Act.` },
+  { q: 'Is $15 an hour a good wage in Singapore?', a: `At 44 hours a week it equals about ${formatMoney(m15)} a month, or ${formatMoney(m15 * 12)} a year, below the median of ${formatMoney(P.wages.mom_median_2025)} reported by MOM for full-time residents, which includes employer CPF. It is above the Local Qualifying Salary floor of ${formatMoney(P.wages.lqs_monthly)} a month that firms hiring foreigners must pay local staff.` },
+  { q: 'Do part-time workers pay CPF on hourly wages?', a: 'Yes, if they are citizens or PRs. CPF depends on the total wages paid in the month, not on the hours. A part-timer earning under $500 in a month pays nothing while the employer contributes; between $500 and $750 the employee share phases in; above $750 the full rates apply, exactly as for a full-time employee.' },
+];
+---
+<ToolPage id="hourly" title="Hourly to Salary Calculator Singapore 2026: MOM Formula" h1="Hourly to salary calculator: from an hourly rate to monthly pay"
+  description="Convert an hourly rate into monthly and annual salary with MOM's 12 × monthly ÷ (52 × 44) formula, then see CPF, take-home pay and overtime at 1.5 times."
+  intro="Enter an hourly rate and the hours you work in a week. The calculator uses the Ministry of Manpower’s formula for the monthly equivalent, then applies CPF and tax."
+  mode="hourly" initialHourly={15} faqs={faqs} related={['takeHome', 'minimumWage', 'home', 'netToGross', 'employerCost', 'averageSalary']}
+  sources={[SRC.mom_hourly, SRC.cpf_rates, SRC.mom_income]}>
+  <p>Singapore’s Ministry of Manpower converts pay between hourly and monthly terms with one formula: the hourly basic rate equals 12 times the monthly basic pay divided by 52 times 44, that is, the year’s pay spread over 52 weeks of 44 hours. Read the other way, an hourly rate of {formatMoney(15, 2)} for a full-time week corresponds to {formatMoney(m15)} a month and {formatMoney(m15 * 12)} a year. The calculator applies this conversion, adjusts it if you work fewer or more than 44 hours a week, and then runs the usual payroll steps on the monthly result: employee and employer CPF, take-home pay, and the income tax IRAS would assess on a full year. The same formula is the base for overtime, which employees covered by Part IV of the Employment Act receive at 1.5 times the hourly basic rate for hours beyond 44 a week. Part-timers can use it to compare a shift rate with a salaried offer, and employers to set a part-time rate that matches the pay of a full-time colleague.</p>
+  <h2>Hourly rates and their monthly equivalents</h2>
+  <ContentTable headers={['Hourly rate', 'Monthly (44 h/week)', 'Yearly', 'Take-home, citizen 30', 'Overtime rate']} align={['r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The first row, {formatMoney(10.5, 2)}, is the hourly rate that Ministry of Manpower guidance associated with the previous Local Qualifying Salary for part-time local workers. Since 1 July 2026 the monthly floor for full-time local employees is {formatMoney(P.wages.lqs_monthly)}; see the <a href={route('minimumWage', lang)}>minimum wage and LQS guide</a> for how it applies.</p>
+  <h2>Who is paid overtime</h2>
+  <p>Overtime at 1.5 times is compulsory for workmen earning up to $4,500 a month and for other employees, non-workmen, earning up to $2,600 a month. Above those salaries the contract sets the rules. The number of overtime hours is capped at 72 a month. Rest-day and public-holiday work follow separate rules, paid in days rather than hours.</p>
+</ToolPage>
