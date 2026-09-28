@@ -9,7 +9,7 @@ import { SRC } from '../../lib/sources';
 import { formatMoney } from '../../lib/format';
 const lang = 'en';
 const title = 'CPF and Tax Calculation Method: Sources, Tests and Limits';
-const description = 'How salarycalculator.sg computes CPF, allocation, income tax and employer cost: official sources, rounding rules, test cases, update cycle and known limits.';
+const description = 'How singaporesalary.com computes CPF, allocation, income tax and employer cost: official sources, rounding rules, test cases, update cycle and known limits.';
 const checks = [
   ['CPF, $5,000, age 30, citizen', `${formatMoney(cpf(5000).employee)} / ${formatMoney(cpf(5000).employer)}`, 'Table 1: 20 % / 17 %'],
   ['CPF at the $8,000 ceiling', `${formatMoney(cpf(12000).total)} total, ${formatMoney(cpf(12000).employee)} employee`, 'Table 1 maxima $2,960 / $1,600'],

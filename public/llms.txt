@@ -1,19 +1,19 @@
-# Salary Calculator SG
+# Singapore Salary
 
 > Free Singapore salary, CPF and income tax calculators for 2026, published by Radif Partners. Every rate is read from the CPF Board and IRAS, with the source and date on each page. Calculations run in the browser.
 
 ## Calculators
-- [Salary calculator](https://salarycalculator.sg/en/): take-home pay, employee and employer CPF, allocation to OA, SA/RA and MediSave, income tax for YA 2027.
-- [CPF calculator](https://salarycalculator.sg/en/cpf-calculator/): contribution and account split by age.
-- [CPF contribution calculator](https://salarycalculator.sg/en/cpf-contribution-calculator/): payroll view, wage bands, rounding, Additional Wage ceiling.
-- [Employer CPF calculator](https://salarycalculator.sg/en/employer-cpf-calculator/) and [employer cost calculator](https://salarycalculator.sg/en/employer-cost-calculator/).
-- [Income tax calculator](https://salarycalculator.sg/en/income-tax-calculator/), [salary after tax](https://salarycalculator.sg/en/salary-after-tax/), [bonus tax](https://salarycalculator.sg/en/bonus-tax-calculator/).
-- [Net to gross](https://salarycalculator.sg/en/net-to-gross-salary/), [hourly to salary](https://salarycalculator.sg/en/hourly-to-salary-calculator/).
+- [Salary calculator](https://singaporesalary.com/en/): take-home pay, employee and employer CPF, allocation to OA, SA/RA and MediSave, income tax for YA 2027.
+- [CPF calculator](https://singaporesalary.com/en/cpf-calculator/): contribution and account split by age.
+- [CPF contribution calculator](https://singaporesalary.com/en/cpf-contribution-calculator/): payroll view, wage bands, rounding, Additional Wage ceiling.
+- [Employer CPF calculator](https://singaporesalary.com/en/employer-cpf-calculator/) and [employer cost calculator](https://singaporesalary.com/en/employer-cost-calculator/).
+- [Income tax calculator](https://singaporesalary.com/en/income-tax-calculator/), [salary after tax](https://singaporesalary.com/en/salary-after-tax/), [bonus tax](https://singaporesalary.com/en/bonus-tax-calculator/).
+- [Net to gross](https://singaporesalary.com/en/net-to-gross-salary/), [hourly to salary](https://singaporesalary.com/en/hourly-to-salary-calculator/).
 
 ## Data
-- All five CPF Board rate tables from 1 January 2026, including the graduated rates for Singapore Permanent Residents in their first two years: https://salarycalculator.sg/en/spr-cpf-contribution-rates/
+- All five CPF Board rate tables from 1 January 2026, including the graduated rates for Singapore Permanent Residents in their first two years: https://singaporesalary.com/en/spr-cpf-contribution-rates/
 - CPF allocation rates 2026 and the 2027 senior rate changes.
 - IRAS resident rates from YA 2024, non-resident rules, reliefs and the $80,000 cap.
 
 ## Method
-- https://salarycalculator.sg/en/methodology/
+- https://singaporesalary.com/en/methodology/

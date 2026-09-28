@@ -3,4 +3,4 @@ Allow: /
 
 Disallow: /*?*
 
-Sitemap: https://salarycalculator.sg/sitemap-index.xml
+Sitemap: https://singaporesalary.com/sitemap-index.xml

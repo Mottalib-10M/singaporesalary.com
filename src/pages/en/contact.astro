@@ -5,8 +5,8 @@ import { route } from '../../i18n/routes';
 import { breadcrumbSchema, contactPageSchema } from '../../lib/seo';
 import { CONTACT_EMAIL } from '../../data/site-config';
 const lang = 'en';
-const title = 'Contact Salary Calculator SG: Errors, Questions, Widget';
-const description = 'Write to the publisher of Salary Calculator SG to report an error in a CPF or tax figure, ask about the method or get the free widget. We reply within days.';
+const title = 'Contact Singapore Salary: Errors, Questions, Widget';
+const description = 'Write to the publisher of Singapore Salary to report an error in a CPF or tax figure, ask about the method or get the free widget. We reply within days.';
 const jsonLd = [contactPageSchema({ name: title, description, path: route('contact', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Contact', path: route('contact', lang) }])];
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Contact' }]}>

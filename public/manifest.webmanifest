@@ -1,6 +1,6 @@
 {
- "name": "Salary Calculator SG",
- "short_name": "Salary Calc SG",
+ "name": "Singapore Salary",
+ "short_name": "SG Salary",
  "description": "Singapore salary, CPF and income tax calculator 2026: take-home pay, employer CPF, allocation to OA, SA and MA.",
  "start_url": "/en/",
  "display": "standalone",

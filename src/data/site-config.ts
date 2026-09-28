@@ -1,6 +1,6 @@
 /** Configuration centrale du site (générée par new-site.py). */
-export const SITE_URL = 'https://salarycalculator.sg';
-export const SITE_NAMES: Record<string, string> = {"en": "Salary Calculator SG"};
+export const SITE_URL = 'https://singaporesalary.com';
+export const SITE_NAMES: Record<string, string> = {"en": "Singapore Salary"};
 export const LANG_TAGS: Record<string, string> = {"en": "en-SG"};
 export const OG_LOCALES: Record<string, string> = {"en": "en_SG"};
 export const LOCALE_TAG = 'en-SG';
@@ -16,7 +16,7 @@ export const AUTHOR_DESC: Record<string, string> = {"en": "Radif Partners publis
  *  themes reellement traites par le site, pas une liste de mots-cles : un sujet
  *  declare ici sans page qui le couvre est une declaration fausse. */
 export const KNOWS_ABOUT: Record<string, string[]> = {"en": ["Central Provident Fund contributions", "Singapore personal income tax", "Payroll and employer costs in Singapore", "Singapore Permanent Resident CPF graduated rates", "Personal finance"]};
-export const CONTACT_EMAIL = 'contact@salarycalculator.sg';
+export const CONTACT_EMAIL = 'contact@singaporesalary.com';
 export const THEME_COLOR = '#C8102E';
 export const LOGO_SYMBOL = 'S$';
 export const BING_VERIFY_CODE = '';
