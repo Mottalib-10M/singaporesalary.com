@@ -4,8 +4,8 @@ import { route } from '../../i18n/routes';
 import { breadcrumbSchema, webPageSchema } from '../../lib/seo';
 import { REVIEW_CYCLE_MONTHS } from '../../data/site-config';
 const lang = 'en';
-const title = 'Editorial Policy Singapore Salary: Sources, Corrections';
-const description = 'How Singapore Salary chooses its sources, checks every CPF and tax parameter, dates its updates and corrects errors, with the review cycle we commit to.';
+const title = 'Editorial Policy SingaporeSalary.com: Sources, Corrections';
+const description = 'How SingaporeSalary.com chooses its sources, checks every CPF and tax parameter, dates its updates and corrects errors, with the review cycle we commit to.';
 const jsonLd = [webPageSchema({ name: title, description, path: route('editorial', lang), lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Editorial policy', path: route('editorial', lang) }])];
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Editorial policy' }]}>

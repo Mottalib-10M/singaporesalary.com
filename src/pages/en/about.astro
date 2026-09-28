@@ -5,14 +5,14 @@ import { breadcrumbSchema, profilePageSchema, organizationSchema } from '../../l
 import { CONTACT_EMAIL, SITE_FOUNDED } from '../../data/site-config';
 import { P } from '../../lib/tables';
 const lang = 'en';
-const title = 'Who Publishes Singapore Salary and How the Site Works';
-const description = 'Singapore Salary is published by Radif Partners: why we built a CPF and tax calculator for Singapore, how the site is funded and how to report an error.';
+const title = 'Who Publishes SingaporeSalary.com and How the Site Works';
+const description = 'SingaporeSalary.com is published by Radif Partners: why we built a CPF and tax calculator for Singapore, how the site is funded and how to report an error.';
 const jsonLd = [profilePageSchema({ path: route('about', lang), lang }), organizationSchema(lang), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'About', path: route('about', lang) }])];
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'About' }]} showAuthor={false}>
   <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">About this site</h1></header>
   <div class="prose prose-slate max-w-none" data-author="Radif Partners">
-    <p>Singapore Salary is published by <strong>Radif Partners</strong>, an independent publisher of free payroll and tax calculators for several countries. The site was started in {SITE_FOUNDED} with one aim: to give employees and employers in Singapore a calculator that applies the CPF Board’s tables as they are written, all five of them, rather than a single percentage, and that explains every step.</p>
+    <p>SingaporeSalary.com is published by <strong>Radif Partners</strong>, an independent publisher of free payroll and tax calculators for several countries. The site was started in {SITE_FOUNDED} with one aim: to give employees and employers in Singapore a calculator that applies the CPF Board’s tables as they are written, all five of them, rather than a single percentage, and that explains every step.</p>
     <h2>Why this calculator exists</h2>
     <p>Most Singapore salary calculators apply 20 % and 17 % to every salary. That is right for citizens and for PRs from their third year, and wrong for first- and second-year PRs, for older workers, for low wages, for bonuses above the Additional Wage ceiling and for anyone paid more than $8,000 a month. Those are exactly the cases where people need a calculator. We built the engine from the rate tables, the rounding notes and the IRAS rules, and we test it against the examples the CPF Board and IRAS publish.</p>
     <h2>How we work</h2>

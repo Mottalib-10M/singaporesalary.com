@@ -1,6 +1,6 @@
 /** Configuration centrale du site (générée par new-site.py). */
 export const SITE_URL = 'https://singaporesalary.com';
-export const SITE_NAMES: Record<string, string> = {"en": "Singapore Salary"};
+export const SITE_NAMES: Record<string, string> = {"en": "SingaporeSalary.com"};
 export const LANG_TAGS: Record<string, string> = {"en": "en-SG"};
 export const OG_LOCALES: Record<string, string> = {"en": "en_SG"};
 export const LOCALE_TAG = 'en-SG';

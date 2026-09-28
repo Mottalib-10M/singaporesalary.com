@@ -1,4 +1,4 @@
-# Singapore Salary
+# SingaporeSalary.com
 
 > Free Singapore salary, CPF and income tax calculators for 2026, published by Radif Partners. Every rate is read from the CPF Board and IRAS, with the source and date on each page. Calculations run in the browser.
 
