@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -21,6 +22,7 @@ const faqs = [
   intro="A bonus, 13th month or leave encashment is an additional wage. CPF applies to it only up to a ceiling that depends on your ordinary wages for the year."
   resume={`The Additional Wage ceiling limits how much of a bonus attracts CPF in Singapore. It equals the annual salary ceiling of ${formatMoney(C)} minus the total ordinary wages subject to CPF during the calendar year. Because ordinary wages are themselves capped at ${formatMoney(OW)} a month, the ceiling is never lower than ${formatMoney(C - OW * 12)}. A salary of ${formatMoney(5000)} a month uses ${formatMoney(60000)} of the annual ceiling and leaves ${formatMoney(C - 60000)} for bonuses and other additional wages; at ${formatMoney(OW)} a month or more, only ${formatMoney(C - OW * 12)} of any bonus attracts CPF. The part of a bonus above the ceiling is paid without CPF deductions but remains fully taxable. Employers compute the ceiling on an estimate of the year’s ordinary wages when a bonus is paid, and correct it at the end of the year or when the employee leaves.`}
   faqs={faqs} related={['bonus', 'contribution', 'cpfRates', 'employerCost', 'incomeTax', 'payslip']} sources={[SRC.cpf_rates, SRC.iras_cpf_relief, SRC.iras_rates]}>
+  <MiniSim client:visible kind="aw" lang={lang} href={route('bonus', lang)} />
   <h2>Ordinary wages versus additional wages</h2>
   <p>CPF divides pay into two kinds. Ordinary wages are due or granted for employment in the month and paid before the CPF due date: basic salary, fixed allowances, overtime. Additional wages are not granted wholly and exclusively for the month: annual bonuses, the annual wage supplement or 13th month, leave encashment, incentive payments and commissions paid at intervals longer than a month. The distinction matters because the two are capped differently: ordinary wages month by month at {formatMoney(OW)}, additional wages year by year through the AW ceiling.</p>
 

@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -24,6 +25,7 @@ const faqs = [
   intro="Tables 2 to 5 of the CPF Board’s 2026 schedule, which most calculators ignore, with the joint application option and a side-by-side comparison on one salary."
   resume={`A Singapore Permanent Resident does not start at citizen CPF rates. In the first two years of PR status, CPF is due at graduated rates, which the CPF Board sets out in four separate tables. By default both the employer and the employee pay graduated rates: in the first year, 4 % from the employer and 5 % from the employee for those aged 55 and below, and in the second year 9 % and 15 %. The employer and employee may instead apply jointly to pay at full employer rates with graduated employee rates, or at full rates for both. From the third anniversary of PR status, the citizen rates of 17 % and 20 % apply automatically. On a ${formatMoney(sal)} salary at age 30, a first-year PR on graduated rates takes home ${formatMoney(y1.takeHomeMonthly)} a month, against ${formatMoney(full.takeHomeMonthly)} at full rates, but builds up ${formatMoney(full.annual.cpfTotal - y1.annual.cpfTotal)} less in CPF over the year.`}
   faqs={faqs} related={['cpfRates', 'employerCpf', 'cpf', 'home', 'netToGross', 'allocation']} sources={[SRC.cpf_rates, SRC.cpf_alloc, SRC.cpf_2027]}>
+  <MiniSim client:visible kind="spr" lang={lang} href={route('cpf', lang)} />
   <h2>Table 2: first year, graduated rates for both (the default)</h2>
   <ContentTable headers={['Age', 'Employer', 'Employee', 'Total', 'Max. total']} align={['l', 'r', 'r', 'r', 'r']} rows={tbl('SPR1_GG')} />
   <p>The employee share is 5 % at every age, and the employer’s is 4 % up to 60 and 3.5 % above. The maximum total contribution, reached at the {formatMoney(P.cpf.ow_ceiling_month)} ordinary wage ceiling, is {formatMoney(720)}, a quarter of a citizen’s.</p>

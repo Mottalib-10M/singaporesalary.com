@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -22,6 +23,7 @@ const faqs = [
   intro="The IRAS resident scale in full, the cumulative tax at each threshold, how non-residents are taxed and what the rates mean for common monthly salaries."
   resume={`Singapore taxes residents on a progressive scale that runs from 0 % to 24 % of chargeable income, and income earned in ${P.tax.income_year} is assessed in the Year of Assessment ${P.tax.year_of_assessment} at the rates in force since YA 2024. The first $20,000 of chargeable income is tax-free; the next $10,000 is taxed at 2 %, the next $10,000 at 3.5 %, then 7 % up to $80,000, 11.5 % up to $120,000 and 15 % up to $160,000. Rates continue to rise by small steps to 22 % between $320,000 and $500,000, 23 % up to $1 million and 24 % above. Chargeable income is employment income minus reliefs, capped at ${formatMoney(P.tax.relief_cap)} in total. Non-resident employees pay the higher of a flat 15 % on gross employment income or the resident rates. No personal income tax rebate was granted for YA 2026, and none is assumed for YA 2027.`}
   faqs={faqs} related={['incomeTax', 'afterTax', 'reliefs', 'residency', 'bonus', 'home']} sources={[SRC.iras_rates, SRC.iras_eir, SRC.iras_cpf_relief]}>
+  <MiniSim client:visible kind="tax" lang={lang} href={route('incomeTax', lang)} />
   <h2>The resident scale and the tax at each threshold</h2>
   <p>The third column is the total tax due on a chargeable income exactly at the top of the band, which is how IRAS publishes the scale. To find the tax on any income, take the figure for the band below and add the rate times the part above it.</p>
   <ContentTable headers={['Chargeable income', 'Rate', 'Tax at top of band']} align={['l', 'r', 'r']} rows={bandsRows} />

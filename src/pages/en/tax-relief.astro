@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -33,6 +34,7 @@ const faqs = [
   intro="Reliefs are deducted from your income before the tax rates apply. Two are automatic for employees; the others depend on your family and your savings choices."
   resume={`Personal reliefs lower your chargeable income before Singapore’s tax rates are applied, so each dollar of relief saves tax at your marginal rate. Every employee receives two reliefs automatically: the earned income relief, $1,000 below age 55, and the CPF relief, equal to the compulsory employee contributions made in the year. Others must be claimed or are pre-filled from government records: spouse relief of $2,000, qualifying child relief of $4,000 per child, the working mother’s child relief, parent relief of up to $9,000 per parent, NSman relief, and reliefs for cash top-ups to CPF and contributions to the Supplementary Retirement Scheme. The total of all personal reliefs is capped at ${formatMoney(P.tax.relief_cap)} per Year of Assessment. Course fees relief ended after YA 2025. For an employee on ${formatMoney(8000)} a month with a one-month bonus, adding $27,000 of family and savings reliefs reduces the YA ${P.tax.year_of_assessment} bill from ${formatMoney(base.annual.tax)} to ${formatMoney(withRel.annual.tax)}.`}
   faqs={faqs} related={['incomeTax', 'afterTax', 'taxRates', 'retirement', 'residency', 'home']} sources={[SRC.iras_eir, SRC.iras_cpf_relief, SRC.iras_rates]}>
+  <MiniSim client:visible kind="relief" lang={lang} href={route('incomeTax', lang)} />
   <h2>The main reliefs for employees</h2>
   <ContentTable headers={['Relief', 'Amount', 'How it gets on your return']} align={['l', 'l', 'l']} rows={reliefs} />
   <p>“Pre-filled” means IRAS receives the information from MINDEF, the CPF Board or SRS operators and adds the relief to your return; you only need to check it. “Claim” means you enter it yourself, or confirm a relief IRAS carried over from the previous year. The income limit for spouse, child and parent reliefs was raised from $4,000 to $8,000 of the dependant’s annual income, a change that brought many families with a part-time earner back into the reliefs.</p>

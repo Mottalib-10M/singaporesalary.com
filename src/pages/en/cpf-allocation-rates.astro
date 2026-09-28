@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -25,6 +26,7 @@ const faqs = [
   intro="The ratios the CPF Board applies from 1 January 2026, the order in which accounts are credited, and what the split means for housing, retirement and healthcare."
   resume={`CPF allocation rates decide which account receives each dollar of your contribution, and they change with age. From 1 January 2026, a member aged 35 or below has ${formatDecimal(A['35_below'].ma * 100)} % of each contribution credited to MediSave, ${formatDecimal(A['35_below'].sa * 100)} % to the Special Account and the remaining ${formatDecimal(A['35_below'].oa * 100)} % to the Ordinary Account. The Ordinary Account share falls at every step, to ${formatDecimal(A['50_55'].oa * 100)} % above 50 and ${formatDecimal(A['60_65'].oa * 100)} % above 60, while the shares for retirement and healthcare rise. From 55 the Retirement Account replaces the Special Account, which the CPF Board closed for older members in 2025. The CPF Board applies the ratios in a fixed order: MediSave first, then the Special or Retirement Account, and the Ordinary Account takes whatever is left, including the rounding. For a citizen aged 30 on ${formatMoney(5000)} a month, a year of contributions puts ${formatMoney(y.oa)} in the Ordinary Account, ${formatMoney(y.sa)} in the Special Account and ${formatMoney(y.ma)} in MediSave.`}
   faqs={faqs} related={['cpf', 'cpfRates', 'retirement', 'cpf2027', 'home', 'selfEmployed']} sources={[SRC.cpf_alloc, SRC.cpf_rates, SRC.cpf_sums]}>
+  <MiniSim client:visible kind="alloc" lang={lang} href={route('cpf', lang)} />
   <h2>The allocation ratios from 1 January 2026</h2>
   <p>The CPF Board publishes the allocation as ratios of the contribution rather than percentages of wages, which is easier to use: multiply the total contribution by each ratio.</p>
   <ContentTable headers={['Age', 'Ordinary Account', 'Special or Retirement', 'MediSave']} align={['l', 'r', 'r', 'r']} rows={ratio} />

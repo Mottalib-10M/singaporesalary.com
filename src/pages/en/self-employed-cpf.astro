@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -20,6 +21,7 @@ const faqs = [
   intro="Freelancers, sole proprietors and partners do not pay CPF like employees. The obligation is narrower, the timing different, and the retirement gap theirs to close."
   resume={`A self-employed person in Singapore does not pay the 37 % CPF that an employee and employer share. The only compulsory contribution is to MediSave, and it applies to Singapore Citizens and permanent residents whose net trade income for the year exceeds $6,000. Net trade income is the business profit assessed by IRAS: gross income minus allowable business expenses, capital allowances and trade losses. The CPF Board works out the MediSave amount from that figure and the person’s age, and issues a notice once IRAS has assessed the income; there is no separate declaration to make. Payment is due within 30 days of the notice or by instalments. Contributions are fully tax-deductible. Nothing is paid into the Ordinary or Special Account unless the self-employed person chooses to, which is the main reason self-employed Singaporeans reach retirement with smaller CPF balances than employees on the same income.`}
   faqs={faqs} related={['employeeVsSelf', 'cpf', 'reliefs', 'retirement', 'incomeTax', 'cpfRates']} sources={[SRC.cpf_rates, SRC.iras_cpf_relief, SRC.cpf_sums]}>
+  <MiniSim client:visible kind="selfEmp" lang={lang} href={route('incomeTax', lang)} />
   <h2>Who counts as self-employed</h2>
   <p>A self-employed person, for CPF, is someone who earns income from a trade, business, profession or vocation and is in a position to realise a profit or a loss: freelancers, sole proprietors, partners in a partnership, commission-based agents paid as independent contractors, and taxi drivers who rent their vehicle. Directors paid a salary by their own company are employees of that company for CPF purposes, and their director’s salary attracts normal contributions. Platform workers, such as food delivery riders and private-hire drivers, are covered by a separate scheme since 2025, with contributions deducted by the platform operator.</p>
 

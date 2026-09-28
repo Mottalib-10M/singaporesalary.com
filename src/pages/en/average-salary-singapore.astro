@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -21,6 +22,7 @@ const faqs = [
   intro="The Ministry of Manpower’s headline figure includes employer CPF, which confuses most comparisons. This page converts it into a salary, a take-home pay and a tax bill."
   resume={`The typical full-time worker in Singapore earns a little under ${formatMoney(Math.round(grossFromMomMedian / 100) * 100)} a month in gross salary. The Ministry of Manpower reports a median gross monthly income from employment of ${formatMoney(W.mom_median_2025)} for full-time employed residents in June 2025, ${formatPercent(growth)} more than the ${formatMoney(W.mom_median_2024)} of 2024; the 20th percentile stood at ${formatMoney(W.mom_p20_2025)}. These figures include the employer’s CPF contribution. Removing it gives a median salary of about ${formatMoney(grossFromMomMedian)}, which is the number to compare with the gross figure on a payslip. For a citizen aged 30, that salary leaves ${formatMoney(med.takeHomeMonthly)} of take-home pay after the 20 % employee CPF, and an income tax bill of ${formatMoney(med.annual.tax)} for YA ${P.tax.year_of_assessment}. The statistics cover residents only, citizens and permanent residents, and exclude foreign workers.`}
   faqs={faqs} related={['home', 'minimumWage', 'takeHome', 'netToGross', 'afterTax', 'm-6000']} sources={[SRC.mom_income, SRC.cpf_rates, SRC.iras_rates]}>
+  <MiniSim client:visible kind="average" lang={lang} href={route('takeHome', lang)} />
   <h2>From MOM’s income figures to a salary</h2>
   <ContentTable headers={['Measure', 'MOM figure (incl. employer CPF)', 'Equivalent gross salary', 'Take-home, citizen 30']} align={['l', 'r', 'r', 'r']} rows={rows} />
   <p>The conversion removes the employer contribution of 17 %, which applies in full at these salaries. It assumes a worker aged 55 or below; for older workers the employer rate is lower and the gap between the MOM figure and the salary is smaller.</p>

@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -23,6 +24,7 @@ const faqs = [
   intro="The CPF Board has published the rates for wages earned from 1 January 2027. Here is who is affected, by how much, and how to model it in the calculator."
   resume={`CPF contribution rates rise again on 1 January 2027 for employees aged above 55 to 65, the last step of a schedule of increases that began in 2022. For employees above 55 to 60, the total rate goes from ${formatPercent(R26['55_60'].total, 1)} to ${formatPercent(R27['55_60'].total, 1)}, with the employer paying ${formatPercent(R27['55_60'].employer_low, 1)} and the employee ${formatPercent(R27['55_60'].employee, 1)}. For employees above 60 to 65, it goes from ${formatPercent(R26['60_65'].total, 1)} to ${formatPercent(R27['60_65'].total, 1)}, split equally at 13 %. The extra contributions are credited in full to the Retirement Account up to the Full Retirement Sum. Nothing changes for employees aged 55 and below or above 65, and the graduated rates for first- and second-year permanent residents stay as they are. For a 58-year-old earning ${formatMoney(5000)} a month, take-home pay falls by ${formatMoney(e58.takeHomeMonthly - e58b.takeHomeMonthly)} and CPF savings grow by ${formatMoney((e58b.monthly.total - e58.monthly.total) * 12)} a year.`}
   faqs={faqs} related={['cpfRates', 'employerCpf', 'retirement', 'allocation', 'cpf', 'employerCost']} sources={[SRC.cpf_2027, SRC.cpf_rates, SRC.cpf_sums]}>
+  <MiniSim client:visible kind="cpf2027" lang={lang} href={route('contribution', lang)} />
   <h2>The rates from 1 January 2027</h2>
   <ContentTable headers={['Age', 'Total 2026', 'Total 2027', 'Employee 2026', 'Employee 2027', 'Employer 2026', 'Employer 2027']} align={['l', 'r', 'r', 'r', 'r', 'r', 'r']} rows={rows} />
   <p>The maximum monthly contribution, reached at the {formatMoney(P.cpf.ow_ceiling_month)} ceiling, rises accordingly: to {formatMoney(Math.round(R27['55_60'].total * 8000))} in total above 55 to 60 and {formatMoney(Math.round(R27['60_65'].total * 8000))} above 60 to 65. Workers earning between $500 and $750 a month also see their phased-in rates rise in proportion, according to the CPF Board.</p>

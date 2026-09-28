@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -20,6 +21,7 @@ const faqs = [
   intro="Residency decides whether you get reliefs and progressive rates or a flat 15 %. For foreigners on a first assignment, it can move the tax bill by several thousand dollars."
   resume={`Your tax residency, not your nationality, decides how Singapore taxes your salary. Citizens and permanent residents living in Singapore are residents. A foreigner is resident for a year of assessment after staying or working in Singapore for at least 183 days in the previous calendar year, or under the two-year and three-year administrative concessions. Residents are taxed at progressive rates from 0 % to 24 % after personal reliefs. Non-resident employees get no reliefs and pay the higher of a flat 15 % on gross employment income or the resident rates applied to the same gross; director’s fees and most other income of non-residents are taxed at 24 %. On ${formatMoney(96000)} a year, a resident foreigner owes ${formatMoney(ex(8000, { status: 'FOREIGNER' }).annual.tax)} while a non-resident owes ${formatMoney(ex(8000, { status: 'FOREIGNER', resident: false }).annual.tax)}, which is why the timing of an arrival or a departure can matter as much as the salary itself.`}
   faqs={faqs} related={['incomeTax', 'taxRates', 'afterTax', 'reliefs', 'employeeVsSelf', 'home']} sources={[SRC.iras_rates, SRC.iras_eir, SRC.mom_income]}>
+  <MiniSim client:visible kind="nonres" lang={lang} href={route('incomeTax', lang)} />
   <h2>The residency tests</h2>
   <p>IRAS looks at the calendar year before the Year of Assessment. You are a tax resident if you are a Singapore Citizen or PR residing in Singapore except for temporary absences, or a foreigner who stayed or worked here for 183 days or more in that year. Days of physical presence count, including the days of arrival and departure. The test is applied year by year, which creates two problems for foreigners who arrive or leave mid-year, and IRAS solves them with concessions.</p>
   <p><strong>The two-year concession</strong> covers someone whose continuous stay spans two calendar years and totals at least 183 days, for example from 1 October 2025 to 30 April 2026. They are treated as resident for both years, even though neither year alone reaches 183 days. <strong>The three-year concession</strong> covers foreigners who work in Singapore for three consecutive years: they are resident for all three, including a short first or last year. Both are administrative concessions rather than law, and they do not apply to directors in some cases.</p>

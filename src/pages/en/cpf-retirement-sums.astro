@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -20,6 +21,7 @@ const faqs = [
   intro="At 55, your Special and Ordinary Account savings move into a Retirement Account that funds lifelong payouts. The amount set aside is measured against three reference sums."
   resume={`Every CPF member turning 55 has a Retirement Account created, and savings from the Special and Ordinary Accounts are moved into it up to a reference amount. For members turning 55 in 2026, the Basic Retirement Sum is ${formatMoney(S.brs)}, the Full Retirement Sum ${formatMoney(S.frs)} and the Enhanced Retirement Sum ${formatMoney(S.ers)}. The Full Retirement Sum is the default target; members who own a property with a lease lasting until at least age 95 can keep only the Basic Retirement Sum and withdraw the rest; members who want higher payouts can top up to the Enhanced sum. From 65, the Retirement Account funds CPF LIFE, an annuity that pays a monthly income for life. Since January 2025 the Special Account is closed at 55, and from 2027 the higher contribution rates for employees aged 55 to 65 are credited to the Retirement Account.`}
   faqs={faqs} related={['allocation', 'cpf2027', 'cpfRates', 'cpf', 'reliefs', 'selfEmployed']} sources={[SRC.cpf_sums, SRC.cpf_alloc, SRC.cpf_2027]}>
+  <MiniSim client:visible kind="retirement" lang={lang} href={route('cpf', lang)} />
   <h2>The three sums for 2026</h2>
   <ContentTable headers={['Sum', 'Amount for members turning 55 in 2026', 'What it means']} align={['l', 'r', 'l']} rows={[
     ['Basic Retirement Sum (BRS)', formatMoney(S.brs), 'minimum to set aside if you own a property lasting to 95'],

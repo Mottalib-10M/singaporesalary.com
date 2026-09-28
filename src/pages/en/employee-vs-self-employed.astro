@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -31,6 +32,7 @@ const faqs = [
   intro="A freelance offer often looks better on paper. The comparison only holds if you put the employer’s CPF, the leave you lose and the tax timing on the same page."
   resume={`The choice between a salaried job and self-employment in Singapore is mostly a choice about CPF and protection, not about tax rates. An employee on ${formatMoney(7000)} a month with a one-month bonus costs the employer ${formatMoney(cost)} a year once employer CPF and the Skills Development Levy are added. A freelancer paid that full amount by a client, with ${formatMoney(expenses)} of business expenses, keeps more cash in the year, because only MediSave is compulsory and no employer share is diverted into CPF. But the salaried employee receives ${formatMoney(salaried.annual.cpfEmployer)} of employer CPF, paid annual leave, sick leave, public holidays and the protections of the Employment Act, none of which a self-employed person has. A fair freelance rate therefore has to exceed the employer’s cost by enough to fund unpaid leave, insurance and voluntary CPF savings.`}
   faqs={faqs} related={['selfEmployed', 'employerCost', 'afterTax', 'hourly', 'reliefs', 'home']} sources={[SRC.cpf_rates, SRC.sdl, SRC.iras_rates]}>
+  <MiniSim client:visible kind="employeeVsSelf" lang={lang} href={route('afterTax', lang)} />
   <h2>One budget, two statuses</h2>
   <p>The comparison below keeps the client’s budget constant: the employer’s full annual cost for a {formatMoney(7000)}-a-month employee aged 30 with a one-month bonus, paid either as salary or as fees to a freelancer.</p>
   <ContentTable headers={['Item', 'Employee', 'Self-employed']} align={['l', 'r', 'r']} rows={rows} />

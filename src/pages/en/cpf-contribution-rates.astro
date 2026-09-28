@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -24,6 +25,7 @@ const faqs = [
   intro="The CPF Board’s table 1 for 2026, set out in full with the wage bands, the maximum contributions at the $8,000 ceiling and the examples that show how they combine."
   resume={`CPF contribution rates for 2026 depend on age and wage level. For Singapore Citizens and permanent residents from their third year who earn more than $750 a month, the total contribution is 37 % of wages up to age 55, of which the employer pays 17 % and the employee 20 %. It falls to 34 % above 55, 25 % above 60, 16.5 % above 65 and 12.5 % above 70. The percentages apply to ordinary wages up to $8,000 a month, so the maximum monthly contribution at 55 or below is $2,960, including $1,600 from the employee. Below $750 of monthly wages the employee share phases in, and below $500 only the employer contributes. First- and second-year PRs have their own graduated tables. The figures on this page are those published by the CPF Board for wages paid from 1 January 2026, read on ${P.retrieved_at}.`}
   faqs={faqs} related={['cpf', 'contribution', 'sprRates', 'allocation', 'cpf2027', 'awCeiling']} sources={[SRC.cpf_rates, SRC.cpf_2027, SRC.cpf_alloc]}>
+  <MiniSim client:visible kind="cpf" lang={lang} href={route('cpf', lang)} />
   <h2>Table 1: citizens and PRs from the third year, wages above $750</h2>
   <p>This is the table that applies to most employees. The last two columns are the maximum monthly contributions on ordinary wages, reached at the {formatMoney(P.cpf.ow_ceiling_month)} ceiling.</p>
   <ContentTable headers={['Employee’s age', 'Employer', 'Employee', 'Total', 'Max. total', 'Max. employee']} align={['l', 'r', 'r', 'r', 'r', 'r']} rows={main} />

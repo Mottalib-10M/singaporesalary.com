@@ -1,4 +1,5 @@
 ---
+import MiniSim from '../../components/calc/MiniSim';
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
@@ -29,6 +30,7 @@ const faqs = [
   intro="A worked payslip with every line explained, the items the Employment Act makes compulsory, and the checks that catch the most common payroll errors."
   resume={`A Singapore payslip starts from the basic salary, adds allowances and overtime to reach gross pay, and deducts the employee’s CPF contribution and a few optional items to reach the net salary paid. Income tax is not deducted, because Singapore does not withhold tax on most salaries. On a basic salary of ${formatMoney(basic)} with a ${formatMoney(allowance)} transport allowance and ${formatMoney(ot)} of overtime, a 32-year-old citizen has ${formatMoney(ow)} of gross pay, contributes ${formatMoney(c.employee)} to CPF and, after a small self-help group contribution, receives ${formatMoney(ow - c.employee - 2)}. The employer’s CPF of ${formatMoney(c.employer)} appears on the payslip for information but is not deducted from pay. The Employment Act requires an itemised payslip with these details, issued with or within three working days of the salary.`}
   faqs={faqs} related={['takeHome', 'cpf', 'hourly', 'contribution', 'awCeiling', 'home']} sources={[SRC.cpf_rates, SRC.mom_hourly, SRC.iras_rates]}>
+  <MiniSim client:visible kind="payslip" lang={lang} href={route('takeHome', lang)} />
   <h2>A worked example</h2>
   <ContentTable headers={['Payslip line', 'Amount']} align={['l', 'r']} rows={lines} />
   <p>Overtime is computed on the hourly basic rate, 12 × basic salary ÷ (52 × 44), and paid at 1.5 times for employees covered by Part IV of the Employment Act. Here, 6 hours at 1.5 × {formatMoney(12 * basic / (52 * 44), 2)} gives about {formatMoney(6 * 1.5 * 12 * basic / (52 * 44))}; the example rounds it to {formatMoney(ot)}.</p>
