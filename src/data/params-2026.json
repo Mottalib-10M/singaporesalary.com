@@ -70,6 +70,18 @@
       "label": {
         "en": "Ministry of Manpower: Employment Pass (qualifying salary)"
       }
+    },
+    "mom_incomplete": {
+      "url": "https://www.mom.gov.sg/employment-practices/salary/calculate-pay-for-incomplete-month",
+      "label": {
+        "en": "Ministry of Manpower: pay for an incomplete month of work"
+      }
+    },
+    "mom_daily": {
+      "url": "https://www.mom.gov.sg/employment-practices/salary/monthly-and-daily-salary",
+      "label": {
+        "en": "Ministry of Manpower: monthly and daily salary, gross and basic rates of pay"
+      }
     }
   },
   "cpf": {
