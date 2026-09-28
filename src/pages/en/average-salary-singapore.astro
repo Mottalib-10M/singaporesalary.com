@@ -2,13 +2,11 @@
 import Guide from '../../components/Guide.astro';
 import ContentTable from '../../components/ContentTable.astro';
 import { route } from '../../i18n/routes';
-import { ex, cpf, P } from '../../lib/tables';
+import { ex, cpf, P, grossFromMomMedian } from '../../lib/tables';
 import { SRC } from '../../lib/sources';
 import { formatMoney, formatPercent } from '../../lib/format';
 const lang = 'en';
 const W = P.wages;
-// La médiane MOM inclut le CPF employeur : on retrouve le salaire brut correspondant (salaire + 17 % sous le plafond).
-const grossFromMomMedian = (() => { let lo = 0, hi = W.mom_median_2025; for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (m + cpf(m).employer < W.mom_median_2025) lo = m; else hi = m; } return Math.round(hi); })();
 const med = ex(grossFromMomMedian);
 const growth = W.mom_median_2025 / W.mom_median_2024 - 1;
 const rows = [[W.mom_p20_2025, '20th percentile (P20)'], [W.mom_median_2025, 'Median'], [W.mom_median_2024, 'Median, 2024']].map(([v, lab]) => { let lo = 0, hi = v as number; for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (m + cpf(m).employer < (v as number)) lo = m; else hi = m; } const g = Math.round(hi); const r = ex(g); return [lab as string, formatMoney(v as number), formatMoney(g), formatMoney(r.takeHomeMonthly)]; });

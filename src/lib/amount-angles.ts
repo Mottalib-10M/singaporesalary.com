@@ -4,6 +4,7 @@
  */
 import { compute, monthlyFromHourly, hourlyFromMonthly, residentTax, sdlMonth } from './engine/sg';
 import P from '../data/params-2026.json';
+import { grossFromMomMedian } from './tables';
 import { formatMoney as $, formatPercent as pct } from './format';
 
 export interface Angle { title: string; description: string; h1: string; h2: string; p: string; h2b: string; p2: string; faqs: Array<{ q: string; a: string }> }
@@ -44,7 +45,7 @@ export function monthlyAngle(m: number): Angle {
       h2b: 'What a raise to $3,500 would change',
       p2: `A ${$(500)} raise adds ${$(c(3500).takeHomeMonthly - r.takeHomeMonthly)} to monthly take-home pay and ${$(c(3500).annual.tax - r.annual.tax)} to the annual tax, because the extra income crosses into the 3.5 % band. The employer’s cost rises by ${$(c(3500).annual.employerCost - r.annual.employerCost)} a year.`,
       faqs: [
-        { q: 'Is $3,000 a good salary in Singapore?', a: `It is below the median. MOM’s median gross monthly income for full-time residents was ${$(W.mom_median_2025)} in 2025, including employer CPF, which corresponds to a salary of about ${$(4900)}. ${$(3000)} is typical for a first job after a diploma or in retail and service roles, and leaves ${$(r.takeHomeMonthly)} a month after CPF.` },
+        { q: 'Is $3,000 a good salary in Singapore?', a: `It is below the median. MOM’s median gross monthly income for full-time residents was ${$(W.mom_median_2025)} in 2025, including employer CPF, which corresponds to a salary of about ${$(Math.round(grossFromMomMedian / 100) * 100)}. ${$(3000)} is typical for a first job after a diploma or in retail and service roles, and leaves ${$(r.takeHomeMonthly)} a month after CPF.` },
         { q: 'Can a foreigner be hired on $3,000 a month?', a: `Not on an S Pass or Employment Pass: new S Pass applications have required at least ${$(W.spass_min)} a month since 1 September 2025, higher in financial services and for older candidates, and the Employment Pass requires at least ${$(W.ep_min)}. Work Permits have no qualifying salary but are limited to specific sectors and nationalities.` },
         { q: 'What does $3,000 cost my employer?', a: `${$(r.annual.employerCost)} a year for a citizen aged 30: ${$(36000)} of salary, ${$(r.annual.cpfEmployer)} of employer CPF and ${$(r.annual.sdl, 2)} of Skills Development Levy. Insurance, bonuses and other benefits come on top and depend on the company, and a foreign hire at this salary is not possible on an S Pass.` },
       ],
@@ -252,7 +253,7 @@ export function hourlyAngle(h: number): Angle {
       faqs: [
         { q: 'What is $20 an hour in monthly salary in Singapore?', a: `${$(m)} a month for a full-time 44-hour week, based on MOM’s formula, or ${$(m * 12)} a year. A citizen aged 30 takes home ${$(r.takeHomeMonthly)} a month after CPF and owes about ${$(r.annual.tax)} of income tax for the year, while the employer adds ${$(r.monthly.employer)} a month of CPF.` },
         { q: 'Am I entitled to overtime at $20 an hour?', a: `If you are a workman, yes, because the monthly equivalent of ${$(m)} is below the ${$(W.workman_ot_ceiling)} limit of Part IV of the Employment Act; overtime is paid at ${$(30, 2)} an hour. If you are not a workman, the Act covers you only up to ${$(W.nonworkman_ot_ceiling)} a month, so it depends on your contract.` },
-        { q: 'Is $20 an hour a good wage in Singapore?', a: `Its full-time equivalent, ${$(m)} a month, is below the median salary of about ${$(4900)} implied by MOM’s 2025 figures, but well above the ${$(W.lqs_monthly)} Local Qualifying Salary. It is typical of skilled trade, technical and experienced service roles, and overtime can lift monthly earnings for workmen covered by the Employment Act.` },
+        { q: 'Is $20 an hour a good wage in Singapore?', a: `Its full-time equivalent, ${$(m)} a month, is below the median salary of about ${$(Math.round(grossFromMomMedian / 100) * 100)} implied by MOM’s 2025 figures, but well above the ${$(W.lqs_monthly)} Local Qualifying Salary. It is typical of skilled trade, technical and experienced service roles, and overtime can lift monthly earnings for workmen covered by the Employment Act.` },
       ],
     }),
     30: () => ({
