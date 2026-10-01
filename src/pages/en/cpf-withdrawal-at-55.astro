@@ -1,0 +1,49 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { withdrawalAt55 } from '../../lib/engine/sg';
+const RS = P.cpf.retirement_sums_2026; const W = P.cpf_withdrawal;
+const ex = withdrawalAt55({ oa: 150000, sa: 120000 });
+const rows = ([[2000, 1500], [40000, 30000], [90000, 70000], [130000, 90400], [150000, 120000], [300000, 200000]] as const).map(([o, s]) => { const w = withdrawalAt55({ oa: o, sa: s }); return [formatMoney(o), formatMoney(s), formatMoney(w.total), formatMoney(w.ra), formatMoney(w.withdrawable)]; });
+const faqs = [
+  { q: 'How much CPF can I withdraw at 55?', a: `At least ${formatMoney(W.unconditional)}, or your whole balance if it is smaller. If your Ordinary and Special Account savings exceed the Full Retirement Sum, ${formatMoney(RS.frs)} for members turning 55 in 2026, you can also withdraw everything above it. With ${formatMoney(150000)} and ${formatMoney(120000)}, that is ${formatMoney(ex.withdrawable)}.` },
+  { q: 'Why can I not withdraw all my CPF at 55?', a: `Because a Retirement Account is created on your 55th birthday and filled from your Special and then Ordinary Account, up to the Full Retirement Sum. That money funds CPF LIFE, the annuity that pays a monthly income for life from 65. Only savings beyond the retirement sum, and the first ${formatMoney(W.unconditional)}, are free to take out.` },
+  { q: 'Can I withdraw more if I own a property?', a: `Yes. A member who owns a property with a remaining lease that lasts to at least age 95 may keep only the Basic Retirement Sum of ${formatMoney(RS.brs)} in the Retirement Account and withdraw the savings above it. The property is then pledged or charged for the difference, which returns to CPF if the home is sold.` },
+  { q: 'Is a CPF withdrawal taxable?', a: 'No. CPF withdrawals are not income and are not taxed in Singapore, whether taken at 55, as monthly payouts or on leaving the country permanently. There is no deadline either: money you do not withdraw stays in your accounts and continues to earn CPF interest, and you can take it out later in as many withdrawals as you like.' },
+];
+---
+<Guide id="withdraw55" title="CPF Withdrawal at 55 (2026): How Much You Can Take Out" h1="CPF withdrawal at 55: how much you can take out"
+  description="How much CPF you can withdraw at 55 in 2026: the first $5,000, savings above the Full Retirement Sum of $220,400, the property pledge, the Retirement Account."
+  intro="At 55, part of your CPF becomes withdrawable and the rest is set aside for retirement. Enter your Ordinary and Special Account balances."
+  resume={`When a CPF member turns ${W.age}, a Retirement Account is opened and savings from the Special Account, then the Ordinary Account, are transferred into it up to the Full Retirement Sum, which is ${formatMoney(RS.frs)} for members reaching 55 in 2026. The member may then withdraw ${formatMoney(W.unconditional)}, or the whole balance if lower, plus any Ordinary and Special Account savings above the Full Retirement Sum. A member with ${formatMoney(150000)} in the Ordinary Account and ${formatMoney(120000)} in the Special Account sets aside ${formatMoney(ex.ra)} and may withdraw ${formatMoney(ex.withdrawable)}. Property owners may choose to set aside only the Basic Retirement Sum of ${formatMoney(RS.brs)}. Withdrawals are optional, tax-free and can be made at any time and in any number. The Retirement Account pays a monthly income for life under CPF LIFE from age 65.`}
+  faqs={faqs} related={['retirement', 'cpfInterest', 'topUp', 'cpf', 'allocation', 'cpf2027']} sources={[SRC.cpf_withdraw55, SRC.cpf_sums, SRC.cpf_interest]}>
+  <MiniSim client:visible kind="withdraw55" lang={lang} href={route('retirement', lang)} />
+  <h2>Withdrawable amounts for different balances</h2>
+  <ContentTable headers={['Ordinary Account', 'Special Account', 'Total', 'To the Retirement Account', 'Withdrawable']} align={['r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The fourth row is the turning point: a total exactly equal to the Full Retirement Sum still allows {formatMoney(W.unconditional)} to be taken, which leaves the Retirement Account slightly short. Below that total, {formatMoney(W.unconditional)} is the limit; above it, the excess is fully available. The table assumes no property pledge.</p>
+
+  <h2>What happens on your 55th birthday</h2>
+  <p>Three things happen automatically. The Retirement Account is created. Special Account savings are transferred to it first, then Ordinary Account savings, until it holds the Full Retirement Sum. And, since January 2025, the Special Account is closed: anything left in it after the transfer goes to the Ordinary Account, where it earns {formatPercent(P.cpf_interest.oa, 1)} rather than {formatPercent(P.cpf_interest.sma, 0)} but becomes withdrawable. MediSave is not touched and remains reserved for healthcare.</p>
+  <p>The retirement sum that applies to you is the one in force in the year you turn 55, and it does not change afterwards. The sums rise each year for later cohorts.</p>
+
+  <h2>The three retirement sums</h2>
+  <p>The Basic Retirement Sum is {formatMoney(RS.brs)} for the 2026 cohort, the Full Retirement Sum is twice that, {formatMoney(RS.frs)}, and the Enhanced Retirement Sum is four times the basic sum, {formatMoney(RS.ers)}. Nobody is required to top up in cash if their savings fall short of the Full Retirement Sum: the Retirement Account simply holds what there is, and payouts are lower. Topping up beyond the Full Retirement Sum, to the Enhanced one, is a choice that raises the lifelong income. The <a href={route('retirement', lang)}>retirement sums guide</a> gives the payouts each level supports.</p>
+
+  <h2>Owning a home changes the amount</h2>
+  <p>CPF savings used for a property still count. If you own a home with a lease that runs to at least 95 and you want to withdraw more, you can apply to keep only the Basic Retirement Sum in cash in the Retirement Account. The amount of CPF used for the property, up to the difference between the basic and full sums, stands as a pledge. If the property is sold, the pledged amount is refunded to the Retirement Account from the sale proceeds. Members without a property, or with a short lease, keep the full sum in cash.</p>
+
+  <h2>Money used for housing and investments</h2>
+  <p>Ordinary Account savings already withdrawn for a home, or invested under the CPF Investment Scheme, are not in the account on your birthday and cannot be transferred. The Retirement Account is filled from what remains in cash. This is why many home owners reach 55 with a Retirement Account well below the Full Retirement Sum and with only the {formatMoney(W.unconditional)} to withdraw: their savings are in the property, and the refund comes back to CPF, principal and accrued interest, if the home is sold.</p>
+
+  <h2>Leaving it in or taking it out</h2>
+  <p>Withdrawable savings left in CPF earn up to {formatPercent(P.cpf_interest.sma + P.cpf_interest.extra55_rate, 0)} a year on the first {formatMoney(P.cpf_interest.extra55_first)} of combined balances from age 55, and can be withdrawn later through PayNow within a day, so the accounts work as a high-yield reserve. Money taken out and placed in a bank deposit earns the bank’s rate. The <a href={route('cpfInterest', lang)}>CPF interest calculator</a> shows what a balance earns. Withdrawals are made online, with a default daily limit that can be raised to $50,000.</p>
+
+  <h2>From 55 to 65: working, contributing, payouts</h2>
+  <p>Employment contributions continue after 55 at lower rates, which are being raised in steps; the <a href={route('cpf2027', lang)}>2027 changes</a> lift them again for workers aged 55 to 65. New contributions that reach the Ordinary Account are withdrawable once the retirement sum has been met. At 65, the payout eligibility age, CPF LIFE starts paying a monthly income for as long as you live; payouts can be deferred up to 70, each year of delay increasing them by up to 7 %. Members who leave Singapore and West Malaysia permanently and renounce citizenship or permanent residence may withdraw their entire CPF balance at any age.</p>
+</Guide>

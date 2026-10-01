@@ -1,0 +1,52 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { sickLeave, dailyRate } from '../../lib/engine/sg';
+const S = P.employment.sick_leave;
+const rows = S.prorate.map((r) => [r.months === 6 ? '6 months or more' : `${r.months} months`, `${r.outpatient} days`, `${r.hospitalisation} days`]);
+const val = [2500, 4000, 6000, 9000].map((m) => [formatMoney(m), formatMoney(dailyRate(m), 2), formatMoney(dailyRate(m) * S.outpatient), formatMoney(dailyRate(m) * S.hospitalisation)]);
+const faqs = [
+  { q: 'How many days of medical leave do I get in Singapore?', a: `Up to ${S.outpatient} days of paid outpatient sick leave and up to ${S.hospitalisation} days of paid hospitalisation leave a year, once you have worked 6 months for your employer. The ${S.hospitalisation} days include the ${S.outpatient} outpatient days, so someone who has used all ${S.outpatient} has ${S.hospitalisation - S.outpatient} days of hospitalisation leave left.` },
+  { q: 'Can I take paid sick leave during probation?', a: `After 3 months of service, yes, in part: ${S.prorate[0].outpatient} days of outpatient and ${S.prorate[0].hospitalisation} days of hospitalisation leave at 3 months, ${S.prorate[1].outpatient} and ${S.prorate[1].hospitalisation} at 4 months, ${S.prorate[2].outpatient} and ${S.prorate[2].hospitalisation} at 5 months. Before 3 months there is no statutory paid sick leave, and absence with a medical certificate is unpaid unless the contract is more generous.` },
+  { q: 'Do I need an MC for medical leave to be paid?', a: 'Yes. Sick leave is paid when a medical practitioner registered under the Medical Registration Act or the Dental Registration Act certifies you unfit for work, and you inform or try to inform your employer within 48 hours. A certificate from any registered doctor is valid, including one issued after a teleconsultation, not only one from a company-appointed clinic.' },
+  { q: 'Does my employer have to pay my medical fees?', a: 'For employees with at least 3 months of service, the employer must bear the medical consultation fee when the visit results in paid sick leave. Other costs, such as medication, treatment and ward charges, are covered only as far as the contract, company medical benefits or collective agreement provide.' },
+];
+---
+<Guide id="sickLeave" title="Medical Leave Singapore 2026: 14 Days Sick, 60 Hospital" h1="Medical leave in Singapore: paid sick and hospitalisation leave"
+  description="Paid medical leave in Singapore under the Employment Act: 14 days of outpatient sick leave, 60 days of hospitalisation leave, pro-rated from 3 months’ service."
+  intro="Sick leave is paid from three months of service and in full from six. Enter your months of service and salary to see your entitlement."
+  resume={`Employees in Singapore covered by the Employment Act are entitled to paid sick leave once they have worked for their employer for at least 3 months. The full yearly entitlement, reached at 6 months of service, is ${S.outpatient} days of paid outpatient sick leave and ${S.hospitalisation} days of paid hospitalisation leave, the second figure including the first. Between 3 and 6 months the entitlement is pro-rated: ${S.prorate[0].outpatient} and ${S.prorate[0].hospitalisation} days after 3 months, ${S.prorate[1].outpatient} and ${S.prorate[1].hospitalisation} after 4, ${S.prorate[2].outpatient} and ${S.prorate[2].hospitalisation} after 5. A day of sick leave is paid at the gross rate of pay, ${formatMoney(dailyRate(4000), 2)} on a monthly salary of ${formatMoney(4000)} and a five-day week. The leave must be certified by a registered doctor, and the employee must inform the employer within 48 hours. Unused sick leave cannot be carried forward or encashed.`}
+  faqs={faqs} related={['annualLeave', 'maternity', 'publicHoliday', 'proRated', 'selfEmployed', 'payslip']} sources={[SRC.mom_sick, SRC.mom_daily, SRC.mom_annual_leave]}>
+  <MiniSim client:visible kind="sick" lang={lang} href={route('takeHome', lang)} />
+  <h2>Entitlement by months of service</h2>
+  <ContentTable headers={['Service completed', 'Paid outpatient sick leave', 'Paid hospitalisation leave (outpatient days included)']} align={['l', 'r', 'r']} rows={rows} />
+  <p>The month of service begins on the day you start work. The entitlement is for each year of service; it does not accumulate from one year to the next.</p>
+
+  <h2>What sick leave is worth</h2>
+  <ContentTable headers={['Monthly gross', 'Pay per sick day, 5-day week', `${S.outpatient} outpatient days`, `${S.hospitalisation} days in all`]} align={['r', 'r', 'r', 'r']} rows={val} />
+  <p>For a monthly-paid employee nothing changes on the payslip: salary continues as if the days had been worked. The values show what the entitlement represents, and what an hourly or daily-rated employee receives. For outpatient sick leave, the gross rate of pay is taken without any shift allowance; for hospitalisation leave it is the full gross rate.</p>
+
+  <h2>Outpatient or hospitalisation leave</h2>
+  <p>Outpatient sick leave covers ordinary illness certified by a doctor without admission. Hospitalisation leave applies when you are warded, and also when a doctor certifies that you need to be hospitalised or need rest or further medical treatment after discharge, even if that rest is at home. Day surgery, quarantine under any written law and certified bed rest count as hospitalisation leave. Since 2019, a certificate from any registered medical practitioner is sufficient for both kinds, where before only public or company-approved doctors could certify hospitalisation leave.</p>
+
+  <h2>Sick leave on a rest day, holiday or annual leave</h2>
+  <p>You are not entitled to paid sick leave on rest days, public holidays, non-working days, or days of annual or unpaid leave, since you were not due to work. If you fall sick during annual leave, the employer may, but need not, convert those days to sick leave. Sick leave during a notice period is paid as usual and does not extend the notice.</p>
+
+  <h2>When the entitlement runs out</h2>
+  <p>Beyond the statutory days, pay depends on the contract. Many employers offer extended or prolonged illness leave at half pay or no pay; civil service and unionised schemes are often more generous. Dismissal of an employee on long medical leave is permitted with notice, but an employee who believes it was unfair can bring a wrongful dismissal claim within one month. Work injuries are a separate system: under the Work Injury Compensation Act the employer’s insurer pays medical leave wages, at full average monthly earnings for up to 14 days of outpatient leave or 60 days of hospitalisation leave, and two thirds thereafter up to a year.</p>
+
+  <h2>Informing your employer</h2>
+  <p>The Act gives 48 hours to inform, or attempt to inform, the employer of the absence; without that, the employee is treated as absent without permission and the day is unpaid. A message to a supervisor on the first morning, followed by the certificate on return, satisfies the rule. An employer may not reject a certificate from a registered doctor or insist on a home visit, but may reasonably ask for the original and may investigate a suspected false certificate, which is a ground for dismissal after inquiry.</p>
+
+  <h2>CPF and tax during sick leave</h2>
+  <p>Sick pay is wages. CPF contributions and income tax apply exactly as on worked days, and the Ordinary Wage ceiling of {formatMoney(P.cpf.ow_ceiling_month)} a month is unchanged. MediSave, the CPF account built from part of each contribution, can pay for hospital stays and some outpatient treatment; the <a href={route('allocation', lang)}>CPF allocation rates</a> show how much of your contribution goes there at each age.</p>
+
+  <h2>Part-timers and self-employed people</h2>
+  <p>A part-time employee’s sick leave is pro-rated by hours: the part-timer’s yearly hours over a full-timer’s, times the full-time entitlement in days, times the full-timer’s daily hours, giving an entitlement in hours. Self-employed people have no statutory sick leave; their protection is their own insurance and their MediSave, as the <a href={route('selfEmployed', lang)}>self-employed CPF guide</a> explains.</p>
+</Guide>

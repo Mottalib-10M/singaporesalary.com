@@ -1,0 +1,51 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { noticePeriod, dailyRate } from '../../lib/engine/sg';
+const N = P.employment.notice;
+const rows = N.map((r) => { const n = noticePeriod({ serviceWeeks: (r.service_weeks_below ?? 400) - 1, monthly: 4500 }); return [r.label, r.weeks ? `${r.weeks} week${r.weeks > 1 ? 's' : ''}` : '1 day', formatMoney(n.inLieu, 2)]; });
+const ex = noticePeriod({ serviceWeeks: 150, monthly: 4500 });
+const month = [3000, 4500, 6000, 9000].map((m) => [formatMoney(m), formatMoney(dailyRate(m), 2), formatMoney(dailyRate(m) * 10, 2), formatMoney(m), formatMoney(m * 2), formatMoney(m * 3)]);
+const faqs = [
+  { q: 'What is the notice period in Singapore if my contract does not say?', a: `The Employment Act then sets it by length of service: 1 day for less than 26 weeks, 1 week for 26 weeks to under 2 years, 2 weeks for 2 to under 5 years, and 4 weeks for 5 years or more. The same period applies to employer and employee. A notice period written in the contract takes precedence over these figures.` },
+  { q: 'How is salary in lieu of notice calculated?', a: `It is the gross salary you would have earned during the notice not served. For whole months, it is the monthly gross pay. For part of a month, MOM uses the daily gross rate: 12 times monthly pay divided by 52 times your working days a week. Two weeks on ${formatMoney(4500)} and a five-day week come to ${formatMoney(ex.inLieu, 2)}.` },
+  { q: 'Can I use annual leave to shorten my notice?', a: 'Yes. You can apply leave to offset the notice, which brings your last day forward by the number of leave days; you are paid up to that earlier date and the leave used is not paid again. Alternatively, with your employer’s agreement, you take leave during the notice and remain employed until the original last day.' },
+  { q: 'Is CPF payable on salary in lieu of notice?', a: 'No. When the employer pays it to the employee, notice pay is not wages for work done, so the CPF Board requires no contributions from either side. It is, however, taxable: IRAS treats salary in lieu of notice as employment income of the year. When the employee pays the employer to leave early, the amount is simply a payment out of pocket.' },
+];
+---
+<Guide id="noticePeriod" title="Notice Period Calculator Singapore 2026: Pay in Lieu" h1="Notice period calculator: statutory notice and salary in lieu"
+  description="Find your notice period under Singapore’s Employment Act when the contract is silent, 1 day to 4 weeks by service, and calculate salary in lieu of notice."
+  intro="Notice follows your contract, or the Employment Act when the contract says nothing. Choose your length of service and salary."
+  resume={`In Singapore, the notice period for ending an employment contract is the one written in the contract, and it must be the same for employer and employee. When the contract is silent, the Employment Act sets it by length of service: 1 day for less than 26 weeks, 1 week for 26 weeks to less than 2 years, 2 weeks for 2 years to less than 5 years, and 4 weeks for 5 years or more. Either party may end the contract at once by paying salary in lieu of notice, equal to the gross salary for the notice period not served. With a monthly gross salary of ${formatMoney(4500)}, two weeks of notice on a five-day week are worth ${formatMoney(ex.inLieu, 2)}. Notice must be given in writing, the day it is given counts as the first day, and it can be waived if both sides agree.`}
+  faqs={faqs} related={['encashLeave', 'retrenchment', 'proRated', 'annualLeave', 'takeHome', 'payslip']} sources={[SRC.mom_notice, SRC.mom_daily, SRC.mom_encash]}>
+  <MiniSim client:visible kind="notice" lang={lang} href={route('encashLeave', lang)} />
+  <h2>Statutory notice by length of service</h2>
+  <ContentTable headers={['Length of service', 'Notice', `Salary in lieu on ${formatMoney(4500)}, 5-day week`]} align={['l', 'l', 'r']} rows={rows} />
+  <p>These periods apply only where the contract contains no notice clause. Most contracts specify one month, and two or three months for senior roles; some set a shorter notice during probation. Whatever the contract says binds both sides equally: a clause asking three months from the employee and one from the employer is not valid.</p>
+
+  <h2>Salary in lieu at common contractual notices</h2>
+  <ContentTable headers={['Monthly gross', 'Daily gross rate', '10 working days', '1 month', '2 months', '3 months']} align={['r', 'r', 'r', 'r', 'r', 'r']} rows={month} />
+  <p>For a notice expressed in months, the amount is simply that many months of gross salary. The daily rate is needed when only part of the notice remains, for instance when an employee serves three weeks of a one-month notice and buys out the rest.</p>
+
+  <h2>Counting the days</h2>
+  <p>The notice period includes the day on which notice is given, as well as rest days, non-working days and public holidays that fall within it. A one-month notice given on 15 March ends on 14 April. One day’s notice given today makes today the last day of work. The resignation letter or email fixes the date, which is why MOM advises asking the employer to acknowledge it in writing.</p>
+
+  <h2>Serving, buying out or waiving</h2>
+  <p>There are four ways through a notice period. Serve it in full and be paid normally. Pay or receive salary in lieu for all of it and leave immediately. Combine the two, working part and compensating the rest. Or agree to waive it, in which case nobody pays anything; a waiver should be in writing. An employer cannot force an employee to stay beyond a notice the employee has bought out, and cannot refuse payment in lieu when the employee offers it.</p>
+  <p>Some employers place a departing employee on garden leave: the employee stays away from work, remains employed and is paid in full until the notice ends. Salary and CPF continue as normal during garden leave.</p>
+
+  <h2>Sick leave, leave and pay during notice</h2>
+  <p>An employee serving notice keeps all contractual and statutory rights. Paid sick leave with a medical certificate does not extend the notice. Annual leave may be taken with the employer’s consent, or used to offset the notice and bring the last day forward, as described in the questions below. CPF contributions are due on all wages paid during the notice period, including the period covered by garden leave.</p>
+
+  <h2>Termination without notice</h2>
+  <p>Either party may end the contract without notice or payment if the other wilfully breaches a condition of the contract. An employer who does not pay salary within 7 days after it is due is deemed to have broken the contract, and the employee may leave at once. An employee who is absent for more than 2 working days without approval or a good excuse, and without trying to inform the employer, is likewise deemed to have broken it. Dismissal for misconduct requires due inquiry, and an employee who believes a dismissal was wrongful may file a claim within one month of the last day.</p>
+
+  <h2>The rest of the final pay</h2>
+  <p>Notice pay is one of several lines. Salary for the last month is pro-rated by working days, as the <a href={route('proRated', lang)}>pro-rated salary calculator</a> shows. Unused leave is paid at the daily gross rate through <a href={route('encashLeave', lang)}>leave encashment</a>. In a retrenchment, a <a href={route('retrenchment', lang)}>retrenchment benefit</a> may be added. Each of these has its own treatment for CPF and tax, notice pay being taxable but free of CPF, so the final payslip should list them separately.</p>
+</Guide>

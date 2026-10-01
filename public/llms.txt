@@ -9,6 +9,9 @@
 - [Employer CPF calculator](https://singaporesalary.com/en/employer-cpf-calculator/) and [employer cost calculator](https://singaporesalary.com/en/employer-cost-calculator/).
 - [Income tax calculator](https://singaporesalary.com/en/income-tax-calculator/), [salary after tax](https://singaporesalary.com/en/salary-after-tax/), [bonus tax](https://singaporesalary.com/en/bonus-tax-calculator/).
 - [Net to gross](https://singaporesalary.com/en/net-to-gross-salary/), [hourly to salary](https://singaporesalary.com/en/hourly-to-salary-calculator/).
+- [Overtime pay calculator](https://singaporesalary.com/en/overtime-pay-calculator/), [pro-rated salary calculator](https://singaporesalary.com/en/pro-rated-salary-calculator/), [annual leave calculator](https://singaporesalary.com/en/annual-leave-calculator/), [leave encashment calculator](https://singaporesalary.com/en/leave-encashment-calculator/).
+- [Notice period calculator](https://singaporesalary.com/en/notice-period-calculator/), [retrenchment benefit calculator](https://singaporesalary.com/en/retrenchment-benefit-calculator/), [public holiday pay](https://singaporesalary.com/en/public-holiday-pay/), [maternity leave pay](https://singaporesalary.com/en/maternity-leave-pay/), [medical leave](https://singaporesalary.com/en/medical-leave/).
+- [SRS tax relief calculator](https://singaporesalary.com/en/srs-tax-relief-calculator/), [CPF top-up tax relief](https://singaporesalary.com/en/cpf-top-up-tax-relief/), [CPF interest calculator](https://singaporesalary.com/en/cpf-interest-calculator/), [CPF withdrawal at 55](https://singaporesalary.com/en/cpf-withdrawal-at-55/).
 
 ## Data
 - All five CPF Board rate tables from 1 January 2026, including the graduated rates for Singapore Permanent Residents in their first two years: https://singaporesalary.com/en/spr-cpf-contribution-rates/

@@ -1,0 +1,47 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { encashLeave, dailyRate, compute } from '../../lib/engine/sg';
+const ex = encashLeave({ monthly: 4500, days: 6 });
+const rows = ([[2800, 4, 6], [3500, 5, 5.5], [4500, 6, 5], [6000, 8, 5], [9000, 10, 5], [12000, 12, 5]] as const).map(([m, n, d]) => { const e = encashLeave({ monthly: m, days: n, daysPerWeek: d }); return [formatMoney(m), `${d} days`, formatMoney(e.daily, 2), `${n}`, formatMoney(e.pay, 2)]; });
+const cpfOn = compute({ monthly: 4500, bonus: ex.pay, age: 30, status: 'SC' }).bonusMonth.employee - compute({ monthly: 4500, age: 30, status: 'SC' }).monthly.employee;
+const faqs = [
+  { q: 'How is leave encashment calculated in Singapore?', a: `Each unused day of annual leave is paid at your gross rate of pay for one day: 12 times your monthly gross salary, divided by 52 times the number of days you work a week. On ${formatMoney(4500)} a month and a five-day week the daily rate is ${formatMoney(ex.daily, 2)}, so six unused days are worth ${formatMoney(ex.pay, 2)}.` },
+  { q: 'Can I encash annual leave while still employed?', a: 'Only if your employer agrees or your contract allows it. The Employment Act requires unused leave to be paid when employment ends; during employment its purpose is rest, and the law gives no right to exchange it for money. Some employers buy back leave above the statutory minimum at year end as a matter of policy.' },
+  { q: 'Is CPF payable on encashed leave?', a: `Yes. Payment for unused annual leave is wages, classed as an Additional Wage, so employee and employer CPF contributions apply, subject to the yearly Additional Wage ceiling. On an encashment of ${formatMoney(ex.pay, 2)}, a citizen aged 55 or below contributes about ${formatMoney(cpfOn)}. The payment is also taxable employment income.` },
+  { q: 'Can leave offset my notice period?', a: 'Yes, in two ways. With the employer’s consent you may take annual leave during notice and stay on the payroll until the original last day. Or you may use your leave to end the contract earlier: the last day moves forward by the number of leave days, and those days are not paid again as encashment.' },
+];
+---
+<Guide id="encashLeave" title="Leave Encashment Calculator Singapore 2026 (MOM Rate)" h1="Leave encashment calculator: pay for unused annual leave"
+  description="Calculate encashment of unused annual leave in Singapore: gross rate of pay per day by MOM’s formula, days pro-rated to service, with CPF and tax treatment."
+  intro="Unused annual leave is paid out at your daily gross rate when you leave a job. Enter your salary, the days left and your working week."
+  resume={`When an employment contract ends in Singapore, annual leave that has been earned and not taken must be paid out, a payment known as leave encashment. Each unused day is paid at the employee’s gross rate of pay for one day, calculated with the Ministry of Manpower’s formula: 12 times the monthly gross rate of pay, divided by 52 weeks multiplied by the average number of days worked per week. For a monthly gross salary of ${formatMoney(4500)} and a five-day week, one day is worth ${formatMoney(ex.daily, 2)}, and six unused days come to ${formatMoney(ex.pay, 2)}. The number of days is first pro-rated to the completed months of service in the current year. The payment is wages: it attracts CPF contributions as an Additional Wage and is taxable. During employment, leave can be exchanged for pay only if the employer agrees.`}
+  faqs={faqs} related={['annualLeave', 'noticePeriod', 'proRated', 'retrenchment', 'bonus', 'awCeiling']} sources={[SRC.mom_encash, SRC.mom_daily, SRC.mom_annual_leave, SRC.cpf_rates]}>
+  <MiniSim client:visible kind="encash" lang={lang} href={route('takeHome', lang)} />
+  <h2>Encashment at different salaries</h2>
+  <ContentTable headers={['Monthly gross', 'Working week', 'Gross rate per day', 'Unused days', 'Encashment']} align={['r', 'l', 'r', 'r', 'r']} rows={rows} />
+  <p>The working week changes the daily rate. On the same {formatMoney(4500)}, a day is worth {formatMoney(dailyRate(4500, 5), 2)} on five days a week, {formatMoney(dailyRate(4500, 5.5), 2)} on five and a half, and {formatMoney(dailyRate(4500, 6), 2)} on six, because the yearly salary is spread over more working days.</p>
+
+  <h2>The gross rate of pay</h2>
+  <p>The gross rate of pay is the total money payable for one day’s work, allowances included. It takes in basic salary and fixed monthly allowances. It excludes overtime payments, bonus payments and annual wage supplements, reimbursement of expenses, productivity incentive payments, and travelling, food or housing allowances. Paid leave of every kind, annual, sick, maternity and childcare, is paid at the gross rate; work on a rest day or public holiday is paid at the basic rate, which leaves the allowances out.</p>
+
+  <h2>How many days are owed</h2>
+  <p>Two balances make up the days to encash. The first is leave carried forward from the previous year that is still valid. The second is leave earned in the current year, pro-rated to completed months: months completed divided by 12, times the yearly entitlement, rounded to the nearest whole day with halves rounded up. Leave already taken is deducted. If you have taken more than you had earned, the employer may recover the excess days from the final pay at the same daily rate, provided the contract or leave policy says so.</p>
+  <p>The <a href={route('annualLeave', lang)}>annual leave calculator</a> gives the pro-rated entitlement for any year of service.</p>
+
+  <h2>When encashment is not due</h2>
+  <p>An employee dismissed on grounds of misconduct after due inquiry is not entitled to payment for unused statutory leave. Leave is also forfeited by an employee absent without permission or reasonable excuse for more than 20 % of the working days in a month or year. And leave beyond the statutory minimum follows the contract: a policy may provide that contractual days above the legal entitlement lapse if not used.</p>
+
+  <h2>CPF and tax on the payment</h2>
+  <p>Encashed leave is an Additional Wage, like a bonus, because it is not paid wholly for the month. CPF applies up to the Additional Wage ceiling: {formatMoney(P.cpf.annual_salary_ceiling)} less the Ordinary Wages subject to CPF for the year. A leaver who earned {formatMoney(P.cpf.ow_ceiling_month)} or more in each month of the year may find part of the encashment falls outside CPF; the <a href={route('awCeiling', lang)}>Additional Wage ceiling guide</a> explains the calculation. Income tax treats it as ordinary employment income of the year in which it is paid.</p>
+  <p>Foreign employees who are leaving Singapore are subject to tax clearance: the employer notifies IRAS at least one month before departure and withholds all monies due, encashment included, until clearance is given.</p>
+
+  <h2>Timing of the final payment</h2>
+  <p>Encashed leave is part of the final salary. For a resignation with notice served, the final salary is due on the last day of employment. Without notice, it is due within 7 days of the last day. On dismissal or termination by the employer, it is due on the last day or, if that is not possible, within 3 working days. Late payment is a breach of the Employment Act that can be brought to the Tripartite Alliance for Dispute Management within six months of the last day. Keep your leave records and your last payslips: the claim rests on the number of days outstanding and on the gross rate of pay, and both are read from those documents.</p>
+</Guide>

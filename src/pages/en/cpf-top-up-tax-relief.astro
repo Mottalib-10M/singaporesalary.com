@@ -1,0 +1,53 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { reliefSaving } from '../../lib/engine/sg';
+const T = P.topup; const I = P.cpf_interest; const RS = P.cpf.retirement_sums_2026;
+const ex = reliefSaving({ annualIncome: 100000, age: 35, relief: T.self_cap });
+const both = reliefSaving({ annualIncome: 100000, age: 35, relief: T.self_cap + T.family_cap });
+const rows = [50000, 70000, 100000, 140000, 200000].map((y) => { const a = reliefSaving({ annualIncome: y, age: 35, relief: T.self_cap }); const b = reliefSaving({ annualIncome: y, age: 35, relief: T.self_cap + T.family_cap }); return [formatMoney(y), formatPercent(a.marginal, 1), formatMoney(a.saving), formatMoney(b.saving)]; });
+const faqs = [
+  { q: 'How much tax relief do I get for a CPF top-up?', a: `Up to ${formatMoney(T.self_cap)} a year for cash top-ups to your own Special, Retirement or MediSave Account, and a further ${formatMoney(T.family_cap)} for top-ups to family members, ${formatMoney(T.self_cap + T.family_cap)} in all. On an income of ${formatMoney(100000)}, topping up ${formatMoney(T.self_cap)} for yourself saves ${formatMoney(ex.saving)} of income tax.` },
+  { q: 'Which family members can I top up for relief?', a: `Parents, parents-in-law, grandparents, grandparents-in-law, your spouse and your siblings. For a spouse or sibling, relief is given only if that person’s income in the previous year was not more than ${formatMoney(T.dependant_income_max)}, or if they are handicapped. No income condition applies to parents and grandparents.` },
+  { q: 'Is there a limit to how much I can top up?', a: `Yes, separate from the tax limit. Before 55, cash top-ups to the Special Account are accepted up to the current Full Retirement Sum, ${formatMoney(RS.frs)} in 2026. From 55, the Retirement Account can be topped up to the Enhanced Retirement Sum of ${formatMoney(RS.ers)}. MediSave can be topped up to the Basic Healthcare Sum of ${formatMoney(P.cpf.basic_healthcare_sum_2026)}.` },
+  { q: 'Can I withdraw a CPF top-up later?', a: 'No. Cash top-ups are irreversible. Money placed in the Special or Retirement Account is paid out as retirement income from the payout eligibility age, and cannot be used for housing or withdrawn as a lump sum. Top-ups also do not count towards the amount you may withdraw at 55 above the Full Retirement Sum.' },
+];
+---
+<Guide id="topUp" title="CPF Top-Up Tax Relief 2026: Tax Saved on up to $16,000" h1="CPF top-up tax relief: what a cash top-up saves you"
+  description="CPF cash top-up tax relief in Singapore for 2026: $8,000 for your own account and $8,000 for family members, the tax saved by income, limits and conditions."
+  intro="A cash top-up to CPF earns tax relief of up to $8,000 for yourself and $8,000 for loved ones. Enter your income and top-up."
+  resume={`Cash top-ups to CPF under the Retirement Sum Topping-Up Scheme and to MediSave earn income tax relief in Singapore. The relief is the amount topped up, limited to ${formatMoney(T.self_cap)} a year for top-ups to one’s own Special, Retirement or MediSave Account, plus ${formatMoney(T.family_cap)} a year for top-ups to the accounts of parents, grandparents, a spouse or siblings, a total of ${formatMoney(T.self_cap + T.family_cap)}. The tax saved is the relief multiplied by the marginal tax rate. A citizen earning ${formatMoney(100000)} who tops up ${formatMoney(T.self_cap)} for themselves saves ${formatMoney(ex.saving)}; adding ${formatMoney(T.family_cap)} for a parent brings the saving to ${formatMoney(both.saving)}. The money earns the CPF floor rate of ${formatPercent(I.sma, 0)} a year and cannot be withdrawn. Relief applies to top-ups made in cash by 31 December and counts within the overall cap of ${formatMoney(P.tax.relief_cap)}.`}
+  faqs={faqs} related={['srs', 'reliefs', 'cpfInterest', 'retirement', 'incomeTax', 'withdraw55']} sources={[SRC.iras_topup, SRC.cpf_sums, SRC.cpf_interest, SRC.iras_rates]}>
+  <MiniSim client:visible kind="topup" lang={lang} href={route('incomeTax', lang)} />
+  <h2>Tax saved by income</h2>
+  <ContentTable headers={['Annual income', 'Marginal tax rate', `Saving on ${formatMoney(T.self_cap)} for yourself`, `Saving on ${formatMoney(T.self_cap + T.family_cap)} with family`]} align={['r', 'r', 'r', 'r']} rows={rows} />
+  <p>The examples assume a citizen aged 35 with earned income relief and CPF relief only. The saving is immediate: it reduces the tax assessed in the following year. The top-up then earns interest for decades, which is the larger part of the benefit for younger members.</p>
+
+  <h2>Which top-ups qualify</h2>
+  <p>Relief is given for cash top-ups to the Special Account of a recipient under 55, to the Retirement Account of a recipient aged 55 or over, and, since 2022, for voluntary cash contributions to MediSave, all within the same {formatMoney(T.self_cap)} limit for one’s own accounts. Transfers from your Ordinary Account to your Special Account, or CPF-to-CPF transfers to a relative, earn no tax relief, since no new cash enters the system. Top-ups that attract a Government matching grant under the Matched Retirement Savings Scheme do not earn relief on the matched portion.</p>
+  <p>Employers can make the top-up for an employee; the relief then goes to the employee, and the amount is treated as taxable remuneration.</p>
+
+  <h2>How far relief goes, and where it stops</h2>
+  <p>Relief is only given on top-ups up to the current Full Retirement Sum, {formatMoney(RS.frs)} in 2026. From 55, the Retirement Account accepts top-ups beyond that, to the Enhanced Retirement Sum of {formatMoney(RS.ers)}, but the part above the Full Retirement Sum earns no tax relief. The personal relief cap of {formatMoney(P.tax.relief_cap)} then limits the total of all reliefs. Someone with high CPF relief and several child reliefs should check the remaining headroom before topping up.</p>
+
+  <h2>What the money earns</h2>
+  <p>Special, MediSave and Retirement Account savings earn {formatPercent(I.sma, 0)} a year, a floor rate the Government has extended to {new Date(I.floor_until + 'T00:00:00Z').toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}. An extra {formatPercent(I.extra_rate, 0)} is paid on the first {formatMoney(I.extra_first)} of combined balances. A top-up of {formatMoney(T.self_cap)} left for 25 years at {formatPercent(I.sma, 0)} grows to about {formatMoney(T.self_cap * Math.pow(1 + I.sma, 25))}, to which the initial tax saving is added. The <a href={route('cpfInterest', lang)}>CPF interest calculator</a> works out the yearly interest on any balance.</p>
+
+  <h2>Topping up for a parent or spouse</h2>
+  <p>The second {formatMoney(T.family_cap)} of relief is often easier to use than the first. A parent aged 55 or over whose Retirement Account is below the Full Retirement Sum receives a higher CPF LIFE payout for every dollar added, and the first {formatMoney(I.extra55_first)} of their balances earns up to {formatPercent(I.sma + I.extra55_rate, 0)}. For a non-working spouse, the relief requires that their income in the previous year did not exceed {formatMoney(T.dependant_income_max)}; rental income, interest from outside banks and pensions all count towards that figure. The relief is claimed by the person who pays, so in a couple it is the higher earner, with the higher marginal rate, who should make the top-up. Two siblings can each top up the same parent, and each claims relief on what they paid, within their own {formatMoney(T.family_cap)} limit.</p>
+
+  <h2>When to make the top-up</h2>
+  <p>For tax, any date up to 31 December gives the same relief. For interest, earlier is better: CPF interest is computed monthly, so a top-up in January earns eleven months more than one in December, about {formatMoney(T.self_cap * I.sma * 11 / 12)} on {formatMoney(T.self_cap)}. Top-ups are made in the CPF mobile app or website with PayNow, and are credited within a few days.</p>
+
+  <h2>The cost: no way back</h2>
+  <p>The relief is the price of illiquidity. A topped-up dollar cannot pay for a flat, cannot be invested under the CPF Investment Scheme’s Ordinary Account rules, and cannot be taken out at 55. It returns as monthly payouts under CPF LIFE from 65, or later if you defer. For someone who may need the cash for a home purchase within a few years, the Ordinary Account or a bank deposit is the right place, whatever the tax saving.</p>
+
+  <h2>Top-up, SRS, or both</h2>
+  <p>The two reliefs stack: {formatMoney(T.self_cap + T.family_cap)} of top-up relief and {formatMoney(P.srs.cap_citizen_pr)} of SRS relief can be claimed in the same year. The top-up offers a guaranteed rate with no access; SRS offers investment choice with penalised early access. The <a href={route('srs', lang)}>SRS tax relief calculator</a> runs the second calculation, and the <a href={route('reliefs', lang)}>tax relief guide</a> lists everything that counts towards the {formatMoney(P.tax.relief_cap)} cap.</p>
+</Guide>

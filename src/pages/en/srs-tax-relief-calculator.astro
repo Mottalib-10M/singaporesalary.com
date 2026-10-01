@@ -1,0 +1,50 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { reliefSaving, srsCap } from '../../lib/engine/sg';
+const cap = P.srs.cap_citizen_pr; const capF = P.srs.cap_foreigner;
+const ex = reliefSaving({ annualIncome: 120000, age: 35, relief: cap });
+const rows = [60000, 80000, 100000, 120000, 160000, 250000].map((y) => { const x = reliefSaving({ annualIncome: y, age: 35, relief: cap }); return [formatMoney(y), formatMoney(x.before), formatMoney(x.after), formatMoney(x.saving), formatPercent(x.saving / cap, 1)]; });
+const f = reliefSaving({ annualIncome: 250000, age: 40, relief: capF, status: 'FOREIGNER' });
+const faqs = [
+  { q: 'How much tax can I save with SRS?', a: `Your contribution, up to the yearly cap, is deducted from your chargeable income, so the saving is roughly the contribution times your marginal tax rate. On an income of ${formatMoney(120000)}, a citizen contributing the maximum ${formatMoney(cap)} pays ${formatMoney(ex.after)} of tax instead of ${formatMoney(ex.before)}, a saving of ${formatMoney(ex.saving)}.` },
+  { q: 'What is the maximum SRS contribution in 2026?', a: `${formatMoney(cap)} a year for Singapore citizens and permanent residents, and ${formatMoney(capF)} for foreigners. Contributions must reach the SRS account by 31 December to count for the following Year of Assessment. They are made in cash, in one or several payments, and an employer may contribute on your behalf within the same cap.` },
+  { q: 'Is SRS worth it at my income?', a: `It depends on your marginal rate. Below about ${formatMoney(40000)} of chargeable income the rate is 2 % to 3.5 %, and the saving is small against money locked up until retirement. From ${formatMoney(80000)} of chargeable income the rate is 11.5 % and above, and a full contribution saves well over a thousand dollars a year.` },
+  { q: 'How are SRS withdrawals taxed?', a: 'Withdrawals on or after the statutory retirement age that applied when you made your first contribution are taxed on only 50 % of the amount, and can be spread over ten years. Earlier withdrawals are fully taxable and carry a 5 % penalty, with exceptions for death, medical grounds, bankruptcy and foreigners who have held the account for at least ten years.' },
+];
+---
+<Guide id="srs" title="SRS Tax Relief Calculator Singapore 2026: Tax Saved" h1="SRS tax relief calculator: what a contribution saves you"
+  description="Calculate the income tax saved by a Supplementary Retirement Scheme contribution in Singapore: $15,300 cap for citizens and PRs, $35,700 for foreigners."
+  intro="SRS contributions reduce your chargeable income dollar for dollar, up to a yearly cap. Enter your income and contribution."
+  resume={`The Supplementary Retirement Scheme is a voluntary savings scheme in Singapore whose contributions are deductible from income for tax purposes. The yearly contribution cap is ${formatMoney(cap)} for Singapore citizens and permanent residents and ${formatMoney(capF)} for foreigners. Each dollar contributed lowers chargeable income by one dollar, so the tax saved equals the contribution multiplied by the marginal tax rate, within the overall personal relief cap of ${formatMoney(P.tax.relief_cap)}. A citizen aged 35 earning ${formatMoney(120000)} who contributes ${formatMoney(cap)} reduces the tax bill from ${formatMoney(ex.before)} to ${formatMoney(ex.after)}, a saving of ${formatMoney(ex.saving)}. Investment returns inside the account are not taxed, and only half of each withdrawal made from retirement age is taxable. Contributions must be made by 31 December to earn relief in the next Year of Assessment.`}
+  faqs={faqs} related={['incomeTax', 'reliefs', 'topUp', 'taxRates', 'residency', 'retirement']} sources={[SRC.iras_srs, SRC.iras_rates, SRC.iras_cpf_relief, SRC.iras_eir]}>
+  <MiniSim client:visible kind="srs" lang={lang} href={route('incomeTax', lang)} />
+  <h2>Tax saved by a full contribution of {formatMoney(cap)}</h2>
+  <ContentTable headers={['Annual income', 'Tax without SRS', 'Tax with SRS', 'Tax saved', 'Saving as a share of the contribution']} align={['r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The figures are for a citizen aged 35 with only earned income relief and CPF relief. The last column is the effective return of the tax relief alone, before any investment return: it follows the marginal rate, which is why the scheme is used mostly by people with chargeable income above {formatMoney(80000)}.</p>
+
+  <h2>How the relief works</h2>
+  <p>Relief is given automatically: the SRS operators, DBS, OCBC and UOB, report contributions to IRAS and the amount appears pre-filled in the tax return of the following year. A contribution made in December 2026 reduces the tax assessed in 2027, payable from mid-2027. You may hold only one SRS account. The relief is available only to tax residents for that Year of Assessment, which matters to foreigners who leave Singapore part-way through a year.</p>
+  <p>All personal reliefs together are capped at {formatMoney(P.tax.relief_cap)} a year. Someone whose CPF relief, earned income relief, child reliefs and other deductions already reach that figure gains nothing from an SRS contribution, and contributions cannot be refunded.</p>
+
+  <h2>Foreigners and the higher cap</h2>
+  <p>Foreigners have no CPF contributions, so their cap is set higher, at {formatMoney(capF)}. A foreign tax resident earning {formatMoney(250000)} who contributes the maximum saves {formatMoney(f.saving)} of tax. Foreigners must declare their status to the SRS operator each year. They may withdraw the whole balance in one sum with no penalty once the account is at least ten years old from the first contribution, and only half of that withdrawal is taxable, a rule that makes SRS a tax-deferral tool for long-stay expatriates. A withholding tax applies to withdrawals by non-citizens.</p>
+
+  <h2>What happens to the money inside the account</h2>
+  <p>Cash left in the SRS account earns the bank’s ordinary deposit rate, close to nothing. The scheme makes sense only if the balance is invested: shares, unit trusts, exchange-traded funds, Singapore Savings Bonds, fixed deposits and single-premium insurance are all allowed, property and direct crypto holdings are not. Gains and dividends accumulate without tax. The trade-off is liquidity: until the retirement age prevailing at your first contribution, money comes out only with full taxation and a 5 % penalty.</p>
+
+  <h2>Withdrawals at retirement</h2>
+  <p>From the statutory retirement age that applied when you first contributed, 63 for accounts opened between July 2022 and June 2026, withdrawals are penalty-free and 50 % taxable, over a window of ten years from the first withdrawal. With no other income, a retiree can withdraw {formatMoney(40000)} a year and pay no tax, since half of it, {formatMoney(20000)}, falls inside the tax-free first band. Over ten years that is {formatMoney(400000)} taken out tax-free, which sets a rough ceiling on how much it is efficient to accumulate.</p>
+
+  <h2>Timing a contribution</h2>
+  <p>Relief depends on the calendar year of the contribution, not on the amount of time the money was in the account, so a payment on 30 December earns the same relief as one in January. The operators close their cut-off a day or two before 31 December for transfers by internet banking. Opening the account early has one lasting effect: the retirement age that governs your penalty-free withdrawals is fixed on the date of your first contribution, so even a token first contribution of one dollar locks in the age in force at the time, before any later increase.</p>
+
+  <h2>SRS or a CPF top-up</h2>
+  <p>Both give relief. A cash top-up to your CPF Special or Retirement Account earns up to {formatMoney(P.topup.self_cap)} of relief, grows at the CPF interest rate of {formatPercent(P.cpf_interest.sma, 0)} without investment risk, and is locked in until payout age. SRS has a higher cap and free choice of investments, with market risk and earlier access. Many taxpayers use the top-up first for its guaranteed rate, then SRS; the <a href={route('topUp', lang)}>CPF top-up tax relief</a> page compares the tax effect, and the <a href={route('incomeTax', lang)}>income tax calculator</a> shows your marginal rate.</p>
+</Guide>

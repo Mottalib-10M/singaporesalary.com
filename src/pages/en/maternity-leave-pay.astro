@@ -1,0 +1,47 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { maternityPay } from '../../lib/engine/sg';
+const M = P.employment.maternity; const S = P.employment.shared_parental;
+const ex = maternityPay({ monthly: 5000 });
+const hi = maternityPay({ monthly: 13000 });
+const rows = [3000, 5000, 8000, 10833, 13000, 18000].map((m) => { const x = maternityPay({ monthly: m }); return [formatMoney(m), formatMoney(x.weekly, 2), formatMoney(x.employerPaid), formatMoney(x.governmentPaid), formatMoney(x.total)]; });
+const faqs = [
+  { q: 'How much is maternity leave pay in Singapore?', a: `Your usual gross pay for ${M.weeks_citizen_child} weeks if your child is a Singapore citizen. On ${formatMoney(5000)} a month that is ${formatMoney(ex.weekly, 2)} a week and ${formatMoney(ex.total)} in all. The Government reimburses your employer for the last 8 weeks, up to ${formatMoney(M.cap_per_4_weeks)} for every 4 weeks, so only salaries above about ${formatMoney(M.cap_per_week * 52 / 12)} a month meet the cap.` },
+  { q: 'Who pays for maternity leave, the employer or the Government?', a: `For a first or second child, the employer pays the first ${M.employer_weeks} weeks and the Government funds the last 8, up to ${formatMoney(M.cap_per_4_weeks * 2)}. For a third or later child, the Government funds all ${M.weeks_citizen_child} weeks, up to ${formatMoney(M.cap_per_4_weeks * 4)}. In both cases the employer keeps paying your salary and claims the reimbursement.` },
+  { q: 'What if my child is not a Singapore citizen?', a: `You are entitled to ${M.weeks_other} weeks of maternity leave under the Employment Act if you have worked for your employer for at least ${M.min_service_months} months. The employer pays the first ${M.employer_weeks} weeks for a first or second child; the last 4 weeks may be unpaid, depending on your contract. If the child becomes a citizen within 12 months of birth, the remaining Government-paid leave becomes available.` },
+  { q: 'How many weeks of shared parental leave are there in 2026?', a: `${S.weeks} weeks for children born on or after 1 April 2026, shared between the two parents, up from ${S.weeks_before} weeks for births in the year before. It is paid by the Government up to ${formatMoney(S.cap_per_week)} a week and comes on top of the mother’s 16 weeks and the father’s 4 weeks of paternity leave.` },
+];
+---
+<Guide id="maternity" title="Maternity Leave Pay Singapore 2026: 16 Weeks, Who Pays" h1="Maternity leave pay in Singapore: 16 weeks and who pays them"
+  description="Maternity leave pay in Singapore in 2026: 16 weeks of Government-Paid Maternity Leave, the $10,000 per 4 weeks cap, employer and Government share, shared leave."
+  intro="Working mothers of Singapore citizen children get 16 weeks of paid leave. Enter your salary to see the pay and who funds it."
+  resume={`A working mother in Singapore is entitled to ${M.weeks_citizen_child} weeks of Government-Paid Maternity Leave if her child is a Singapore citizen and she has worked for her employer, or been self-employed, for at least ${M.min_service_months} continuous months before the birth. She is paid her gross rate of pay throughout. For a first or second child, the employer bears the first ${M.employer_weeks} weeks and the Government reimburses the last 8 weeks, up to ${formatMoney(M.cap_per_4_weeks)} per 4 weeks. For a third or later child, the Government reimburses all 16 weeks within the same cap. On a monthly salary of ${formatMoney(5000)}, maternity pay is ${formatMoney(ex.weekly, 2)} a week, ${formatMoney(ex.total)} over the 16 weeks. A mother whose child is not a citizen has ${M.weeks_other} weeks of leave under the Employment Act, of which the employer pays the first ${M.employer_weeks}.`}
+  faqs={faqs} related={['annualLeave', 'sickLeave', 'takeHome', 'cpf', 'selfEmployed', 'reliefs']} sources={[SRC.mom_maternity, SRC.mom_spl, SRC.cpf_rates, SRC.mom_daily]}>
+  <MiniSim client:visible kind="maternity" lang={lang} href={route('takeHome', lang)} />
+  <h2>Maternity pay for a first or second citizen child</h2>
+  <ContentTable headers={['Monthly gross', 'Per week', 'Employer, first 8 weeks', 'Government, last 8 weeks', '16 weeks in all']} align={['r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>Up to about {formatMoney(M.cap_per_week * 52 / 12)} a month, the Government’s share covers the full salary for its eight weeks. Above that, reimbursement stops at {formatMoney(M.cap_per_week)} a week: on {formatMoney(13000)} a month the Government pays {formatMoney(hi.governmentPaid)} for the last eight weeks against a salary of {formatMoney(hi.weekly * 8)}. The law does not oblige the employer to pay the difference, though many contracts provide for full pay.</p>
+
+  <h2>Eligibility</h2>
+  <p>Three conditions give the 16 weeks. The child is a Singapore citizen. The mother has served her employer for a continuous period of at least {M.min_service_months} months before the birth, or as a self-employed person has been engaged in her work for that long and has lost income. And she has given at least 4 weeks’ notice before starting leave, or told her employer of the delivery as soon as possible; without notice, only half the pay is due unless there was good reason. Marital status is no longer a condition. Adoptive mothers have a separate entitlement of 12 weeks of adoption leave.</p>
+
+  <h2>How the 16 weeks can be taken</h2>
+  <p>By default the leave starts up to 4 weeks before the birth and runs continuously for 16 weeks. By agreement with the employer, the first 8 weeks are taken in one block and the last 8 weeks, or 4 weeks for the 12-week entitlement, flexibly over 12 months from the birth, as days counted by the number of working days a week. An employer may not dismiss an employee or give her notice during maternity leave, and a dismissal without sufficient cause during pregnancy, after at least three months of service, obliges the employer to pay the maternity benefits she would have received.</p>
+
+  <h2>Fathers and shared parental leave</h2>
+  <p>Fathers of citizen children have 4 weeks of Government-Paid Paternity Leave, all of it mandatory for employers to grant for children born from 1 April 2025. In addition, parents of children born on or after 1 April 2026 have {S.weeks} weeks of shared parental leave to divide between them, by default equally, paid by the Government up to {formatMoney(S.cap_per_week)} a week. Together, a couple can now take 30 weeks of paid leave in a child’s first year.</p>
+
+  <h2>CPF and tax on maternity pay</h2>
+  <p>Maternity pay is ordinary wages. CPF contributions continue at the usual rates, 20 % from a citizen employee aged 55 or below and 17 % from the employer, up to the Ordinary Wage ceiling of {formatMoney(P.cpf.ow_ceiling_month)} a month, including on the weeks the Government reimburses. The pay is taxable income of the year. A mother whose pay is capped for the Government-paid weeks sees both her CPF and her taxable income fall for those weeks.</p>
+  <p>At tax time, working mothers of citizen children may claim the Working Mother’s Child Relief, a fixed dollar amount per child for children born from 2024 and a percentage of earned income for earlier births. The <a href={route('reliefs', lang)}>tax relief guide</a> sets out how it combines with the other reliefs.</p>
+
+  <h2>Self-employed mothers</h2>
+  <p>A self-employed mother claims directly from the Government for the income lost during leave, based on her net trade income in the latest notice of assessment or over the previous 12 months, within the same cap of {formatMoney(M.cap_per_4_weeks)} per 4 weeks. The same service condition applies: at least {M.min_service_months} continuous months of work before the birth. The <a href={route('selfEmployed', lang)}>self-employed CPF guide</a> covers MediSave contributions, which continue to be assessed on yearly net trade income.</p>
+</Guide>

@@ -1,0 +1,50 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { annualLeave } from '../../lib/engine/sg';
+const A = P.employment.annual_leave;
+const table = [1, 2, 3, 4, 5, 6, 7, 8].map((y) => [y === 8 ? '8th year and after' : `${y}${y === 1 ? 'st' : y === 2 ? 'nd' : y === 3 ? 'rd' : 'th'} year`, `${annualLeave({ yearOfService: y }).statutory} days`]);
+const pro = [3, 4, 6, 7, 9, 12].map((m) => [`${m} months`, `${annualLeave({ yearOfService: 1, completedMonths: m }).prorated} days`, `${annualLeave({ yearOfService: 1, completedMonths: m, contractDays: 14 }).prorated} days`, `${annualLeave({ yearOfService: 1, completedMonths: m, contractDays: 18 }).prorated} days`]);
+const ex = annualLeave({ yearOfService: 4, completedMonths: 4 });
+const faqs = [
+  { q: 'How many days of annual leave am I entitled to in Singapore?', a: `Under the Employment Act, ${A.first_year_days} days in your first year of service and one more day for each further year, up to ${A.max_days} days from the eighth year. You must have worked for your employer for at least ${A.min_service_months} months. Most contracts give more than the legal minimum, commonly 14 to 21 days, and the contract then applies.` },
+  { q: 'How is annual leave pro-rated?', a: `By completed months of service in the current year: months completed, divided by 12, multiplied by the yearly entitlement. A fraction under half a day is rounded down, and half a day or more is rounded up to a full day. Four completed months on a 10-day entitlement give 3.33, so ${ex.prorated} days.` },
+  { q: 'Can I take annual leave during probation?', a: `The statutory right begins after ${A.min_service_months} months of service, whatever the length of the probation period. Leave then accrues from your first day, so three months of service on a 7-day entitlement gives about two days. Many employers allow leave earlier or in advance; that is a matter of company policy, not law.` },
+  { q: 'Does unused annual leave carry forward?', a: 'For employees covered by Part 4 of the Employment Act, statutory leave not taken within the year may be carried forward to the next 12 months, after which it can be forfeited. For other employees, the contract decides whether leave is carried forward, forfeited or paid out. Leave unused when the job ends is paid in the final salary.' },
+];
+---
+<Guide id="annualLeave" title="Annual Leave Calculator Singapore 2026: Days and Pro-Rata" h1="Annual leave calculator: statutory days and pro-rated entitlement"
+  description="Work out annual leave in Singapore under the Employment Act: 7 days in the first year rising to 14, pro-rated by completed months, with MOM’s rounding rule."
+  intro="Annual leave starts at 7 days a year and grows with service. Enter your year of service and the months completed to see what you have earned."
+  resume={`Employees in Singapore who have worked for their employer for at least ${A.min_service_months} months are entitled to paid annual leave under the Employment Act. The statutory minimum is ${A.first_year_days} days in the first year of service, rising by one day for each additional year to a maximum of ${A.max_days} days from the eighth year onwards. An employee who has not completed a full year receives leave in proportion to the completed months of service: months divided by twelve, times the yearly entitlement, with fractions of half a day or more rounded up and smaller fractions rounded down. Someone entitled to 10 days who has completed 4 months has earned ${ex.prorated} days. The contract may grant more than the statutory days, and a year of service runs from the employee’s start date, not from 1 January.`}
+  faqs={faqs} related={['encashLeave', 'sickLeave', 'publicHoliday', 'maternity', 'noticePeriod', 'proRated']} sources={[SRC.mom_annual_leave, SRC.mom_encash, SRC.mom_daily]}>
+  <MiniSim client:visible kind="annualLeave" lang={lang} href={route('encashLeave', lang)} />
+  <h2>Statutory annual leave by year of service</h2>
+  <ContentTable headers={['Year of service', 'Days of leave']} align={['l', 'r']} rows={table} />
+  <p>These are minimums. The year of service runs from the date you started, so someone who joined on 1 September 2023 moves to the fourth-year entitlement on 1 September 2026.</p>
+
+  <h2>Pro-rated leave in an incomplete year</h2>
+  <ContentTable headers={['Completed months', 'On 7 days (statutory, 1st year)', 'On a 14-day contract', 'On an 18-day contract']} align={['l', 'r', 'r', 'r']} rows={pro} />
+  <p>Only completed months count: 4 months and 25 days is 4 months. The rounding rule explains the uneven steps in the first column, where 4 months of a 7-day entitlement is 2.33 days, rounded to 2, and 7 months is 4.08, rounded to 4.</p>
+
+  <h2>Who is covered</h2>
+  <p>Since April 2019 the leave provisions of the Employment Act apply to all employees, including managers and executives, whatever their salary. Seafarers, domestic workers and public officers are outside the Act. Part-time employees, those working less than 35 hours a week, are entitled to leave in proportion to their hours: the yearly hours of the part-timer divided by those of a comparable full-timer, times the full-time entitlement, expressed in hours.</p>
+
+  <h2>When leave can be taken, and who decides</h2>
+  <p>Leave is taken at dates agreed with the employer, who may refuse or defer a request for operational reasons but cannot prevent the leave from being used altogether. An employer may also ask employees to take leave during a shutdown, with reasonable notice. Annual leave should be granted on working days: a public holiday or rest day falling within a period of leave does not use up a day of leave. If you fall sick during annual leave and hold a medical certificate, the days can be treated as sick leave where your contract or the employer agrees.</p>
+
+  <h2>Losing the entitlement</h2>
+  <p>An employee forfeits statutory annual leave for the year if they are absent from work without permission or reasonable excuse for more than 20 % of the working days in a month or year. Leave is also lost if it is not taken within the carry-forward period allowed. Unpaid leave reduces the entitlement indirectly, because the months in which it is taken may not count as completed months of service.</p>
+
+  <h2>Leave when the job ends</h2>
+  <p>On resignation or termination, leave earned and not taken is paid at the gross rate of pay, pro-rated to the completed months of the final year. An employee may also use remaining leave to bring forward the last day of work, in which case the contract ends earlier and no pay is due for the days after, or ask to be on paid leave until the original last day. The <a href={route('encashLeave', lang)}>leave encashment calculator</a> converts unused days into dollars, and the <a href={route('noticePeriod', lang)}>notice period calculator</a> shows how leave and notice interact.</p>
+
+  <h2>Other statutory leave alongside annual leave</h2>
+  <p>Annual leave is separate from the {P.employment.public_holidays} paid public holidays, from paid sick leave of up to {P.employment.sick_leave.outpatient} days and hospitalisation leave of up to {P.employment.sick_leave.hospitalisation} days, and from maternity, paternity, shared parental and childcare leave. None of these can be deducted from annual leave. Childcare leave gives working parents of a citizen child under seven a further six days a year, and two days for a child aged seven to twelve. Each type of leave has its own conditions of service and its own rate of pay, which is why payslips and leave records list them separately.</p>
+</Guide>

@@ -8,6 +8,9 @@ const L: Record<string, string> = {
   awCeiling: 'Additional Wage ceiling', taxRates: 'Income tax rates', residency: 'Resident vs non-resident tax', reliefs: 'Tax reliefs',
   selfEmployed: 'Self-employed CPF (MediSave)', employeeVsSelf: 'Employee vs self-employed', minimumWage: 'Minimum wage and LQS',
   averageSalary: 'Average and median salary', payslip: 'How to read a payslip', retirement: 'CPF retirement sums',
+  overtime: 'Overtime pay calculator', proRated: 'Pro-rated salary calculator', annualLeave: 'Annual leave calculator', encashLeave: 'Leave encashment calculator', noticePeriod: 'Notice period calculator',
+  retrenchment: 'Retrenchment benefit calculator', publicHoliday: 'Public holiday pay', maternity: 'Maternity leave pay', sickLeave: 'Medical leave', srs: 'SRS tax relief calculator',
+  topUp: 'CPF top-up tax relief', cpfInterest: 'CPF interest calculator', withdraw55: 'CPF withdrawal at 55',
   glossary: 'Glossary', method: 'Methodology and sources', widget: 'Embed the calculator', about: 'About', contact: 'Contact',
   editorial: 'Editorial policy', privacy: 'Privacy', terms: 'Terms of use', cookies: 'Cookies',
 };
@@ -19,9 +22,9 @@ export const annualLabel = (a: number) => `${sgd(a)} a year`;
 export const hourlyLabel = (a: number) => `${sgd(a)} an hour`;
 export function navCategories(lang: Locale): NavCategory[] {
   return [
-    { label: 'Calculators', links: ['home', 'cpf', 'contribution', 'employerCpf', 'employerCost', 'afterTax', 'incomeTax', 'takeHome', 'netToGross', 'hourly', 'bonus'].map((i) => link(i, lang)) },
-    { label: 'CPF', links: ['cpfRates', 'sprRates', 'allocation', 'awCeiling', 'cpf2027', 'retirement', 'selfEmployed'].map((i) => link(i, lang)) },
-    { label: 'Tax and pay', links: ['taxRates', 'reliefs', 'residency', 'employeeVsSelf', 'minimumWage', 'averageSalary', 'payslip'].map((i) => link(i, lang)) },
+    { label: 'Calculators', links: ['home', 'cpf', 'contribution', 'employerCpf', 'employerCost', 'afterTax', 'incomeTax', 'takeHome', 'netToGross', 'hourly', 'bonus', 'overtime', 'proRated', 'annualLeave', 'encashLeave', 'noticePeriod', 'retrenchment'].map((i) => link(i, lang)) },
+    { label: 'CPF', links: ['cpfRates', 'sprRates', 'allocation', 'awCeiling', 'cpf2027', 'retirement', 'selfEmployed', 'cpfInterest', 'withdraw55', 'topUp'].map((i) => link(i, lang)) },
+    { label: 'Tax and pay', links: ['taxRates', 'reliefs', 'residency', 'employeeVsSelf', 'srs', 'minimumWage', 'averageSalary', 'payslip', 'publicHoliday', 'maternity', 'sickLeave'].map((i) => link(i, lang)) },
     { label: 'By salary', links: [...MONTHLY.map((a) => ({ href: route(`m-${a}`, lang), label: monthlyLabel(a) })), ...ANNUAL.map((a) => ({ href: route(`y-${a}`, lang), label: annualLabel(a) })), ...HOURLY.map((a) => ({ href: route(`h-${a}`, lang), label: hourlyLabel(a) }))] },
   ];
 }

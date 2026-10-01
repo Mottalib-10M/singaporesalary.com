@@ -8,7 +8,7 @@ export const CURRENCY = 'SGD';
 export const YEAR = 2026;
 /** Année de création du site — signal d'ancienneté (RECETTE §8.0). */
 export const SITE_FOUNDED = '2026';
-export const LAST_UPDATED = '2026-09-28';
+export const LAST_UPDATED = '2026-10-01';
 export const AUTHOR_NAME = 'Radif Partners';
 export const AUTHOR_ROLE: Record<string, string> = {"en": "Publisher of payroll calculators and practical guides · Singapore CPF and income tax"};
 export const AUTHOR_DESC: Record<string, string> = {"en": "Radif Partners publishes free payroll calculators and practical guides. Every rate on this site is read from the CPF Board and IRAS publications, with the source and the date it was checked shown on the page."};

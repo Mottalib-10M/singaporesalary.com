@@ -187,3 +187,96 @@ export function grossForTakeHome(target: number, o: { age: number; status: Statu
   }
   return Math.round(hi * 100) / 100;
 }
+
+/* ----- Droit du travail (Employment Act) et épargne : pages ajoutées le 2026-10-01 ----- */
+const E = P.employment;
+/** Taux journalier MOM : 12 × mensuel ÷ (52 × jours travaillés par semaine). */
+export const dailyRate = (monthly: number, daysPerWeek = 5) => (P.hourly.months * Math.max(0, monthly)) / (P.hourly.weeks * Math.max(1, daysPerWeek));
+
+/** Heures supplémentaires : 1,5 × le taux horaire de base, pour les salariés couverts par la partie IV. */
+export function overtimePay(o: { basic: number; hours: number; workman?: boolean }) {
+  const W = P.wages; const ceiling = o.workman ? W.workman_ot_ceiling : W.nonworkman_ot_ceiling;
+  const covered = o.basic <= ceiling;
+  const base = o.workman ? o.basic : Math.min(o.basic, W.nonworkman_ot_ceiling);
+  const hourly = hourlyFromMonthly(Math.max(0, base));
+  const hours = Math.min(Math.max(0, o.hours), W.ot_hours_cap);
+  const rate = round2(hourly * P.hourly.ot_multiplier);
+  return { covered, hourly: round2(hourly), rate, hours, pay: covered ? round2(hourly * P.hourly.ot_multiplier * hours) : 0, ceiling };
+}
+
+/** Congés annuels légaux : 7 jours la première année, un de plus par année, 14 au maximum ; prorata par mois complets. */
+export function annualLeave(o: { yearOfService: number; completedMonths?: number; contractDays?: number }) {
+  const A = E.annual_leave; const y = Math.max(1, Math.floor(o.yearOfService));
+  const statutory = Math.min(A.max_days, A.first_year_days + y - 1);
+  const entitlement = Math.max(statutory, o.contractDays ?? 0);
+  const m = Math.min(12, Math.max(0, Math.floor(o.completedMonths ?? 12)));
+  const raw = (m / 12) * entitlement; const frac = raw - Math.floor(raw);
+  const prorated = m < A.min_service_months ? 0 : Math.floor(raw) + (frac >= 0.5 ? 1 : 0);
+  return { statutory, entitlement, prorated };
+}
+/** Congés non pris payés au départ : taux journalier brut × jours. */
+export const encashLeave = (o: { monthly: number; days: number; daysPerWeek?: number }) => { const d = dailyRate(o.monthly, o.daysPerWeek ?? 5); return { daily: round2(d), pay: round2(d * Math.max(0, o.days)) }; };
+/** Mois incomplet : salaire mensuel × jours travaillés ÷ jours ouvrés du mois. */
+export const proRated = (o: { monthly: number; worked: number; working: number }) => round2(Math.max(0, o.monthly) * Math.min(Math.max(0, o.worked), o.working) / Math.max(1, o.working));
+/** Jour férié travaillé : un jour de salaire de base en plus du salaire mensuel. */
+export const publicHolidayPay = (o: { basic: number; daysPerWeek?: number }) => round2(dailyRate(o.basic, o.daysPerWeek ?? 5));
+
+/** Préavis légal à défaut de clause, et indemnité compensatrice au taux brut. */
+export function noticePeriod(o: { serviceWeeks: number; monthly: number; daysPerWeek?: number }) {
+  const row = E.notice.find((r) => r.service_weeks_below === null || o.serviceWeeks < r.service_weeks_below)!;
+  const dpw = o.daysPerWeek ?? 5; const days = row.days + row.weeks * dpw;
+  return { label: row.label, days: row.days, weeks: row.weeks, workingDays: days, inLieu: round2(dailyRate(o.monthly, dpw) * days) };
+}
+
+/** Congé maternité payé : 16 semaines (enfant citoyen) ; l'État rembourse 2 500 $ par semaine au plus. */
+export function maternityPay(o: { monthly: number; citizenChild?: boolean; thirdChildOrMore?: boolean }) {
+  const M = E.maternity; const weeks = (o.citizenChild ?? true) ? M.weeks_citizen_child : M.weeks_other;
+  const weekly = (P.hourly.months * Math.max(0, o.monthly)) / P.hourly.weeks;
+  const govWeeks = (o.citizenChild ?? true) ? (o.thirdChildOrMore ? weeks : weeks - M.employer_weeks) : 0;
+  const employerWeeks = (o.citizenChild ?? true) ? weeks - govWeeks : M.employer_weeks;
+  const paidWeeks = (o.citizenChild ?? true) ? weeks : M.employer_weeks;
+  const governmentPaid = round2(Math.min(weekly, M.cap_per_week) * govWeeks);
+  return { weeks, paidWeeks, weekly: round2(weekly), governmentPaid, employerPaid: round2(weekly * employerWeeks), total: round2(weekly * employerWeeks + governmentPaid), capped: weekly > M.cap_per_week };
+}
+
+/** Congé maladie payé selon les mois de service : rien avant 3 mois, plein droit à 6 mois. */
+export function sickLeave(serviceMonths: number) {
+  const m = Math.floor(serviceMonths); const rows = E.sick_leave.prorate;
+  if (m < rows[0].months) return { outpatient: 0, hospitalisation: 0 };
+  const row = [...rows].reverse().find((r) => m >= r.months)!;
+  return { outpatient: row.outpatient, hospitalisation: row.hospitalisation };
+}
+
+/** Indemnité de licenciement économique : usage de 2 semaines à 1 mois de salaire par année de service. */
+export function retrenchment(o: { monthly: number; years: number }) {
+  const R = E.retrenchment; const y = Math.max(0, o.years);
+  const week = (P.hourly.months * Math.max(0, o.monthly)) / P.hourly.weeks;
+  return { eligible: y >= R.min_years, low: round2(week * R.weeks_per_year_low * y), high: round2(o.monthly * R.months_per_year_high * y) };
+}
+
+/** Économie d'impôt d'une déduction (SRS, versement volontaire CPF) pour un résident salarié. */
+export function reliefSaving(o: { annualIncome: number; age: number; relief: number; status?: Status }) {
+  const base = { monthly: Math.max(0, o.annualIncome) / 12, age: o.age, status: o.status ?? 'SC' as Status };
+  const a = compute(base).annual; const b = compute({ ...base, otherReliefs: Math.max(0, o.relief) }).annual;
+  return { before: a.tax, after: b.tax, saving: round2(a.tax - b.tax), marginal: a.marginal, usable: round2(b.reliefs.total - a.reliefs.total) };
+}
+export const srsCap = (foreigner: boolean) => (foreigner ? P.srs.cap_foreigner : P.srs.cap_citizen_pr);
+
+/** Intérêts CPF d'une année : taux de base par compte, plus l'intérêt supplémentaire sur les premiers 60 000 $. */
+export function cpfInterest(o: { oa: number; sma: number; age: number }) {
+  const I = P.cpf_interest; const oa = Math.max(0, o.oa); const sma = Math.max(0, o.sma);
+  const base = round2(oa * I.oa + sma * I.sma);
+  const eligible = Math.min(I.extra_first, Math.min(oa, I.extra_oa_cap) + sma);
+  const extra = o.age >= P.cpf_withdrawal.age
+    ? round2(Math.min(eligible, I.extra55_first) * I.extra55_rate + Math.max(0, eligible - I.extra55_first) * I.extra_rate)
+    : round2(eligible * I.extra_rate);
+  return { base, extra, total: round2(base + extra), rate: oa + sma > 0 ? (base + extra) / (oa + sma) : 0 };
+}
+
+/** À 55 ans : le Retirement Account reçoit jusqu'au Full Retirement Sum ; le reste, et au moins 5 000 $, est retirable. */
+export function withdrawalAt55(o: { oa: number; sa: number }) {
+  const total = Math.max(0, o.oa) + Math.max(0, o.sa); const frs = P.cpf.retirement_sums_2026.frs;
+  const ra = Math.min(total, frs);
+  const withdrawable = round2(Math.max(Math.min(P.cpf_withdrawal.unconditional, total), total - frs));
+  return { total, ra: round2(Math.min(ra, total - Math.min(withdrawable, total))), withdrawable, metFrs: total >= frs };
+}

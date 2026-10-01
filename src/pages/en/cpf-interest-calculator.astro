@@ -1,0 +1,49 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { cpfInterest } from '../../lib/engine/sg';
+const I = P.cpf_interest;
+const ex = cpfInterest({ oa: 60000, sma: 50000, age: 35 });
+const rows = ([[10000, 5000, 28], [30000, 20000, 32], [60000, 50000, 35], [120000, 110000, 45], [200000, 250000, 54], [100000, 220000, 60]] as const).map(([o, s, a]) => { const i = cpfInterest({ oa: o, sma: s, age: a }); return [`${a}`, formatMoney(o), formatMoney(s), formatMoney(i.base), formatMoney(i.extra), formatMoney(i.total), formatPercent(i.rate, 2)]; });
+const y55 = cpfInterest({ oa: 0, sma: 60000, age: 55 });
+const faqs = [
+  { q: 'What is the CPF interest rate in 2026?', a: `For ${I.quarter}, the Ordinary Account earns ${formatPercent(I.oa, 1)} a year and the Special, MediSave and Retirement Accounts earn ${formatPercent(I.sma, 0)}. Both are floor rates: the formulas tied to bank deposit rates and government bond yields currently give less, so the legislated and extended minimums apply.` },
+  { q: 'How does CPF extra interest work?', a: `The Government adds ${formatPercent(I.extra_rate, 0)} a year on the first ${formatMoney(I.extra_first)} of your combined balances, of which no more than ${formatMoney(I.extra_oa_cap)} can come from the Ordinary Account. From age 55, the first ${formatMoney(I.extra55_first)} earns an extra ${formatPercent(I.extra55_rate, 0)} and the next ${formatMoney(I.extra_first - I.extra55_first)} an extra ${formatPercent(I.extra_rate, 0)}. The maximum is ${formatMoney(I.extra_first * I.extra_rate)} a year below 55 and ${formatMoney(y55.extra)} from 55.` },
+  { q: 'When is CPF interest paid?', a: 'Interest is computed every month on the lowest balance held in each account during that month, and credited to your accounts once a year, on 31 December. A contribution received in March therefore starts earning interest in April. Interest is compounded annually, since the credited amount earns interest from the next year.' },
+  { q: 'Is CPF interest taxable?', a: 'No. Interest earned on all CPF accounts is exempt from income tax, and so are withdrawals. This makes the comparison with a bank deposit simple: the CPF rate is a net rate, and for a Singapore tax resident so is deposit interest, which has been tax-exempt for individuals for many years.' },
+];
+---
+<Guide id="cpfInterest" title="CPF Interest Calculator 2026: OA 2.5 %, SA 4 % + Extra" h1="CPF interest calculator: base and extra interest on your balances"
+  description="Calculate the interest on your CPF savings in 2026: 2.5 % on the Ordinary Account, 4 % on Special, MediSave and Retirement, plus extra interest on $60,000."
+  intro="CPF savings earn 2.5 % or 4 % a year, and more on the first $60,000. Enter your balances and age to see a year of interest."
+  resume={`CPF savings earn interest at rates set every quarter. For ${I.quarter}, the Ordinary Account pays ${formatPercent(I.oa, 1)} a year, and the Special, MediSave and Retirement Accounts pay ${formatPercent(I.sma, 0)}, a floor rate the Government has extended until the end of 2027. On top of these base rates, members earn extra interest of ${formatPercent(I.extra_rate, 0)} a year on the first ${formatMoney(I.extra_first)} of their combined balances, with the Ordinary Account counted for up to ${formatMoney(I.extra_oa_cap)}. Members aged 55 and above earn an extra ${formatPercent(I.extra55_rate, 0)} on the first ${formatMoney(I.extra55_first)} and ${formatPercent(I.extra_rate, 0)} on the next ${formatMoney(I.extra_first - I.extra55_first)}. A member aged 35 with ${formatMoney(60000)} in the Ordinary Account and ${formatMoney(50000)} in the other accounts earns ${formatMoney(ex.total)} in a year: ${formatMoney(ex.base)} of base interest and ${formatMoney(ex.extra)} of extra interest.`}
+  faqs={faqs} related={['cpf', 'allocation', 'retirement', 'topUp', 'withdraw55', 'cpfRates']} sources={[SRC.cpf_interest, SRC.cpf_alloc, SRC.cpf_sums]}>
+  <MiniSim client:visible kind="interest" lang={lang} href={route('cpf', lang)} />
+  <h2>A year of interest on typical balances</h2>
+  <ContentTable headers={['Age', 'Ordinary Account', 'Special, MediSave, Retirement', 'Base interest', 'Extra interest', 'Total', 'Average rate']} align={['r', 'r', 'r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The average rate falls as balances grow, because extra interest stops at {formatMoney(I.extra_first)}, and rises with the share held outside the Ordinary Account. The last row shows the effect of age: at 60, the same first {formatMoney(I.extra_first)} earns {formatMoney(y55.extra)} of extra interest instead of {formatMoney(I.extra_first * I.extra_rate)}.</p>
+
+  <h2>How the base rates are set</h2>
+  <p>The Ordinary Account rate is the three-month average of the major local banks’ interest rates, with a legislated minimum of {formatPercent(I.oa, 1)}. Since that average has stayed far below the minimum for more than two decades, the rate has been {formatPercent(I.oa, 1)} throughout. The Special and MediSave rate is the twelve-month average yield of ten-year Singapore Government Securities plus 1 %, with a floor of {formatPercent(I.sma, 0)}. The Retirement Account rate is the weighted average rate of the special government securities that back it, with the same floor. All are reviewed quarterly, except the Retirement Account rate, which is set once a year.</p>
+
+  <h2>Where the extra interest goes</h2>
+  <p>Extra interest earned on the Ordinary Account is not credited there. It goes to the Special Account before 55, or to the Retirement Account from 55, so it adds to retirement savings rather than to money available for housing. The order in which balances are counted towards the {formatMoney(I.extra_first)} matters only for that reason: the Retirement Account is counted first, then the Ordinary Account up to its {formatMoney(I.extra_oa_cap)} limit, then the Special and MediSave Accounts.</p>
+
+  <h2>Moving money from Ordinary to Special Account</h2>
+  <p>Before 55, a member may transfer Ordinary Account savings to the Special Account, up to the Full Retirement Sum of {formatMoney(P.cpf.retirement_sums_2026.frs)}, to earn {formatPercent(I.sma, 0)} instead of {formatPercent(I.oa, 1)}. On {formatMoney(50000)} the difference is {formatMoney(50000 * (I.sma - I.oa))} a year. The transfer cannot be reversed, and Special Account money cannot be used for a home loan, so it suits savings that will not be needed for housing. Since January 2025 the Special Account is closed at 55: its balance moves to the Retirement Account up to the Full Retirement Sum and the remainder to the Ordinary Account.</p>
+
+  <h2>Compounding over a working life</h2>
+  <p>At {formatPercent(I.sma, 0)}, money doubles in about 18 years; at {formatPercent(I.oa, 1)}, in about 28. A balance of {formatMoney(50000)} in the Special Account at 30 becomes about {formatMoney(50000 * Math.pow(1 + I.sma, 25))} at 55 with no further contribution, against {formatMoney(50000 * Math.pow(1 + I.oa, 25))} in the Ordinary Account. Using Ordinary Account savings for a home also has an interest cost of its own: on sale of the property, the principal withdrawn must be returned to CPF together with the accrued interest it would have earned at {formatPercent(I.oa, 1)}.</p>
+
+  <h2>CPF interest against the alternatives</h2>
+  <p>The rates are guaranteed by the Government and free of tax, which sets a high bar for anything else. A member may invest Ordinary Account savings above {formatMoney(20000)} and Special Account savings above {formatMoney(40000)} under the CPF Investment Scheme, but must beat {formatPercent(I.oa, 1)} or {formatPercent(I.sma, 0)} after fees to come out ahead; the CPF Board’s own figures show that many members who invested their Ordinary Account did not. The first {formatMoney(I.extra_first)} is harder still to beat, since extra interest lifts its return to {formatPercent(I.oa + I.extra_rate, 1)} and {formatPercent(I.sma + I.extra_rate, 0)}. For a housing loan from HDB, the rate charged is the Ordinary Account rate plus 0.1 point, so each dollar left in the account costs almost exactly what it earns.</p>
+
+  <h2>Interest and your contributions</h2>
+  <p>New contributions are split between the three accounts by age, with a larger share going to the Ordinary Account when young and to MediSave later, as the <a href={route('allocation', lang)}>CPF allocation rates</a> show. Interest on each month’s contribution starts the following month. The <a href={route('cpf', lang)}>CPF calculator</a> gives your monthly contribution, and the <a href={route('retirement', lang)}>retirement sums guide</a> shows how the balances at 55 translate into the Basic, Full and Enhanced Retirement Sums.</p>
+</Guide>

@@ -1,7 +1,7 @@
 {
   "_lisezmoi": "Every legal parameter lives here, never hard-coded (RECETTE-SITE.md §4). Each value was read on the official source cited in `sources`, on the date given in retrieved_at.",
   "year": 2026,
-  "retrieved_at": "2026-09-27",
+  "retrieved_at": "2026-10-01",
   "valid_from": "2026-01-01",
   "valid_to": "2026-12-31",
   "sources": {
@@ -81,6 +81,84 @@
       "url": "https://www.mom.gov.sg/employment-practices/salary/monthly-and-daily-salary",
       "label": {
         "en": "Ministry of Manpower: monthly and daily salary, gross and basic rates of pay"
+      }
+    },
+    "mom_overtime": {
+      "url": "https://www.mom.gov.sg/employment-practices/hours-of-work-overtime-and-rest-days",
+      "label": {
+        "en": "Ministry of Manpower: Hours of work, overtime and rest days"
+      }
+    },
+    "mom_annual_leave": {
+      "url": "https://www.mom.gov.sg/employment-practices/leave/annual-leave/eligibility-and-entitlement",
+      "label": {
+        "en": "Ministry of Manpower: Annual leave eligibility and entitlement"
+      }
+    },
+    "mom_encash": {
+      "url": "https://www.mom.gov.sg/employment-practices/leave/annual-leave",
+      "label": {
+        "en": "Ministry of Manpower: Annual leave, including unused leave"
+      }
+    },
+    "mom_ph": {
+      "url": "https://www.mom.gov.sg/employment-practices/public-holidays-entitlement-and-pay",
+      "label": {
+        "en": "Ministry of Manpower: Public holidays, entitlement and pay"
+      }
+    },
+    "mom_notice": {
+      "url": "https://www.mom.gov.sg/employment-practices/termination-of-employment/termination-with-notice",
+      "label": {
+        "en": "Ministry of Manpower: Termination with notice"
+      }
+    },
+    "mom_maternity": {
+      "url": "https://www.mom.gov.sg/employment-practices/leave/maternity-leave/eligibility-and-entitlement",
+      "label": {
+        "en": "Ministry of Manpower: Maternity leave eligibility and entitlement"
+      }
+    },
+    "mom_spl": {
+      "url": "https://www.mom.gov.sg/employment-practices/leave/shared-parental-leave",
+      "label": {
+        "en": "Ministry of Manpower: Shared parental leave"
+      }
+    },
+    "mom_sick": {
+      "url": "https://www.mom.gov.sg/employment-practices/leave/sick-leave/eligibility-and-entitlement",
+      "label": {
+        "en": "Ministry of Manpower: Sick leave eligibility and entitlement"
+      }
+    },
+    "mom_retrenchment": {
+      "url": "https://www.mom.gov.sg/employment-practices/retrenchment/responsible-retrenchment",
+      "label": {
+        "en": "Ministry of Manpower: Responsible retrenchment and retrenchment benefit"
+      }
+    },
+    "iras_srs": {
+      "url": "https://www.iras.gov.sg/schemes/individual-income-tax/srs-contributions-and-tax-relief",
+      "label": {
+        "en": "IRAS: SRS contributions and tax relief"
+      }
+    },
+    "iras_topup": {
+      "url": "https://www.iras.gov.sg/taxes/individual-income-tax/basics-of-individual-income-tax/tax-reliefs-rebates-and-deductions/tax-reliefs/central-provident-fund-%28cpf%29-cash-top-up-relief",
+      "label": {
+        "en": "IRAS: CPF Cash Top-up Relief"
+      }
+    },
+    "cpf_interest": {
+      "url": "https://www.cpf.gov.sg/member/growing-your-savings/earning-higher-returns/earning-attractive-interest",
+      "label": {
+        "en": "CPF Board: CPF interest rates and extra interest"
+      }
+    },
+    "cpf_withdraw55": {
+      "url": "https://www.cpf.gov.sg/member/retirement-income/retirement-withdrawals/withdrawing-for-immediate-retirement-needs",
+      "label": {
+        "en": "CPF Board: Withdrawals from age 55"
       }
     }
   },
@@ -505,5 +583,108 @@
     "workman_ot_ceiling": 4500,
     "nonworkman_ot_ceiling": 2600,
     "ot_hours_cap": 72
+  },
+  "employment": {
+    "annual_leave": {
+      "first_year_days": 7,
+      "max_days": 14,
+      "min_service_months": 3
+    },
+    "sick_leave": {
+      "outpatient": 14,
+      "hospitalisation": 60,
+      "prorate": [
+        {
+          "months": 3,
+          "outpatient": 5,
+          "hospitalisation": 15
+        },
+        {
+          "months": 4,
+          "outpatient": 8,
+          "hospitalisation": 30
+        },
+        {
+          "months": 5,
+          "outpatient": 11,
+          "hospitalisation": 45
+        },
+        {
+          "months": 6,
+          "outpatient": 14,
+          "hospitalisation": 60
+        }
+      ]
+    },
+    "public_holidays": 11,
+    "notice": [
+      {
+        "service_weeks_below": 26,
+        "label": "Less than 26 weeks",
+        "days": 1,
+        "weeks": 0
+      },
+      {
+        "service_weeks_below": 104,
+        "label": "26 weeks to less than 2 years",
+        "days": 0,
+        "weeks": 1
+      },
+      {
+        "service_weeks_below": 260,
+        "label": "2 years to less than 5 years",
+        "days": 0,
+        "weeks": 2
+      },
+      {
+        "service_weeks_below": null,
+        "label": "5 years or more",
+        "days": 0,
+        "weeks": 4
+      }
+    ],
+    "maternity": {
+      "weeks_citizen_child": 16,
+      "weeks_other": 12,
+      "employer_weeks": 8,
+      "cap_per_week": 2500,
+      "cap_per_4_weeks": 10000,
+      "min_service_months": 3
+    },
+    "shared_parental": {
+      "weeks": 10,
+      "from": "2026-04-01",
+      "weeks_before": 6,
+      "cap_per_week": 2500
+    },
+    "retrenchment": {
+      "min_years": 2,
+      "weeks_per_year_low": 2,
+      "months_per_year_high": 1
+    }
+  },
+  "srs": {
+    "cap_citizen_pr": 15300,
+    "cap_foreigner": 35700
+  },
+  "topup": {
+    "self_cap": 8000,
+    "family_cap": 8000,
+    "dependant_income_max": 8000
+  },
+  "cpf_interest": {
+    "oa": 0.025,
+    "sma": 0.04,
+    "floor_until": "2027-12-31",
+    "quarter": "1 October to 31 December 2026",
+    "extra_first": 60000,
+    "extra_oa_cap": 20000,
+    "extra_rate": 0.01,
+    "extra55_first": 30000,
+    "extra55_rate": 0.02
+  },
+  "cpf_withdrawal": {
+    "age": 55,
+    "unconditional": 5000
   }
 }

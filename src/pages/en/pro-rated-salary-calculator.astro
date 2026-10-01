@@ -1,0 +1,51 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { proRated, dailyRate, compute } from '../../lib/engine/sg';
+const ex = proRated({ monthly: 4000, worked: 12, working: 22 });
+const c = compute({ monthly: ex, age: 30, status: 'SC' });
+const rows = ([[3000, 15, 22], [4000, 12, 22], [4000, 10, 20], [5500, 18, 23], [8000, 5, 21], [10000, 11, 22]] as const).map(([m, w, t]) => { const g = proRated({ monthly: m, worked: w, working: t }); const r = compute({ monthly: g, age: 30, status: 'SC' }); return [formatMoney(m), `${w} of ${t}`, formatMoney(g, 2), formatMoney(r.monthly.employee), formatMoney(r.takeHomeMonthly)]; });
+const feb = proRated({ monthly: 4000, worked: 10, working: 20 }); const mar = proRated({ monthly: 4000, worked: 10, working: 22 });
+const faqs = [
+  { q: 'How do I calculate pro-rated salary in Singapore?', a: `Multiply the monthly gross rate of pay by the number of days you actually worked in the month, and divide by the total number of working days in that month. On ${formatMoney(4000)} a month, working 12 of 22 working days gives ${formatMoney(ex, 2)}. This is the Ministry of Manpower’s formula for an incomplete month of work.` },
+  { q: 'Are public holidays counted as working days?', a: 'Yes, when they fall on a day you would normally work. A paid public holiday counts both in the total working days of the month and in the days you are treated as having worked, provided you were employed on that day. Rest days and non-working days, such as Sunday and Saturday on a five-day week, are left out of both figures.' },
+  { q: 'Why is my pro-rated pay different from days ÷ 30?', a: `Because the legal formula uses the working days of the actual month, not calendar days. Ten days worked in a month of 20 working days is half a month’s salary, ${formatMoney(feb, 2)} on ${formatMoney(4000)}; the same ten days in a month of 22 working days is ${formatMoney(mar, 2)}. A contract cannot use a method that pays less than the statutory one.` },
+  { q: 'Is CPF pro-rated too?', a: `CPF is calculated on the wages actually paid for the month, so it falls with the salary. On pro-rated pay of ${formatMoney(ex, 2)}, a citizen aged 55 or below contributes ${formatMoney(c.monthly.employee)} and the employer ${formatMoney(c.monthly.employer)}. Below $750 of total wages a month, reduced employee rates apply, and below $500 only the employer contributes.` },
+];
+---
+<Guide id="proRated" title="Pro-Rated Salary Calculator Singapore 2026 (MOM Formula)" h1="Pro-rated salary calculator: pay for an incomplete month"
+  description="Calculate pro-rated salary in Singapore with the MOM formula for an incomplete month: monthly pay × days worked ÷ working days, with CPF and take-home pay."
+  intro="When you join, leave or take no-pay leave part-way through a month, your salary is pro-rated by working days. Enter the three figures."
+  resume={`In Singapore, salary for an incomplete month of work is calculated with a formula set by the Employment Act: monthly gross rate of pay, multiplied by the number of days the employee actually worked in that month, divided by the total number of working days in that month. Working days are the days the employee is required to work, public holidays included, rest days and non-working days excluded. On a monthly salary of ${formatMoney(4000)}, an employee who works 12 of the 22 working days in a month is paid ${formatMoney(ex, 2)} before CPF, and takes home ${formatMoney(c.takeHomeMonthly)} after the employee CPF contribution of ${formatMoney(c.monthly.employee)}. The formula applies to the first and last months of a job, to unpaid leave, and to national service or other absences without pay.`}
+  faqs={faqs} related={['hourly', 'encashLeave', 'noticePeriod', 'takeHome', 'payslip', 'overtime']} sources={[SRC.mom_incomplete, SRC.mom_daily, SRC.cpf_rates, SRC.mom_hourly]}>
+  <MiniSim client:visible kind="prorata" lang={lang} href={route('takeHome', lang)} />
+  <h2>Pro-rated salary: worked examples</h2>
+  <ContentTable headers={['Monthly salary', 'Days worked', 'Pro-rated gross', 'Employee CPF', 'Take-home']} align={['r', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>CPF is shown for a Singapore citizen aged 55 or below. The fifth row shows a short first month on a high salary: once pro-rated, the pay falls below the Ordinary Wage ceiling of {formatMoney(P.cpf.ow_ceiling_month)}, so CPF applies to all of it.</p>
+
+  <h2>Counting the working days of the month</h2>
+  <p>Start from the calendar and strike out your rest day and any non-working day. On a five-day week, that leaves Monday to Friday; on a five-and-a-half-day week, Saturdays count as half days; on a six-day week, only the rest day is removed. Public holidays that fall on working days stay in the count. A month can therefore have anywhere from 20 to 23 working days on a five-day week, which is why the same number of days worked produces different pay from one month to the next.</p>
+  <p>For half days, count 0.5 if you worked five hours or fewer on a day of normal length, and a full day if you worked more than five hours, the convention MOM applies to its own examples.</p>
+
+  <h2>Days counted as worked</h2>
+  <p>Besides the days you were physically at work, the count includes paid public holidays, paid annual leave, paid sick leave and paid hospitalisation leave falling within your period of employment in that month. Unpaid leave, absence without permission and days before your start date or after your last day are excluded. An employee who starts on the 16th of a month with 22 working days, 12 of them from the 16th onwards, is paid for 12 days whether or not a public holiday falls among them.</p>
+
+  <h2>Gross or basic rate of pay</h2>
+  <p>The formula uses the monthly gross rate of pay: basic salary plus fixed allowances paid every month, such as a fixed transport or shift allowance. It leaves out overtime pay, bonuses, annual wage supplement, reimbursements and productivity incentives, and travel, food and housing allowances. If your payslip shows a basic salary of {formatMoney(3500)} and a fixed allowance of {formatMoney(500)}, the figure to enter is {formatMoney(4000)}.</p>
+  <p>The same gross rate gives the daily rate used for leave encashment and salary in lieu of notice: 12 times the monthly amount divided by 52 weeks times the days worked a week, {formatMoney(dailyRate(4000), 2)} a day on {formatMoney(4000)} and a five-day week. That daily rate is not the one used for an incomplete month; mixing the two is the commonest payroll error in a final month.</p>
+
+  <h2>First month, last month and the final payment</h2>
+  <p>In the month you leave, the pro-rated salary is one line of the final pay. Unused annual leave is paid separately at the daily gross rate, as the <a href={route('encashLeave', lang)}>leave encashment calculator</a> shows, and any notice not served is settled at the same rate, by whichever side cut the notice short. When an employee resigns, the final salary must be paid on the last day of employment, or within 7 days if notice was not served; on dismissal, on the last day or within 3 working days.</p>
+
+  <h2>Annual wage supplement and bonus</h2>
+  <p>A contractual 13th-month payment is normally pro-rated by completed months of service in the year when an employee joins or leaves mid-year, unless the contract says otherwise. That pro-rating follows the contract, not the incomplete-month formula, and the payment is an Additional Wage for CPF. The <a href={route('bonus', lang)}>bonus tax calculator</a> works out CPF and tax on it.</p>
+
+  <h2>Who the formula protects</h2>
+  <p>The Employment Act covers all employees under a contract of service, local or foreign, including managers and executives, with the exception of seafarers, domestic workers and public servants. The incomplete-month rule is in the general part of the Act, so it applies at any salary. An employer may be more generous, for instance paying the full month to someone who started on the 3rd, but may not pay less than the formula gives.</p>
+</Guide>

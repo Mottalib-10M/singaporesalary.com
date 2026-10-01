@@ -1,0 +1,51 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { overtimePay, hourlyFromMonthly } from '../../lib/engine/sg';
+const W = P.wages;
+const ex = overtimePay({ basic: 2600, hours: 20 });
+const rows = ([[1800, 20, false], [2200, 30, false], [2600, 20, false], [3000, 40, true], [3800, 50, true], [4500, 72, true]] as const).map(([b, h, w]) => { const o = overtimePay({ basic: b, hours: h, workman: w }); return [formatMoney(b), w ? 'Workman' : 'Non-workman', formatMoney(o.hourly, 2), formatMoney(o.rate, 2), `${h} h`, formatMoney(o.pay, 2)]; });
+const rest = hourlyFromMonthly(2600) * 8;
+const faqs = [
+  { q: 'How is overtime pay calculated in Singapore?', a: `Overtime is paid at no less than 1.5 times the hourly basic rate of pay. The hourly rate is 12 times the monthly basic salary divided by 52 weeks of 44 hours. On ${formatMoney(2600)} a month the hourly rate is about ${formatMoney(ex.hourly, 2)} and the overtime rate ${formatMoney(ex.rate, 2)}, so 20 hours of overtime pay ${formatMoney(ex.pay, 2)}.` },
+  { q: 'Who is entitled to overtime pay in Singapore?', a: `Employees covered by Part 4 of the Employment Act: workmen, meaning manual workers, earning a basic salary of up to ${formatMoney(W.workman_ot_ceiling)} a month, and other employees earning up to ${formatMoney(W.nonworkman_ot_ceiling)}. Managers and executives are not covered. Above those ceilings, overtime pay is whatever the employment contract provides, which may be nothing.` },
+  { q: 'What is the maximum overtime in Singapore?', a: `${W.ot_hours_cap} hours in a month, and no more than 12 hours of work in a day, breaks excluded. Employers who need more must apply to the Ministry of Manpower for an overtime exemption. Work on a rest day or public holiday counts towards the monthly limit only for the hours beyond the normal daily hours.` },
+  { q: 'When must overtime be paid?', a: 'Within 14 days after the end of the salary period in which the overtime was worked. Ordinary salary must be paid within 7 days after the salary period. Overtime hours and the amount paid must appear as separate lines on the itemised payslip that every employer is required to issue.' },
+];
+---
+<Guide id="overtime" title="Overtime Pay Calculator Singapore 2026: 1.5× Hourly Rate" h1="Overtime pay calculator: 1.5 times your hourly basic rate"
+  description="Calculate overtime pay in Singapore under the Employment Act: hourly basic rate, 1.5 times for overtime, the $2,600 and $4,500 ceilings and the 72-hour limit."
+  intro="Overtime is paid at 1.5 times the hourly basic rate for employees covered by Part 4 of the Employment Act. Enter your basic salary and hours."
+  resume={`In Singapore, employees covered by Part 4 of the Employment Act must be paid at least 1.5 times their hourly basic rate for work beyond their contractual hours, or beyond 8 hours a day or 44 hours a week. Part 4 covers workmen earning a basic monthly salary of up to ${formatMoney(W.workman_ot_ceiling)} and non-workmen earning up to ${formatMoney(W.nonworkman_ot_ceiling)}. The hourly basic rate follows the Ministry of Manpower’s formula: 12 times the monthly basic salary, divided by 52 weeks of 44 hours. A non-workman on ${formatMoney(2600)} has an hourly rate of about ${formatMoney(ex.hourly, 2)} and an overtime rate of ${formatMoney(ex.rate, 2)}; 20 overtime hours in a month add ${formatMoney(ex.pay, 2)}. Overtime is limited to ${W.ot_hours_cap} hours a month and must be paid within 14 days of the end of the salary period.`}
+  faqs={faqs} related={['hourly', 'publicHoliday', 'proRated', 'payslip', 'takeHome', 'minimumWage']} sources={[SRC.mom_overtime, SRC.mom_hourly, SRC.mom_daily, SRC.cpf_rates]}>
+  <MiniSim client:visible kind="overtime" lang={lang} href={route('hourly', lang)} />
+  <h2>Overtime pay at different salaries</h2>
+  <ContentTable headers={['Basic salary', 'Category', 'Hourly basic rate', 'Overtime rate', 'Overtime hours', 'Overtime pay']} align={['r', 'l', 'r', 'r', 'r', 'r']} rows={rows} />
+  <p>The Ministry of Manpower rounds the {formatMoney(2600)} case down to an hourly rate of $13.60; the unrounded formula gives {formatMoney(ex.hourly, 2)}. The last row is the legal maximum: {W.ot_hours_cap} hours in a month for a workman at the {formatMoney(W.workman_ot_ceiling)} ceiling.</p>
+
+  <h2>Workman or non-workman</h2>
+  <p>A workman is someone whose work is mainly manual: construction and shipyard workers, machine operators, cleaners, drivers, and the supervisors who spend more than half their time on manual work. Everyone else covered by the Act, from clerks and retail assistants to receptionists, is a non-workman. The distinction sets the salary ceiling for Part 4: {formatMoney(W.workman_ot_ceiling)} of basic salary for workmen, {formatMoney(W.nonworkman_ot_ceiling)} for non-workmen. It is the basic salary that counts, before allowances, overtime and bonuses.</p>
+  <p>For non-workmen, the overtime rate itself is capped at the {formatMoney(W.nonworkman_ot_ceiling)} salary level. Since nobody above that level is covered, the cap matters only for an employee paid exactly at the ceiling.</p>
+
+  <h2>What counts as overtime</h2>
+  <p>Overtime is all work in excess of the normal hours of work, breaks excluded. Normal hours are the contractual hours, which cannot exceed 8 a day or 44 a week. Two arrangements stretch those limits without creating overtime: a five-day week may run to 9 hours a day, and a contract may alternate weeks of under 44 hours with weeks of up to 48, provided the fortnight totals 88. Shift workers may work up to 12 hours a day if the average over three weeks stays at 44 hours.</p>
+  <p>A part-time employee is paid the ordinary hourly rate for extra hours up to the normal hours of a similar full-time employee, and 1.5 times beyond that.</p>
+
+  <h2>Work on a rest day</h2>
+  <p>Part 4 employees get one unpaid rest day a week. Work on it is paid by a separate scale, not as overtime. At the employer’s request: one day’s basic pay for up to half the normal daily hours, two days’ pay for more than half, and two days’ pay plus 1.5 times the hourly rate for hours beyond the normal day. At the employee’s own request, the amounts are halved: half a day’s pay and one day’s pay. On {formatMoney(2600)} a month and an 8-hour day, a full rest day worked at the employer’s request brings about {formatMoney(rest * 2, 2)}. Public holidays have their own rule, set out in the <a href={route('publicHoliday', lang)}>public holiday pay guide</a>.</p>
+
+  <h2>CPF and tax on overtime</h2>
+  <p>Overtime pay is an Ordinary Wage for CPF when it is paid for the month it was worked, and so it attracts contributions at the usual rates up to the Ordinary Wage ceiling of {formatMoney(P.cpf.ow_ceiling_month)} a month. For a citizen aged 55 or below, 20 % of the overtime goes to CPF, and the employer adds 17 %. Overtime is also taxable employment income, declared by the employer with the rest of the year’s pay. At the salaries covered by Part 4, income tax is small or nil, as the <a href={route('takeHome', lang)}>take-home pay calculator</a> shows.</p>
+
+  <h2>If you are not covered by Part 4</h2>
+  <p>Professionals, managers and executives, and anyone above the salary ceilings, have no statutory right to overtime pay or to limits on hours. Their contract decides: many provide time off in lieu, some a fixed overtime allowance, others nothing. Employers are still expected to follow the Tripartite Guidelines on fair employment, and salary-related claims for unpaid contractual overtime go to the Tripartite Alliance for Dispute Management, which handles claims of up to $20,000, or $30,000 with union involvement.</p>
+
+  <h2>Checking your payslip</h2>
+  <p>Employers must issue itemised payslips showing overtime hours worked, the overtime pay and the period it covers. Divide the overtime pay by the hours: the result should be at least 1.5 times your hourly basic rate from the <a href={route('hourly', lang)}>hourly rate calculator</a>. Employers must keep employment records for the latest two years, and for one year after an employee leaves, which is the evidence a claim relies on.</p>
+</Guide>

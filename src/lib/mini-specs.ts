@@ -1,5 +1,5 @@
 /** Mini-simulateurs des guides (RECETTE §9.3) : un par sujet, calculés par le moteur singapourien. */
-import { compute, allocate, residentTax, marginalRate, earnedIncomeRelief, type Status } from './engine/sg';
+import { compute, allocate, residentTax, marginalRate, earnedIncomeRelief, overtimePay, annualLeave, encashLeave, proRated, publicHolidayPay, noticePeriod, maternityPay, sickLeave, retrenchment, reliefSaving, srsCap, cpfInterest, withdrawalAt55, dailyRate, type Status } from './engine/sg';
 import P from '../data/params-2026.json';
 import { grossFromMomMedian } from './tables';
 import { formatMoney as $, formatPercent as pct } from './format';
@@ -64,6 +64,48 @@ const SPECS: Record<string, MiniSpec> = {
   relief: { title: 'How much a tax relief saves you', cta: 'Income tax calculator', inputs: [annual(90000), { id: 'r', label: 'Extra relief you claim', def: 8000, unit: 'S$', max: 80000 }], run: ({ y, r }) => {
     const a = C(y / 12).annual; const b = C(y / 12, 30, { otherReliefs: r }).annual;
     return { head: ['Tax saved by the relief', $(a.tax - b.tax)], rows: [['Tax without it', $(a.tax)], ['Tax with it', $(b.tax)], ['Relief cap for all reliefs', $(P.tax.relief_cap)]] };
+  } },
+  overtime: { title: 'Your overtime pay', cta: 'Hourly rate calculator', inputs: [{ id: 'b', label: 'Monthly basic salary', def: 2600, unit: 'S$', max: 1000000 }, { id: 'h', label: 'Overtime hours this month', def: 20, unit: 'h', max: 300, decimals: 1 }, { id: 'w', label: 'Type of work', def: 0, options: [{ value: '0', label: 'Non-workman (office, service)' }, { value: '1', label: 'Workman (manual labour)' }] }], run: ({ b, h, w }) => {
+    const o = overtimePay({ basic: b, hours: h, workman: w === 1 }); return { head: ['Overtime pay for the month', o.covered ? $(o.pay, 2) : 'Not covered'], rows: [['Hourly basic rate', $(o.hourly, 2)], ['Overtime rate, 1.5 times', $(o.rate, 2)], ['Salary ceiling for coverage', $(o.ceiling)]], note: o.covered ? (h > P.wages.ot_hours_cap ? `Overtime is limited to ${P.wages.ot_hours_cap} hours a month.` : undefined) : 'Above the ceiling, overtime pay depends on your contract.' };
+  } },
+  annualLeave: { title: 'Your annual leave entitlement', cta: 'Leave encashment calculator', inputs: [{ id: 'y', label: 'Year of service', def: 3, unit: 'yr', max: 50 }, { id: 'm', label: 'Completed months this year', def: 12, unit: 'mo', max: 12 }], run: ({ y, m }) => {
+    const a = annualLeave({ yearOfService: y, completedMonths: m }); return { head: ['Leave earned so far this year', `${a.prorated} days`], rows: [['Full-year statutory entitlement', `${a.statutory} days`], ['Legal maximum', `${P.employment.annual_leave.max_days} days from the 8th year`], ['Minimum service to qualify', `${P.employment.annual_leave.min_service_months} months`]] };
+  } },
+  encash: { title: 'Pay for your unused leave', cta: 'Take-home pay calculator', inputs: [monthly(4500), { id: 'n', label: 'Unused leave days', def: 6, unit: 'days', max: 60, decimals: 1 }, { id: 'd', label: 'Working days a week', def: 5, options: [{ value: '5', label: '5 days' }, { value: '5.5', label: '5.5 days' }, { value: '6', label: '6 days' }] }], run: ({ m, n, d }) => {
+    const e = encashLeave({ monthly: m, days: n, daysPerWeek: d }); return { head: ['Leave encashment before CPF', $(e.pay, 2)], rows: [['Gross rate of pay per day', $(e.daily, 2)], ['Employee CPF on it, age 55 or below', $(compute({ monthly: m, bonus: e.pay, age: 30, status: 'SC' }).bonusMonth.employee - compute({ monthly: m, age: 30, status: 'SC' }).monthly.employee)], ['Formula', '12 × monthly ÷ (52 × days a week)']] };
+  } },
+  prorata: { title: 'Salary for an incomplete month', cta: 'Take-home pay calculator', inputs: [monthly(4000), { id: 'w', label: 'Days actually worked', def: 12, unit: 'days', max: 31, decimals: 1 }, { id: 't', label: 'Working days in that month', def: 22, unit: 'days', max: 31 }], run: ({ m, w, t }) => {
+    const g = proRated({ monthly: m, worked: w, working: t }); const c = compute({ monthly: g, age: 30, status: 'SC' });
+    return { head: ['Gross pay for the month', $(g, 2)], rows: [['Employee CPF (citizen, 55 or below)', $(c.monthly.employee)], ['Take-home pay', $(c.takeHomeMonthly)], ['Share of the month worked', pct(t > 0 ? Math.min(w, t) / t : 0, 0)]] };
+  } },
+  pubhol: { title: 'Pay for working on a public holiday', cta: 'Overtime pay calculator', inputs: [{ id: 'b', label: 'Monthly basic salary', def: 3000, unit: 'S$', max: 1000000 }, { id: 'd', label: 'Working days a week', def: 5, options: [{ value: '5', label: '5 days' }, { value: '5.5', label: '5.5 days' }, { value: '6', label: '6 days' }] }], run: ({ b, d }) => {
+    const x = publicHolidayPay({ basic: b, daysPerWeek: d }); return { head: ['Extra pay for the day', $(x, 2)], rows: [['On top of your monthly salary', $(b)], ['Paid public holidays a year', String(P.employment.public_holidays)], ['Formula', '12 × basic ÷ (52 × days a week)']] };
+  } },
+  notice: { title: 'Notice period and pay in lieu', cta: 'Leave encashment calculator', inputs: [{ id: 's', label: 'Length of service', def: 150, options: [{ value: '10', label: 'Less than 26 weeks' }, { value: '60', label: '26 weeks to under 2 years' }, { value: '150', label: '2 to under 5 years' }, { value: '300', label: '5 years or more' }] }, monthly(4500)], run: ({ s, m }) => {
+    const n = noticePeriod({ serviceWeeks: s, monthly: m }); return { head: ['Statutory notice', n.weeks ? `${n.weeks} week${n.weeks > 1 ? 's' : ''}` : '1 day'], rows: [['Salary in lieu of that notice', $(n.inLieu, 2)], ['Working days covered, 5-day week', String(n.workingDays)], ['Applies when', 'The contract sets no notice']] };
+  } },
+  maternity: { title: 'Your maternity leave pay', cta: 'Take-home pay calculator', inputs: [monthly(5000), { id: 'c', label: 'Your situation', def: 1, options: [{ value: '1', label: 'Citizen child, 1st or 2nd' }, { value: '2', label: 'Citizen child, 3rd or later' }, { value: '0', label: 'Child not a Singapore citizen' }] }], run: ({ m, c }) => {
+    const x = maternityPay({ monthly: m, citizenChild: c !== 0, thirdChildOrMore: c === 2 }); return { head: [`Pay over ${x.paidWeeks} paid weeks`, $(x.total)], rows: [['Per week', $(x.weekly, 2)], ['Paid by the employer', $(x.employerPaid)], ['Reimbursed by the Government', $(x.governmentPaid)]], note: x.capped ? 'Government-paid weeks are capped at S$2,500 a week; your employer may top up.' : undefined };
+  } },
+  sick: { title: 'Your paid sick leave', cta: 'Take-home pay calculator', inputs: [{ id: 's', label: 'Months of service', def: 6, unit: 'mo', max: 600 }, monthly(4000)], run: ({ s, m }) => {
+    const x = sickLeave(s); return { head: ['Paid outpatient sick leave', `${x.outpatient} days`], rows: [['Paid hospitalisation leave, outpatient days included', `${x.hospitalisation} days`], ['Pay per sick day, 5-day week', $(dailyRate(m), 2)], ['Full entitlement after', '6 months']] };
+  } },
+  retrench: { title: 'Your retrenchment benefit range', cta: 'Notice period calculator', inputs: [monthly(5000), { id: 'y', label: 'Years of service', def: 6, unit: 'yrs', max: 50, decimals: 1 }], run: ({ m, y }) => {
+    const r = retrenchment({ monthly: m, years: y }); return { head: ['At one month per year of service', $(r.high)], rows: [['At two weeks per year of service', $(r.low)], ['Income tax and CPF on it', 'None'], ['Eligible under the norm', r.eligible ? 'Yes, 2 years or more' : 'No, under 2 years']] };
+  } },
+  srs: { title: 'Tax saved by an SRS contribution', cta: 'Income tax calculator', inputs: [annual(120000), { id: 'c', label: 'SRS contribution this year', def: P.srs.cap_citizen_pr, unit: 'S$', max: P.srs.cap_foreigner }, { id: 'f', label: 'You are', def: 0, options: [{ value: '0', label: 'Citizen or PR' }, { value: '1', label: 'Foreigner' }] }], run: ({ y, c, f }) => {
+    const cap = srsCap(f === 1); const x = reliefSaving({ annualIncome: y, age: 35, relief: Math.min(c, cap), status: f === 1 ? 'FOREIGNER' : 'SC' });
+    return { head: ['Income tax saved', $(x.saving)], rows: [['Contribution counted', $(Math.min(c, cap))], ['Your yearly SRS cap', $(cap)], ['Tax before and after', `${$(x.before)} → ${$(x.after)}`]] };
+  } },
+  interest: { title: 'Interest on your CPF balances', cta: 'CPF calculator', inputs: [{ id: 'o', label: 'Ordinary Account', def: 60000, unit: 'S$', max: 5000000 }, { id: 's', label: 'Special, MediSave and Retirement Accounts', def: 50000, unit: 'S$', max: 5000000 }, age(35)], run: ({ o, s, a }) => {
+    const i = cpfInterest({ oa: o, sma: s, age: a }); return { head: ['Interest for one year', $(i.total)], rows: [['Base interest', $(i.base)], ['Extra interest', $(i.extra)], ['Average rate on your balances', pct(i.rate, 2)]] };
+  } },
+  topup: { title: 'Tax saved by a CPF cash top-up', cta: 'Income tax calculator', inputs: [annual(100000), { id: 't', label: 'Top-up to your own account', def: P.topup.self_cap, unit: 'S$', max: 500000 }, { id: 'g', label: 'Top-up to family members', def: 0, unit: 'S$', max: 500000 }], run: ({ y, t, g }) => {
+    const rel = Math.min(t, P.topup.self_cap) + Math.min(g, P.topup.family_cap); const x = reliefSaving({ annualIncome: y, age: 35, relief: rel });
+    return { head: ['Income tax saved', $(x.saving)], rows: [['Relief counted', $(rel)], ['Maximum relief a year', $(P.topup.self_cap + P.topup.family_cap)], ['Your marginal tax rate', pct(x.marginal, 1)]] };
+  } },
+  withdraw55: { title: 'What you can withdraw at 55', cta: 'CPF retirement sums', inputs: [{ id: 'o', label: 'Ordinary Account at 55', def: 150000, unit: 'S$', max: 5000000 }, { id: 's', label: 'Special Account at 55', def: 120000, unit: 'S$', max: 5000000 }], run: ({ o, s }) => {
+    const w = withdrawalAt55({ oa: o, sa: s }); return { head: ['Withdrawable in cash', $(w.withdrawable)], rows: [['Set aside in your Retirement Account', $(w.ra)], ['Full Retirement Sum 2026', $(RS.frs)], ['FRS met', w.metFrs ? 'Yes' : 'No']] };
   } },
 };
 

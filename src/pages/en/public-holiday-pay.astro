@@ -1,0 +1,50 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { publicHolidayPay, hourlyFromMonthly, dailyRate } from '../../lib/engine/sg';
+const PH = P.employment.public_holidays;
+const ex = publicHolidayPay({ basic: 3000 });
+const rows = ([[1800, 6], [2200, 5.5], [2600, 5], [3000, 5], [4000, 5], [6000, 5]] as const).map(([b, d]) => [formatMoney(b), `${d} days`, formatMoney(publicHolidayPay({ basic: b, daysPerWeek: d }), 2), formatMoney(b + publicHolidayPay({ basic: b, daysPerWeek: d }), 2)]);
+const days = ['New Year’s Day', 'Chinese New Year (2 days)', 'Hari Raya Puasa', 'Good Friday', 'Labour Day', 'Vesak Day', 'Hari Raya Haji', 'National Day', 'Deepavali', 'Christmas Day'].map((d) => [d]);
+const faqs = [
+  { q: 'How much am I paid for working on a public holiday in Singapore?', a: `An extra day’s salary at the basic rate of pay, on top of your gross pay for that day, which is already inside your monthly salary. On a basic salary of ${formatMoney(3000)} and a five-day week, the extra day is ${formatMoney(ex, 2)}. Employer and employee may instead agree on another day off in substitution.` },
+  { q: 'Is it double pay on a public holiday?', a: 'In effect, yes, for a monthly-paid employee: the month’s salary already pays for the holiday, and working it adds one more day at the basic rate. It is not “triple pay”. Hours worked beyond your normal daily hours on the holiday are overtime on top, at 1.5 times the hourly basic rate, for employees covered by Part 4 of the Employment Act.' },
+  { q: 'What if a public holiday falls on my day off?', a: 'If it falls on your rest day, usually Sunday, the next working day becomes a paid holiday. If it falls on a non-working day, such as Saturday on a five-day week, you are entitled to another day off or to one extra day’s salary at the gross rate of pay, as the employer decides.' },
+  { q: 'Can my employer give time off in lieu instead of pay?', a: 'For managers and executives, and for employees not covered by Part 4 of the Employment Act, yes: the employer may grant time off in lieu for the hours worked on the holiday. For Part 4 employees, the choice is between the extra day’s pay and a full substitute day off agreed with the employee.' },
+];
+---
+<Guide id="publicHoliday" title="Public Holiday Pay Singapore 2026: Extra Day’s Salary" h1="Public holiday pay in Singapore: what working a holiday pays"
+  description="Singapore’s 11 paid public holidays: the extra day’s salary for working on one, holidays that fall on a rest day or Saturday, overtime and off in lieu."
+  intro="Every employee covered by the Employment Act has 11 paid public holidays. Working on one earns an extra day’s pay. Enter your basic salary."
+  resume={`Employees covered by Singapore’s Employment Act are entitled to ${PH} paid public holidays a year. An employee who does not work on a public holiday is paid the gross rate of pay for that day, which a monthly salary already includes. An employee required to work on a public holiday must be paid an extra day’s salary at the basic rate of pay, or be given another day off by agreement. The extra day is calculated as 12 times the monthly basic salary divided by 52 times the number of working days a week: ${formatMoney(ex, 2)} on a basic salary of ${formatMoney(3000)} and a five-day week. A holiday that falls on a rest day moves to the next working day, and one that falls on a non-working day gives another day off or a day’s salary in lieu. Absence without reason the day before or after forfeits the holiday pay.`}
+  faqs={faqs} related={['overtime', 'annualLeave', 'hourly', 'proRated', 'sickLeave', 'payslip']} sources={[SRC.mom_ph, SRC.mom_overtime, SRC.mom_daily]}>
+  <MiniSim client:visible kind="pubhol" lang={lang} href={route('overtime', lang)} />
+  <h2>Extra pay for a public holiday worked</h2>
+  <ContentTable headers={['Monthly basic salary', 'Working week', 'Extra day at the basic rate', 'Total for that month']} align={['r', 'l', 'r', 'r']} rows={rows} />
+  <p>The total column shows the month’s basic salary plus one holiday worked. Allowances are not part of the extra day, because the rule uses the basic rate of pay; they are, however, part of the gross rate paid for a holiday not worked.</p>
+
+  <h2>The {PH} gazetted public holidays</h2>
+  <ContentTable headers={['Holiday']} align={['l']} rows={days} />
+  <p>Chinese New Year counts for two days, which brings the list to {PH}. Polling Day in a general or presidential election is an additional public holiday when it occurs. By agreement, employer and employee may substitute any public holiday with another working day.</p>
+
+  <h2>Holidays on a rest day or a non-working day</h2>
+  <p>The two cases are treated differently. A rest day is the one day a week on which you cannot be made to work, most often Sunday: a holiday that falls on it is observed on the following working day, which is why Singapore regularly has Monday holidays. A non-working day is a day off that is not the rest day, typically Saturday on a five-day week: the holiday stays on the Saturday, and the employer must either give another day off or pay one extra day’s salary at the gross rate, {formatMoney(dailyRate(3000), 2)} on {formatMoney(3000)} a month.</p>
+
+  <h2>Overtime on a public holiday</h2>
+  <p>For employees covered by Part 4 of the Employment Act, workmen earning up to {formatMoney(P.wages.workman_ot_ceiling)} and other employees earning up to {formatMoney(P.wages.nonworkman_ot_ceiling)} in basic salary, hours worked beyond the normal daily hours on a public holiday are overtime. MOM’s formula is the hourly basic rate times 1.5 times the overtime hours, added to the public holiday pay. On {formatMoney(2600)}, two such hours add {formatMoney(hourlyFromMonthly(2600) * 1.5 * 2, 2)}. Work on the holiday itself does not count towards the 72-hour monthly overtime limit; only those extra hours do. The <a href={route('overtime', lang)}>overtime pay calculator</a> covers ordinary days.</p>
+
+  <h2>Shift workers, part-timers and daily-rated staff</h2>
+  <p>For a shift that straddles midnight, the employer may treat the holiday as the 24 hours starting from the shift’s usual start time, so that one shift, not two half shifts, attracts the holiday rate. Part-time employees are entitled to public holiday pay in proportion to their hours, or to an encashment of public holidays built into their hourly rate if the contract says so. Daily-rated employees are paid for a public holiday at their daily rate if they would have worked that day.</p>
+
+  <h2>When holiday pay can be withheld</h2>
+  <p>An employee who is absent without consent or a reasonable excuse on the working day immediately before or immediately after a public holiday loses the pay for that holiday: the employer may deduct one day’s gross pay from the month’s salary. Approved leave of any kind is not absence. A holiday that falls during approved unpaid leave is not paid; one that falls during paid annual leave or sick leave is paid, and the leave day is credited back.</p>
+
+  <h2>Tax and CPF</h2>
+  <p>The extra day’s pay is wages for the month: CPF contributions and income tax apply as on the rest of the salary, within the Ordinary Wage ceiling of {formatMoney(P.cpf.ow_ceiling_month)}. It should appear on the itemised payslip as a separate line, with the date of the holiday worked.</p>
+</Guide>

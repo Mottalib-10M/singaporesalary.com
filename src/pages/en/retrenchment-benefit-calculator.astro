@@ -1,0 +1,49 @@
+---
+import MiniSim from "../../components/calc/MiniSim";
+import Guide from "../../components/Guide.astro";
+import ContentTable from "../../components/ContentTable.astro";
+import { route } from "../../i18n/routes";
+import { P } from "../../lib/tables";
+import { SRC } from "../../lib/sources";
+import { formatMoney, formatPercent } from "../../lib/format";
+const lang = "en";
+import { retrenchment } from '../../lib/engine/sg';
+const R = P.employment.retrenchment;
+const ex = retrenchment({ monthly: 5000, years: 6 });
+const rows = ([[3000, 2], [4000, 3], [5000, 6], [6500, 10], [8000, 15], [12000, 20]] as const).map(([m, y]) => { const r = retrenchment({ monthly: m, years: y }); return [formatMoney(m), `${y} years`, formatMoney(r.low), formatMoney(r.high)]; });
+const faqs = [
+  { q: 'How is retrenchment benefit calculated in Singapore?', a: `There is no legal formula. The amount comes from the employment contract or collective agreement, or is negotiated. The prevailing norm reported by the Ministry of Manpower is between 2 weeks and 1 month of salary for each year of service; in unionised companies it is usually 1 month. For ${formatMoney(5000)} a month and 6 years, that range runs from ${formatMoney(ex.low)} to ${formatMoney(ex.high)}.` },
+  { q: 'Is retrenchment benefit compulsory in Singapore?', a: `No. The Employment Act does not oblige an employer to pay it unless the contract or a collective agreement provides for it. What the Act says is that employees with at least ${R.min_years} years of service are eligible to ask for it. The Tripartite Advisory on Managing Excess Manpower urges employers to pay according to the norm where they can.` },
+  { q: 'Is retrenchment benefit taxable?', a: 'No. IRAS treats a retrenchment payment made to compensate for loss of employment as a capital receipt, which is not taxable. Amounts in the same package that pay for services, such as salary in lieu of notice in some cases, gratuity for past work or encashed leave, are taxable and are reported separately by the employer.' },
+  { q: 'Do I get retrenchment benefit with less than 2 years of service?', a: `You are not eligible under the Employment Act to claim it, but nothing stops an employer from paying. MOM’s guidance is that employees with under ${R.min_years} years of service could be granted an ex gratia payment out of goodwill, and many retrenchment exercises do include a smaller payment for them.` },
+];
+---
+<Guide id="retrenchment" title="Retrenchment Benefit Calculator Singapore 2026: The Norm" h1="Retrenchment benefit calculator: the range under the prevailing norm"
+  description="Estimate retrenchment benefit in Singapore: the norm of 2 weeks to 1 month of salary per year of service, who is eligible after 2 years, tax and CPF treatment."
+  intro="Singapore law sets no retrenchment formula, but practice follows a well-known range. Enter your salary and years of service."
+  resume={`A retrenchment benefit compensates an employee whose job is lost through redundancy or reorganisation. Singapore law does not fix its amount: it depends on the employment contract or the collective agreement, and otherwise on negotiation. The Ministry of Manpower reports a prevailing norm of between 2 weeks and 1 month of salary per year of service, with 1 month per year common in unionised companies. Employees who have served at least ${R.min_years} years are eligible to claim it. For a monthly salary of ${formatMoney(5000)} and 6 years of service, the norm gives between ${formatMoney(ex.low)} and ${formatMoney(ex.high)}. A retrenchment benefit is not taxable, and neither employee nor employer pays CPF contributions on it. Notice, or salary in lieu, and unused leave are owed in addition.`}
+  faqs={faqs} related={['noticePeriod', 'encashLeave', 'proRated', 'takeHome', 'averageSalary', 'employerCost']} sources={[SRC.mom_retrenchment, SRC.mom_notice, SRC.cpf_rates, SRC.iras_rates]}>
+  <MiniSim client:visible kind="retrench" lang={lang} href={route('noticePeriod', lang)} />
+  <h2>The range at different salaries and lengths of service</h2>
+  <ContentTable headers={['Monthly salary', 'Service', 'At 2 weeks per year', 'At 1 month per year']} align={['r', 'l', 'r', 'r']} rows={rows} />
+  <p>Two weeks of salary is taken here as two fifty-seconds of the yearly salary. The spread is wide: the upper figure is a little more than double the lower one. Where a given employer lands depends on its finances, the industry’s practice and whether a union is recognised.</p>
+
+  <h2>What counts as retrenchment</h2>
+  <p>Retrenchment is dismissal on the ground of redundancy, or because of a reorganisation of the employer’s business. It covers permanent employees and those on fixed-term contracts of at least six months that are ended early. An employer who terminates a contract and has no plan to fill the role is retrenching, whatever word the letter uses. A contract that simply reaches its end date is not a retrenchment, and neither is a dismissal for poor performance or misconduct.</p>
+  <p>Employers with at least ten employees must notify the Ministry of Manpower within five working days of informing the affected employees, a requirement that applies to any retrenchment, even of a single person.</p>
+
+  <h2>Which salary, and which years</h2>
+  <p>Contracts and collective agreements usually define the base: last drawn basic salary, or gross salary with fixed allowances. Where they are silent, the basis is negotiated. Years of service are generally counted to the last day of employment, with part-years pro-rated by completed months. Many schemes cap either the number of years or the total payment; a cap of 25 years, or of a fixed number of months, is common in collective agreements.</p>
+
+  <h2>Why no CPF and no income tax</h2>
+  <p>CPF contributions are payable on wages, meaning remuneration for employment. A retrenchment benefit compensates for the loss of the job, so it is not wages and the CPF Board does not require contributions from either side. For the same reason IRAS regards it as a capital receipt rather than income. The exemption is specific to the compensation element. Notice pay, encashed leave, a pro-rated bonus or annual wage supplement, and any gratuity for past services keep their own treatment, and the employer’s Form IR8A separates them.</p>
+
+  <h2>What else the employer owes</h2>
+  <p>The retrenchment benefit comes on top of three things. The notice period in the contract, or the statutory one, must be given or paid, as the <a href={route('noticePeriod', lang)}>notice period calculator</a> sets out; the Tripartite Advisory suggests longer notice than the contractual minimum where possible. Salary up to the last day is pro-rated by working days. Unused annual leave is encashed at the daily gross rate with the <a href={route('encashLeave', lang)}>leave encashment calculator</a>. All of it is due on the last day of employment.</p>
+
+  <h2>Older workers and re-employment</h2>
+  <p>Employees who reach the statutory retirement age, 64 since 1 July 2026, and cannot be offered re-employment are entitled to a different payment, the Employment Assistance Payment, rather than a retrenchment benefit. The tripartite guidelines recommend three and a half months of salary, within a floor and a ceiling. An employee retrenched before that age is treated like any other.</p>
+
+  <h2>If the employer does not pay</h2>
+  <p>Where the contract or collective agreement provides for a retrenchment benefit, an unpaid amount is a salary-related claim that can be taken to the Tripartite Alliance for Dispute Management for mediation, and then to the Employment Claims Tribunals, within six months of the last day of employment. Where the contract is silent, there is no claim in law, and the route is negotiation, through the union if there is one. The <a href={route('averageSalary', lang)}>average salary page</a> helps to judge an offer against pay for comparable roles.</p>
+</Guide>
