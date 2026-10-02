@@ -38,7 +38,7 @@ const cookiesHref = route('cookies', lang as never);
       <div class="mx-auto flex max-w-4xl flex-col gap-3 px-4 py-4 sm:py-5">
         <h2 id="consent-title" class="text-sm font-semibold text-navy-900">{s.title}</h2>
         <p class="text-sm leading-relaxed text-navy-600">
-          {s.body} <a href={cookiesHref} class="underline hover:text-navy-900">{s.more}</a>.
+          {s.body}{' '}<a href={cookiesHref} class="underline hover:text-navy-900">{s.more}</a>.
         </p>
         <div class="flex flex-col gap-2 sm:flex-row">
           <button type="button" data-consent="granted" class="rounded-lg bg-navy-900 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700">{s.accept}</button>
