@@ -15,13 +15,18 @@ const jsonLd = [profilePageSchema({ path: route('about', lang), lang }), organiz
     <p>SingaporeSalary.com is published by <strong>Radif Partners</strong>, an independent publisher of free payroll and tax calculators for several countries. The site was started in {SITE_FOUNDED} with one aim: to give employees and employers in Singapore a calculator that applies the CPF Board’s tables as they are written, all five of them, rather than a single percentage, and that explains every step.</p>
     <h2>Why this calculator exists</h2>
     <p>Most Singapore salary calculators apply 20 % and 17 % to every salary. That is right for citizens and for PRs from their third year, and wrong for first- and second-year PRs, for older workers, for low wages, for bonuses above the Additional Wage ceiling and for anyone paid more than $8,000 a month. Those are exactly the cases where people need a calculator. We built the engine from the rate tables, the rounding notes and the IRAS rules, and we test it against the examples the CPF Board and IRAS publish.</p>
-    <h2>How we work</h2>
-    <p>Every rate is read from the official source, written into a single parameter file with its source and the date it was checked, and never typed into a page by hand. Pages that quote an amount compute it with the same engine as the calculator. The parameters were last checked on {P.retrieved_at}. The method, the test cases and the known limits are published on the <a href={route('method', lang)}>methodology page</a>, and the rules we follow in writing and correcting are in the <a href={route('editorial', lang)}>editorial policy</a>.</p>
-    <h2>How the site is funded</h2>
-    <p>The site is free and requires no account. It may show advertising in the future, placed below the calculators and never inside them. We do not sell data, and there is none to sell: the calculators run in your browser and nothing you type is sent to us. No bank, employer, recruiter or government body pays for or reviews the content.</p>
+    <h2>How a CPF rate reaches this page</h2>
+    <ol>
+      <li>The rate is copied from the CPF Board’s contribution tables, or from the IRAS page for tax, into one file of 2026 values. That file lists the {Object.keys(P.sources).length} official documents it draws on and the date they were last compared with it: {P.retrieved_at}.</li>
+      <li>A single calculation engine reads the file. The calculators, the salary tables and the amounts quoted in the guides all come out of it, so no CPF or tax figure is keyed into a page by hand.</li>
+      <li>The engine is held to worked examples from the CPF Board and IRAS by automated tests: the split of a $100 contribution between OA, SA and MA at 30, the graduated rates of a first-year PR, the employee share rounded down to the dollar.</li>
+    </ol>
+    <p>The <a href={route('method', lang)}>methodology page</a> sets out every formula and what the engine leaves aside, such as self-employed MediSave, Workfare and the foreign worker levy. How sources are chosen and corrections dated is described in the <a href={route('editorial', lang)}>editorial policy</a>.</p>
+    <h2>Money, data and who has a say</h2>
+    <p>Nobody pays to use SingaporeSalary.com and there is nothing to sign up for. Your salary, age and residency status stay in your browser tab, where the CPF and tax arithmetic is done, so we never receive them and have nothing to sell. There are no ads today; if some are added later, they will sit outside the calculators. Neither the CPF Board, IRAS or MOM nor any bank, insurer, recruiter or employer funds the site or sees a page before it goes live.</p>
     <h2>What we are not</h2>
     <p>We are not tax advisers and not affiliated with the CPF Board, IRAS or the Ministry of Manpower. The results are estimates to help you plan; your payslip, CPF statement and notice of assessment are the documents that count.</p>
     <h2>Report an error</h2>
-    <p>If a figure looks wrong, write to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> with the page, the inputs and what you expected. We check every report against the official source and publish corrections with their date.</p>
+    <p>Payslip and calculator disagree? Send <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> the month, your age, your status (citizen, PR in the first, second or later year, foreigner), the ordinary and additional wages you entered and both figures. We rework the case from the CPF Board table or IRAS rule it falls under and, if the site is at fault, fix it and show the date of the correction on the page.</p>
   </div>
 </PageLayout>

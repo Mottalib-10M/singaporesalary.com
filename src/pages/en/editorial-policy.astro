@@ -11,17 +11,17 @@ const jsonLd = [webPageSchema({ name: title, description, path: route('editorial
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} breadcrumbs={[{ label: 'Editorial policy' }]}>
   <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Editorial policy</h1></header>
   <div class="prose prose-slate max-w-none">
-    <h2>Sources</h2>
-    <p>We use primary sources only for rates and rules: the CPF Board, IRAS, the Ministry of Manpower and the legislation they apply. Press articles and other calculators are never a source for a figure. Each page lists the sources it relies on, and each parameter in our engine carries the address it was read from.</p>
-    <h2>Figures</h2>
-    <p>Amounts on the pages are computed by the same engine as the calculators, from the same parameter file, so a correction to a rate updates every page at once. Test cases taken from official examples run before every publication.</p>
-    <h2>Review cycle</h2>
-    <p>Every page is reviewed at least every {REVIEW_CYCLE_MONTHS} months, and all parameters when the CPF Board publishes its next rate tables and after each Budget. The date shown at the top and bottom of each page is the date of the last check.</p>
-    <h2>Corrections</h2>
-    <p>When we find or are told about an error, we correct it, rerun the tests and note the date of the change. Significant corrections are described on the page concerned. Reports can be sent through the <a href={route('contact', lang)}>contact page</a>.</p>
-    <h2>Independence</h2>
-    <p>No company, bank or government body pays for or reviews our content. Advertising, if shown, never appears inside a calculator and never influences what we write.</p>
-    <h2>Use of software</h2>
-    <p>We use software tools, including language models, to help draft and check text. Every figure is produced by the tested engine, and every rule is checked against the official source before publication.</p>
+    <h2>What counts as a source</h2>
+    <p>A rate or a rule on SingaporeSalary.com must come from a primary publication: the CPF Board’s contribution and allocation tables, IRAS guidance for the Year of Assessment concerned, Ministry of Manpower pages on pay and leave, or the Acts behind them. A number seen in a newspaper or on another calculator is at most a reason to go and read the official text. Each guide lists the documents it relies on, and the parameter file keeps their addresses next to the values.</p>
+    <h2>One engine, one file</h2>
+    <p>Calculators, salary tables and the amounts quoted in guides are all produced by the same engine reading the same 2026 parameter file. Change a CPF rate there and every page carries the new rate at the next build. The engine’s automated tests reproduce CPF Board and IRAS worked examples, among them the allocation of $100 at ages 30 and 57 and the second-year PR rates.</p>
+    <h2>When parameters are checked</h2>
+    <p>Two events set off a full pass over the parameters: the CPF Board announcing new contribution rates (the January 2027 increases for workers aged 55 to 65 are already in the file) and each Singapore Budget. Outside those, every page is read again at least once in {REVIEW_CYCLE_MONTHS} months. The date printed at the top and bottom of a page is when it was last checked.</p>
+    <h2>Fixing mistakes</h2>
+    <p>Once an error is confirmed, the value or sentence is corrected, the tests are run again and the page’s check date moves forward. If the fix changes a result noticeably, the page says so. You can point one out from the <a href={route('contact', lang)}>contact page</a>.</p>
+    <h2>Who has no say</h2>
+    <p>Radif Partners takes no money from banks, insurers, recruiters or government agencies, and none of them reads a page before it is published. Should advertising appear one day, it will be kept outside the calculators and have no influence on the text.</p>
+    <h2>Software and AI</h2>
+    <p>Drafting and proofreading are assisted by software, language models included. They never produce a number: CPF, tax and leave figures come from the tested engine, and each rule is compared with the CPF Board, IRAS or MOM text before it goes live.</p>
   </div>
 </PageLayout>

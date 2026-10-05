@@ -3,6 +3,7 @@ import PageLayout from '../../layouts/PageLayout.astro';
 import LegalIdentity from '../../components/LegalIdentity.astro';
 import { route } from '../../i18n/routes';
 import { breadcrumbSchema } from '../../lib/seo';
+import { LEGAL } from '../../data/site-config';
 const lang = 'en';
 ---
 <PageLayout title="Terms of Use and Legal Notice, SingaporeSalary.com" description="Terms of use and legal notice of SingaporeSalary.com: publisher, host, nature of the results, limitation of liability, reuse of content and the free embeddable widget." lang={lang} noindex={true} jsonLd={[breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Terms of use', path: route('terms', lang) }])]} breadcrumbs={[{ label: 'Terms of use' }]}>
@@ -11,14 +12,14 @@ const lang = 'en';
     <h2>Publisher</h2>
     <LegalIdentity lang="en" />
     <h2>Host</h2>
-    <LegalIdentity lang="en" mode="hosting" />
+    <p>The site is a set of static files: there is no database or application server, and the CPF engine travels with the pages to run in your browser. The files are served by GitHub Pages, a service run by GitHub, Inc., whose head office is in San Francisco, California, United States (88 Colin P Kelly Jr Street, 94107): <a href={LEGAL.hosting.url} rel="nofollow noopener" target="_blank">pages.github.com</a>.</p>
     <h2>Nature of the results</h2>
-    <p>The calculators give estimates based on the official rates in force, read on the date shown on each page. They are not financial, tax or legal advice and do not replace your payslip, your CPF statement, your IRAS notice of assessment or a professional adviser. Your situation may involve rules the calculators do not model, listed on the <a href={route('method', lang)}>methodology page</a>.</p>
+    <p>Each result is an estimate computed from the CPF Board tables and IRAS rates in force on the check date printed on the page. It is not tax, investment or legal advice, and it does not override what your employer reports on your payslip, what the CPF Board records on your statement or what IRAS assesses for the Year of Assessment; a professional adviser remains the right person for your own case. Situations the engine leaves out are listed on the <a href={route('method', lang)}>methodology page</a>.</p>
     <h2>Liability</h2>
-    <p>We take care to keep the rates accurate and to correct reported errors promptly, but we cannot guarantee that the site is free of error or always available. We are not liable for decisions taken on the basis of the estimates. Nothing in these terms limits a liability that cannot be limited by law.</p>
+    <p>Rates are checked with care and reported mistakes are fixed quickly, yet errors and outages can still happen and no guarantee is given against them. Radif Partners accepts no liability for payroll, hiring or financial decisions made from these estimates, except where the law does not allow that liability to be excluded.</p>
     <h2>Reuse</h2>
-    <p>Texts, tables and code on this site are protected by copyright. You may quote short extracts with a link to the page. The salary calculator may be embedded freely using the code on the <a href={route('widget', lang)}>widget page</a>, provided the credit link stays visible.</p>
+    <p>Copyright covers the wording, tables and code of SingaporeSalary.com. Short quotations are welcome with a link back to the page quoted. To offer the CPF and tax calculator itself to your readers, use the iframe from the <a href={route('widget', lang)}>widget page</a> and keep its credit link in view.</p>
     <h2>Applicable law</h2>
-    <p>These terms are governed by French law, the law of the publisher’s establishment, without prejudice to mandatory consumer protection rules of your country of residence.</p>
+    <p>French law governs these terms, as Radif Partners is established in France. Whether you live in Singapore or elsewhere, the consumer protections your own country makes mandatory still apply.</p>
   </div>
 </PageLayout>

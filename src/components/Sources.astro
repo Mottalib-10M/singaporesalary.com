@@ -16,7 +16,7 @@ const { lang } = Astro.props;
 const INTRO: Record<string, string> = {
   fr: 'Chaque chiffre de cette page provient d’une de ces sources officielles, consultées le',
   de: 'Jede Zahl auf dieser Seite stammt aus einer dieser amtlichen Quellen, abgerufen am',
-  en: 'Every figure on this page comes from one of these official sources, read on',
+  en: 'From CPF contribution and allocation tables to IRAS tax rates and Ministry of Manpower leave rules, the site’s figures are taken from the documents below; the engine’s parameter file was last compared with them on',
   es: 'Cada cifra de esta página procede de una de estas fuentes oficiales, consultadas el',
   nl: 'Elk bedrag op deze pagina komt uit een van deze officiële bronnen, geraadpleegd op',
   it: 'Ogni cifra di questa pagina proviene da una di queste fonti ufficiali, consultate il',
@@ -32,7 +32,7 @@ const sources: Src[] = Object.values((P as { sources?: Record<string, Src> }).so
 {sources.length > 0 && (
   <>
     <h2 id="sources">{H2[lang] ?? H2.en}</h2>
-    <p>{INTRO[lang] ?? INTRO.en} {P.retrieved_at}.</p>
+    <p>{`${INTRO[lang] ?? INTRO.en} ${P.retrieved_at}.`}</p>
     <ul>
       {sources.map((s) => (
         <li><a href={s.url} rel="nofollow noopener" target="_blank">{s.label[lang] ?? s.label.en}</a></li>
