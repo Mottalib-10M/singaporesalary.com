@@ -4,26 +4,21 @@ import { route } from '../../i18n/routes';
 import { breadcrumbSchema } from '../../lib/seo';
 const lang = 'en';
 ---
-<PageLayout title="Cookies on SingaporeSalary.com: What Is Set and Why" description="Cookies on SingaporeSalary.com: none for the calculators, Clarity and Google Analytics for audience measurement, no consent banner, and how to block them." lang={lang} noindex={true} jsonLd={[breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Cookies', path: route('cookies', lang) }])]} breadcrumbs={[{ label: 'Cookies' }]}>
+<PageLayout title="Cookies on SingaporeSalary.com: None at All" description="SingaporeSalary.com places no cookies and saves nothing on your device; Microsoft Clarity runs without cookies purely to spot errors in the CPF and tax tools." lang={lang} noindex={true} jsonLd={[breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Cookies', path: route('cookies', lang) }])]} breadcrumbs={[{ label: 'Cookies' }]}>
   <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Cookies</h1></header>
   <div class="prose prose-slate max-w-none">
-    <p>Nothing in the CPF and tax calculators needs a cookie. Your wage, age and status are held by the page while it is open and, once you change a field, written into the address bar so the link can be shared.</p>
-    <h2>Microsoft Clarity</h2>
-    <p>Clarity shows us where readers click and how far they scroll, as heatmaps and anonymised replays; field contents are masked before leaving your browser. It stores:</p>
+    <p>SingaporeSalary.com does not put any cookie in your browser, and neither does any service it loads. With nothing to agree to, the site shows no cookie notice.</p>
+    <h2>The CPF and tax calculators</h2>
+    <p>Your monthly wage, bonus, age and residency status stay in the open page. They are never saved to a cookie, to local storage or to session storage; once you change a field they are copied into the address bar, so the link itself can be shared, and they vanish with the tab otherwise.</p>
+    <h2>Microsoft Clarity, cookieless</h2>
+    <p>We keep a single technical script, Microsoft Clarity, to detect faults in the site. Before it loads, the page instructs it that storage is denied, so it stores none of its usual identifiers:</p>
     <ul>
-      <li><code>_clck</code>, which recognises a returning browser, for one year;</li>
-      <li><code>_clsk</code>, which ties page views into one session, for one day;</li>
-      <li><code>MUID</code> and <code>CLID</code>, which Microsoft may set on its own domains.</li>
+      <li>no <code>_clck</code> and no <code>_clsk</code> on this domain;</li>
+      <li>no <code>MUID</code> or <code>CLID</code> on Microsoft’s domains.</li>
     </ul>
-    <h2>Google Analytics 4</h2>
-    <p>Run by Google Ireland Limited, GA4 reports page views, traffic sources, visit length, engagement, device and approximate location. Reports are kept for 14 months. It stores:</p>
-    <ul>
-      <li><code>_ga</code>, which distinguishes visitors, for two years;</li>
-      <li><code>_ga_BFY4BLYY92</code>, which keeps session state for this site, for two years.</li>
-    </ul>
-    <p>Neither tool sets an advertising cookie.</p>
-    <h2>No banner, but you can opt out</h2>
-    <p>Both tools start as soon as a page loads and SingaporeSalary.com displays no consent banner. Refusing third-party cookies, blocking <code>clarity.ms</code> and <code>google-analytics.com</code>, or installing Google’s <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">Analytics opt-out add-on</a> stops them; clearing site data removes what is already stored. CPF and take-home results are unaffected.</p>
-    <p>Questions: see the <a href={route('privacy', lang)}>privacy policy</a>.</p>
+    <p>Every page view is given a one-off identifier, so separate visits are not connected. What comes back to us is technical: JavaScript errors, how long pages take to load, clicks that lead nowhere and how far down a page people scroll. Page wording and anything typed into the CPF, bonus or relief fields is masked before it leaves your browser.</p>
+    <p>Operator: Microsoft Ireland Operations Limited, One Microsoft Place, South County Business Park, Leopardstown, Dublin 18, Ireland. Retention: 30 days for recordings, 13 months for aggregates. Basis: our legitimate interest in calculators that work. To opt out, block <code>clarity.ms</code> or email us; CPF and take-home results are unaffected.</p>
+    <h2>No analytics, no ads</h2>
+    <p>The site runs no audience analytics and no advertising, and the publisher holds no personal data on its visitors. Questions: see the <a href={route('privacy', lang)}>privacy policy</a>.</p>
   </div>
 </PageLayout>
