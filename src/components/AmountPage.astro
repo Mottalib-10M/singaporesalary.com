@@ -20,15 +20,15 @@ const jsonLd = [webApplicationSchema({ name: A.h1, description, path, lang }), w
 import { position } from '../lib/position';
 ---
 <PageLayout title={title} description={description} lang={lang} jsonLd={jsonLd} faqs={A.faqs} breadcrumbs={[{ label: crumb }]} related={neighbours.map((n) => ({ ...n, description: '' }))} sources={sources}>
-  <header class="mb-6">
-    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">{A.h1}</h1>
-    <p class="mt-2 text-sm text-navy-500">{ui.reviewedBy} <a href={route('about', lang)} class="text-accent-700 hover:underline">{AUTHOR_NAME}</a></p>
+  <header class="mb-4">
+    <h1 class="text-[1.75rem] font-bold text-navy-900 max-sm:leading-tight sm:text-3xl md:text-4xl">{A.h1}</h1>
   </header>
+  <SgCalculator client:load mode={mode} initialMonthly={Math.round(monthly * 100) / 100} initialBonus={bonus} initialHourly={hourly} methodHref={route('method', lang)} />
+  <p class="mt-3 text-sm text-navy-500">{ui.reviewedBy} <a href={route('about', lang)} class="text-accent-700 hover:underline">{AUTHOR_NAME}</a></p>
   <section class="prose prose-slate max-w-none">
     <h2>{A.h2}</h2>
     <p>{A.p}</p>
   </section>
-  <SgCalculator client:load mode={mode} initialMonthly={Math.round(monthly * 100) / 100} initialBonus={bonus} initialHourly={hourly} methodHref={route('method', lang)} />
   <AdSlot slot={`${id}-1`} />
   <section class="prose prose-slate max-w-none">
     <h2>{A.h2b}</h2>

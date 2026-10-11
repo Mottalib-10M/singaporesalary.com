@@ -46,3 +46,14 @@ h1 { font-weight: 700; } h2 { font-weight: 650; } h3 { font-weight: 600; }
 .prose table, table.journal { font-variant-numeric: tabular-nums; border-collapse: collapse; }
 .prose thead th, table.journal thead th { font-variant: small-caps; letter-spacing: .02em; border-bottom: 1px solid var(--color-navy-300); background: transparent; }
 .prose td, .prose th, table.journal td, table.journal th { border-left: 0; border-right: 0; }
+
+/* Chapeau replié (RECETTE §26) : un seul <p> entier dans le HTML, la suite masquée se déplie sans JS.
+   Le lien suit la dernière ligne visible (premier écran, règle du 2026-10-11). */
+.clamp { position: relative; }
+.clamp-rest { display: none; }
+.clamp-toggle { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.clamp-toggle:checked ~ p .clamp-rest { display: inline; }
+.clamp-toggle:checked ~ .clamp-more { display: none; }
+.clamp > p { display: inline; }
+.clamp-more { display: inline-block; cursor: pointer; margin-left: 0.25rem; font-size: 0.875rem; font-weight: 600; color: var(--color-accent-700); text-decoration: underline; text-underline-offset: 3px; }
+.clamp-toggle:focus-visible ~ .clamp-more { outline: 2px solid #111827; outline-offset: 3px; }
