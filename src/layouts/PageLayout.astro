@@ -1,4 +1,5 @@
 ---
+import { meneParSimu } from '../lib/mene-par-simu';
 import { LANG_TAGS as __LT } from '../data/site-config';
 import { displayDate } from '../lib/format';
 import BaseLayout from './BaseLayout.astro';
@@ -7,14 +8,17 @@ import { t } from '../i18n/ui';
 import { route, type Locale } from '../i18n/routes';
 import type { FAQItem } from '../lib/seo';
 interface BreadcrumbItem { label: string; href?: string }
-interface Props { title: string; description: string; lang: Locale; canonical?: string; ogImage?: string; noindex?: boolean; jsonLd?: string[]; related?: Array<{ href: string; name: string; description: string }>; faqs?: FAQItem[]; sources?: Array<{ name: string; url: string }>; breadcrumbs?: BreadcrumbItem[]; showAuthor?: boolean }
+interface Props { title: string; description: string; lang: Locale; canonical?: string; ogImage?: string; noindex?: boolean; jsonLd?: string[]; related?: Array<{ href: string; name: string; description: string }>; faqs?: FAQItem[]; sources?: Array<{ name: string; url: string }>; breadcrumbs?: BreadcrumbItem[]; showAuthor?: boolean; dateEnHaut?: boolean }
 const { title, description, lang, canonical, ogImage, noindex = false, jsonLd = [], related = [], faqs = [], sources = [], breadcrumbs = [], showAuthor = true } = Astro.props;
+const lecture = jsonLd.some((j) => /"@type":"(?:Article|BlogPosting|NewsArticle)"/.test(j));
+const dateEnHaut = Astro.props.dateEnHaut ?? (lecture && !meneParSimu('', Astro.slots.has('default') ? await Astro.slots.render('default') : ''));
 const ui = t(lang);
 ---
 <BaseLayout title={title} description={description} lang={lang} canonical={canonical} ogImage={ogImage} noindex={noindex} jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
-  {/* Date de mise à jour à droite, sur la ligne fine du fil d'Ariane ; seule sur sa ligne,
-       elle laissait ≈ 100 px de blanc avant le titre (RECETTE §10.3, check-layout 13). */}
-  <p slot="crumb-aside" data-chrome class="ml-auto text-sm text-navy-500">{ui.updatedOn} <time datetime={LAST_UPDATED}>{displayDate(LAST_UPDATED, __LT[lang])}</time></p>
+  {/* Date en haut seulement sur une page de lecture (Article qui ne s'ouvre pas sur un
+       simulateur) : sur un simulateur ou un accueil elle repoussait le titre sans rien
+       apprendre ; elle reste en bas de page et dans dateModified (RECETTE §8.4, 2026-10-15). */}
+  {dateEnHaut && <p slot="crumb-aside" data-chrome class="ml-auto text-sm text-navy-500">{ui.updatedOn} <time datetime={LAST_UPDATED}>{displayDate(LAST_UPDATED, __LT[lang])}</time></p>}
   <div class="mx-auto max-w-6xl px-4 pb-8 pt-4">
     <slot />
     {faqs.length > 0 && (<section class="mt-12" id="faq"><h2 class="mb-6 text-2xl font-bold text-navy-900">{ui.faqTitle}</h2><div class="space-y-3">
