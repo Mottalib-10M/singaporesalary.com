@@ -3,7 +3,7 @@ import PageLayout from '../../layouts/PageLayout.astro';
 import LegalIdentity from '../../components/LegalIdentity.astro';
 import { route } from '../../i18n/routes';
 import { breadcrumbSchema } from '../../lib/seo';
-import { LEGAL } from '../../data/site-config';
+import { CLARITY_ID, CONTACT_EMAIL, GA4_ID, LEGAL } from '../../data/site-config';
 const lang = 'en';
 ---
 <PageLayout title="Terms of Use and Legal Notice, SingaporeSalary.com" description="Terms of use and legal notice of SingaporeSalary.com: publisher, host, nature of the results, limitation of liability, reuse of content and the free embeddable widget." lang={lang} noindex={true} jsonLd={[breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Terms of use', path: route('terms', lang) }])]} breadcrumbs={[{ label: 'Terms of use' }]}>
@@ -19,6 +19,10 @@ const lang = 'en';
     <p>Rates are checked with care and reported mistakes are fixed quickly, yet errors and outages can still happen and no guarantee is given against them. Radif Partners accepts no liability for payroll, hiring or financial decisions made from these estimates, except where the law does not allow that liability to be excluded.</p>
     <h2>Reuse</h2>
     <p>Copyright covers the wording, tables and code of SingaporeSalary.com. Short quotations are welcome with a link back to the page quoted. To offer the CPF and tax calculator itself to your readers, use the iframe from the <a href={route('widget', lang)}>widget page</a> and keep its credit link in view.</p>
+    {/* gen-legal-pages:terms */}
+    <h2>Personal data and cookies</h2>
+    {GA4_ID ? (<p>What you type in the calculators stays in your browser. The site sets Google Analytics audience measurement cookies (<code>_ga</code>, <code>_ga_{GA4_ID.replace('G-', '')}</code>, 13 months at most), with no advertising{CLARITY_ID && '; page stability is monitored with Microsoft Clarity, cookie-free'}. Details, legal basis and how to object: <a href={route('privacy', lang)}>privacy policy</a> and <a href={route('cookies', lang)}>cookies</a> page.</p>) : (<p>What you type in the calculators stays in your browser and the site sets no cookies{CLARITY_ID && '; page stability is monitored anonymously with Microsoft Clarity, cookie-free'}. See the <a href={route('privacy', lang)}>privacy policy</a> and the <a href={route('cookies', lang)}>cookies</a> page.</p>)}
+    {/* /gen-legal-pages:terms */}
     <h2>Applicable law</h2>
     <p>French law governs these terms, as Radif Partners is established in France. Whether you live in Singapore or elsewhere, the consumer protections your own country makes mandatory still apply.</p>
   </div>

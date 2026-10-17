@@ -1,24 +1,34 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro';
+import { CLARITY_ID, CONTACT_EMAIL, GA4_ID, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
 import { route } from '../../i18n/routes';
-import { breadcrumbSchema } from '../../lib/seo';
 const lang = 'en';
+const title = `Cookies – ${SITE_NAMES[lang]}`;
+const description = GA4_ID ? 'Google Analytics audience measurement cookies and nothing else: names, purpose, a lifetime of 13 months at most, the provider and how to object.' : 'The site sets no cookies: what you type stays in your browser and nothing is kept on your device.';
 ---
-<PageLayout title="Cookies on SingaporeSalary.com: None at All" description="SingaporeSalary.com places no cookies and saves nothing on your device; Microsoft Clarity runs without cookies purely to spot errors in the CPF and tax tools." lang={lang} noindex={true} jsonLd={[breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Cookies', path: route('cookies', lang) }])]} breadcrumbs={[{ label: 'Cookies' }]}>
-  <header class="mb-6"><h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Cookies</h1></header>
+{/* Page générée par scripts/gen-legal-pages.py (trame, décision GA4 du 2026-10-17). Ne pas
+     retoucher à la main : relancer le script. Un passage propre au site se garde entre
+     les marqueurs site:debut et site:fin. */}
+<PageLayout title={title} description={description} lang={lang} noindex={true} breadcrumbs={[{ label: 'Cookies' }]} showAuthor={false}>
   <div class="prose prose-slate max-w-none">
-    <p>SingaporeSalary.com does not put any cookie in your browser, and neither does any service it loads. With nothing to agree to, the site shows no cookie notice.</p>
-    <h2>The CPF and tax calculators</h2>
-    <p>Your monthly wage, bonus, age and residency status stay in the open page. They are never saved to a cookie, to local storage or to session storage; once you change a field they are copied into the address bar, so the link itself can be shared, and they vanish with the tab otherwise.</p>
-    <h2>Microsoft Clarity, cookieless</h2>
-    <p>We keep a single technical script, Microsoft Clarity, to detect faults in the site. Before it loads, the page instructs it that storage is denied, so it stores none of its usual identifiers:</p>
-    <ul>
-      <li>no <code>_clck</code> and no <code>_clsk</code> on this domain;</li>
-      <li>no <code>MUID</code> or <code>CLID</code> on Microsoft’s domains.</li>
-    </ul>
-    <p>Every page view is given a one-off identifier, so separate visits are not connected. What comes back to us is technical: JavaScript errors, how long pages take to load, clicks that lead nowhere and how far down a page people scroll. Page wording and anything typed into the CPF, bonus or relief fields is masked before it leaves your browser.</p>
-    <p>Operator: Microsoft Ireland Operations Limited, One Microsoft Place, South County Business Park, Leopardstown, Dublin 18, Ireland. Retention: 30 days for recordings, 13 months for aggregates. Basis: our legitimate interest in calculators that work. To opt out, block <code>clarity.ms</code> or email us; CPF and take-home results are unaffected.</p>
-    <h2>No analytics, no ads</h2>
-    <p>The site runs no audience analytics and no advertising, and the publisher holds no personal data on its visitors. Questions: see the <a href={route('privacy', lang)}>privacy policy</a>.</p>
+    <h1>Cookies</h1>
+    {GA4_ID ? (<>
+    <p>The site sets Google Analytics audience measurement cookies and those alone: no advertising cookie, no social media cookie. Details of the processing are in the <a href={route('privacy', lang)}>privacy policy</a>.</p>
+    <h2>Cookies set</h2>
+    <table><thead><tr><th>Name</th><th>Provider</th><th>Purpose</th><th>Lifetime</th></tr></thead><tbody>
+    <tr><td><code>_ga</code></td><td>Google Analytics</td><td>Tell visitors apart with a random identifier</td><td>13 months at most (390 days)</td></tr>
+    <tr><td><code>_ga_{GA4_ID.replace('G-', '')}</code></td><td>Google Analytics</td><td>Keep the state of the current visit</td><td>13 months at most (390 days)</td></tr>
+    </tbody></table>
+    <p>These lifetimes are not extended on each visit; Google’s default is 2 years and the site shortens it. Purpose: audience measurement (pages viewed, referrer, device, approximate country). The IP address is anonymised: Google Analytics 4 neither logs nor stores it. No advertising and no ad sharing: ad storage, ad personalisation and Google signals are switched off.</p>
+    <p>Provider: Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland. Data may be transferred to Google LLC in the United States under the EU–U.S. Data Privacy Framework and the European Commission’s standard contractual clauses. Retention at Google: 14 months. Legal basis: the publisher’s legitimate interests (Article 6(1)(f) GDPR; in Singapore, the legitimate interests exception of the PDPA, First Schedule, Part 3).</p>
+    <h2>Objecting to these cookies</h2>
+    <p>Block or delete cookies in your browser settings, or install the <a href="https://tools.google.com/dlpage/gaoptout" rel="nofollow noopener" target="_blank">Google Analytics opt-out browser add-on</a>. The site and its calculators work the same way.</p>
+    </>) : (<>
+    <p>The site <strong>sets no cookies</strong>. Details of the processing are in the <a href={route('privacy', lang)}>privacy policy</a>.</p>
+    </>)}
+    {CLARITY_ID && (<><h2>Microsoft Clarity, cookie-free</h2><p>Page stability is monitored with Microsoft Clarity in cookie-free mode: Clarity sets no cookies, each page view gets a single-use identifier, and page content and your inputs are masked. Blocking <code>clarity.ms</code> stops it.</p></>)}
+    <h2>What you type</h2>
+    <p>Calculations run in your browser: what you enter is sent to no server and is gone when you close the page.</p>
+    <p>Questions: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Last updated: {LAST_UPDATED}.</p>
   </div>
 </PageLayout>
